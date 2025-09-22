@@ -1,3 +1,6 @@
+# TETRIS AI Motor Control System Dependencies
+# Updated: 2025-09-23
+
 Flask==3.0.3
 Werkzeug==3.0.3
 websockets==12.0
@@ -7,10 +10,11 @@ pyserial==3.5
 psutil==5.9.8
 
 # LangChain 0.3 stack
-langchain>=0.3,<0.4
-langchain-core>=0.3.15,<0.4
-langchain-google-genai>=2.0.4
-google-generativeai>=0.8.5
+langchain==0.3.27
+langchain-core==0.3.76
+langchain-google-genai==2.0.10
+google-generativeai==0.8.5
+langsmith==0.4.29
 
 readchar==4.0.5
 typing-extensions==4.12.2
