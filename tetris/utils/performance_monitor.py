@@ -45,11 +45,11 @@ class PerformanceMonitor:
         self.monitor_thread: Optional[threading.Thread] = None
         self.alert_callbacks: List[Callable] = []
         
-        # 기본 알림 임계값
+        # 라즈베리파이5 16GB 최적화 임계값
         self.alert_thresholds = alert_thresholds or {
             'cpu_percent': 80.0,
-            'memory_percent': 85.0,
-            'disk_percent': 90.0
+            'memory_percent': 90.0,  # 16GB 메모리에 맞게 상향 조정
+            'disk_percent': 85.0
         }
         
         # psutil 가용성 확인
@@ -263,10 +263,12 @@ def get_performance_monitor() -> PerformanceMonitor:
         _performance_monitor = PerformanceMonitor()
     return _performance_monitor
 
-def start_performance_monitoring(interval: int = 30) -> bool:
-    """성능 모니터링 시작 편의 함수"""
+def start_performance_monitoring(interval: int = 60) -> bool:
+    """성능 모니터링 시작 편의 함수 (라즈베리파이5 최적화)"""
     monitor = get_performance_monitor()
     monitor.interval = interval
+    # 라즈베리파이5 16GB에 맞게 메모리 임계값 조정
+    monitor.alert_thresholds['memory_percent'] = 90.0
     return monitor.start_monitoring()
 
 def stop_performance_monitoring() -> bool:

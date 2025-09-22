@@ -8,8 +8,8 @@ from datetime import datetime
 # 기본 설정
 BASE_DIR = Path(__file__).resolve().parent
 
-# 환경 설정 (환경변수에서 읽기)
-ENVIRONMENT = os.getenv('TETRIS_ENV', 'production')
+# 환경 설정 (라즈베리파이5 최적화)
+ENVIRONMENT = os.getenv('TETRIS_ENV', 'raspberry_pi5')
 
 # 웹 서버 설정
 def get_available_port():
@@ -30,11 +30,11 @@ WEB_CONFIG = {
     'USE_RELOADER': False
 }
 
-# 파일 업로드 설정
+# 파일 업로드 설정 (라즈베리파이5 최적화)
 UPLOAD_CONFIG = {
     'UPLOAD_FOLDER': BASE_DIR / 'web_interface' / 'source' / 'uploads',
-    'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg', 'gif', 'webp'},
-    'MAX_FILE_SIZE': 10 * 1024 * 1024,  # 10MB
+    'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg', 'webp'},  # gif 제거로 처리 속도 향상
+    'MAX_FILE_SIZE': 5 * 1024 * 1024,  # 5MB로 감소 (메모리 효율성)
     'MIN_PEOPLE_COUNT': 0,
     'MAX_PEOPLE_COUNT': 4
 }
@@ -86,19 +86,19 @@ OUTPUT_CONFIG = {
     'OUTPUT_SCENARIO_DIR': BASE_DIR / 'tetris_out' / 'out_scenario'
 }
 
-# 로깅 설정
+# 로깅 설정 (라즈베리파이5 최적화)
 LOGGING_CONFIG = {
-    'LEVEL': 'INFO',
+    'LEVEL': 'WARNING',  # INFO에서 WARNING으로 변경 (로그 크기 감소)
     'FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     'LOG_FILE': BASE_DIR / 'logs' / f'tetris_{datetime.now().strftime("%Y%m%d")}.log',
-    'MAX_BYTES': 10 * 1024 * 1024,  # 10MB
-    'BACKUP_COUNT': 5,
+    'MAX_BYTES': 5 * 1024 * 1024,  # 5MB로 감소
+    'BACKUP_COUNT': 3,  # 백업 파일 수 감소
     'MODULE_LEVELS': {
-        'tetris.web_interface': 'INFO',
-        'tetris.main_chain': 'INFO', 
-        'tetris.rpi_controller': 'INFO',
-        'flask': 'WARNING',
-        'werkzeug': 'WARNING'
+        'tetris.web_interface': 'WARNING',
+        'tetris.main_chain': 'INFO',  # AI 체인은 여전히 INFO 유지
+        'tetris.rpi_controller': 'INFO',  # 하드웨어 제어는 INFO 유지
+        'flask': 'ERROR',
+        'werkzeug': 'ERROR'
     }
 }
 
@@ -158,6 +158,16 @@ def get_config(env=None):
         config['web']['DEBUG'] = False
         config['web']['USE_RELOADER'] = False
         config['logging']['LEVEL'] = 'INFO'
+        
+    elif env == 'raspberry_pi5':
+        # 라즈베리파이5 16GB 전용 최적화 설정
+        config['web']['DEBUG'] = False
+        config['web']['USE_RELOADER'] = False
+        config['web']['THREADED'] = True
+        config['logging']['LEVEL'] = 'WARNING'
+        config['upload']['MAX_FILE_SIZE'] = 5 * 1024 * 1024  # 5MB
+        config['logging']['MAX_BYTES'] = 5 * 1024 * 1024  # 5MB
+        config['logging']['BACKUP_COUNT'] = 3
     
     return config
 

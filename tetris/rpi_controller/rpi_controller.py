@@ -41,7 +41,18 @@ def connect_to_arduinos():
         for p in found_ports:
             if p.serial_number and p.serial_number == sn:
                 try:
-                    ser = serial.Serial(p.device, BAUD_RATE, timeout=1)
+                    # 간단한 재시도/백오프 로직 추가 (최대 3회)
+                    last_exc = None
+                    for attempt in range(3):
+                        try:
+                            ser = serial.Serial(p.device, BAUD_RATE, timeout=1)
+                            break
+                        except serial.SerialException as e:
+                            last_exc = e
+                            time.sleep(0.5 * (attempt + 1))
+                    else:
+                        raise serial.SerialException(f"연결 재시도 초과: {last_exc}")
+
                     time.sleep(2)
                     arduino_connections[sn] = ser
                     print(f"  ✅ 셀 {i+1}번 연결 성공 (SN: {sn}, Port: {p.device})")

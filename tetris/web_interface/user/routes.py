@@ -64,9 +64,14 @@ def upload_file():
         if file.filename == '':
             return APIResponse.error("No file selected", "NO_FILE", 400)
         
-        # 파일 업로드 검증
-        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
-        max_size = 10 * 1024 * 1024  # 10MB
+        # 중앙 설정을 사용하여 업로드 제한 일치
+        try:
+            from ..source.config_manager import get_config
+        except Exception:
+            from tetris.web_interface.source.config_manager import get_config  # type: ignore
+        cfg = get_config()
+        allowed_extensions = set(cfg['upload']['ALLOWED_EXTENSIONS'])
+        max_size = int(cfg['upload']['MAX_FILE_SIZE'])
         
         validation_error = validate_file_upload(file, allowed_extensions, max_size)
         if validation_error:
@@ -75,37 +80,32 @@ def upload_file():
         # 파일 저장
         filename, filepath = save_uploaded_file(file)
         
-        # 상태 업데이트
+        # 상태 업데이트: AI 체인이 기대하는 필드 채움
+        import base64, mimetypes
+        mime, _ = mimetypes.guess_type(filename)
+        if not mime:
+            mime = 'application/octet-stream'
+        with open(filepath, 'rb') as f:
+            image_data_url = 'data:{};base64,'.format(mime) + base64.b64encode(f.read()).decode('utf-8')
+        scenario = f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        
         update_status(
             progress=25,
             status='uploaded',
             message='파일 업로드 완료',
             uploaded_file=True,
             people_count=int(people_count),
-            image_path=filepath
+            image_path=filepath,
+            image_data_url=image_data_url,
+            scenario=scenario
         )
-        
-        # WebSocket으로 업로드 완료 알림
-        try:
-            from ..source.websocket_manager import ws_manager
-            ws_manager.broadcast({
-                'type': 'upload_complete',
-                'data': {
-                    'filename': filename,
-                    'people_count': int(people_count),
-                    'filepath': filepath,
-                    'upload_time': datetime.now().isoformat()
-                }
-            })
-        except Exception as e:
-            logger.warning(f"WebSocket 알림 실패: {e}")
         
         # 응답 생성
         response_data = {
             'filename': filename,
             'people_count': int(people_count),
             'upload_time': datetime.now().isoformat(),
-            'scenario': f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            'scenario': scenario
         }
         
         log_api_response('/api/upload', 200, "File uploaded successfully")

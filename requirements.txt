@@ -1,9 +1,9 @@
-# TETRIS AI Motor Control System Dependencies
-# Updated: 2025-09-23
+# TETRIS AI Motor Control System Dependencies (라즈베리파이5 최적화)
+# Updated: 2025-09-22
 
 Flask==3.0.3
 Werkzeug==3.0.3
-websockets==12.0
+# websockets 제거됨 - HTTP + SSE만 사용
 Pillow==10.4.0
 qrcode[pil]==7.4.2
 pyserial==3.5
