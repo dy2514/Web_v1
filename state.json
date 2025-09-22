@@ -1,7 +1,7 @@
 {
   "system": {
-    "status": "idle",
-    "last_updated": "2025-09-23T00:40:05.888994",
+    "status": "connected",
+    "last_updated": "2025-09-23T02:27:45.727797",
     "version": "1.0.0"
   },
   "sessions": {},
@@ -24,5 +24,102 @@
     "motor_status": "idle",
     "last_command": null
   },
-  "notifications": []
+  "notifications": [
+    {
+      "id": "notif_1758561249.652638",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:14:09.652638"
+    },
+    {
+      "id": "notif_1758561249.749521",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:14:09.749521"
+    },
+    {
+      "id": "notif_1758561249.78069",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:14:09.780690"
+    },
+    {
+      "id": "notif_1758561742.050529",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:22:22.051529"
+    },
+    {
+      "id": "notif_1758561742.077456",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:22:22.077456"
+    },
+    {
+      "id": "notif_1758561742.097513",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:22:22.097513"
+    },
+    {
+      "id": "notif_1758561742.807039",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:22:22.807039"
+    },
+    {
+      "id": "notif_1758561945.938198",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:25:45.938198"
+    },
+    {
+      "id": "notif_1758561945.963205",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:25:45.963205"
+    },
+    {
+      "id": "notif_1758561945.984512",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:25:45.984512"
+    },
+    {
+      "id": "notif_1758561946.683576",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:25:46.683576"
+    },
+    {
+      "id": "notif_1758562060.155216",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:27:40.155216"
+    },
+    {
+      "id": "notif_1758562060.179632",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:27:40.179632"
+    },
+    {
+      "id": "notif_1758562060.198635",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:27:40.198635"
+    },
+    {
+      "id": "notif_1758562060.790538",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:27:40.790538"
+    },
+    {
+      "id": "notif_1758562065.728843",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-23T02:27:45.728843"
+    }
+  ]
 }

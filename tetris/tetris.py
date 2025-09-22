@@ -40,9 +40,9 @@ def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
     import threading
     import time
     
-    print(f"🌐 TETRIS 통합 웹 서버 시작 (포트: {port})")
-    print(f"📱 모바일 접속: http://localhost:{port}/mobile/input")
-    print(f"🖥️  데스크탑 접속: http://localhost:{port}/desktop/control")
+    print(f"TETRIS 통합 웹 서버 시작 (포트: {port})")
+    print(f"모바일 접속: http://localhost:{port}/mobile/input")
+    print(f"데스크탑 접속: http://localhost:{port}/desktop/control")
     
     if open_browser:
         try:
@@ -73,11 +73,11 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
         people_count, image_data_url, scenario = get_user_input_scenario()
 
     # 2) main_chain 입력 생성
-    print("🤖 AI 체인 입력 생성 중...")
+    print("AI 체인 입력 생성 중...")
     user_msgs = MC.make_chain1_user_input(
         people_count=people_count, image_data_url=image_data_url
     )
-    print(f"✅ AI 체인 입력 생성 완료: {len(user_msgs)}개 메시지")
+    print(f"AI 체인 입력 생성 완료: {len(user_msgs)}개 메시지")
 
     # 2-1) 출력 파일 경로 준비
     OUT_ROOT = HERE / "tetris_out"
@@ -86,45 +86,45 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     out_path = OUT_DIR / f"{scenario}.txt"
 
     # 3) 전체 체인 실행 
-    print("🤖 AI 체인 실행 시작...")
+    print("AI 체인 실행 시작...")
     t_chain_start = perf_counter()
     try:
         result = MC.seq_chain.invoke({"user_input": user_msgs, "people_count": people_count})
-        print("✅ AI 체인 실행 완료")
+        print("AI 체인 실행 완료")
     except Exception as e:
-        print(f"\n❌ AI 체인 실행 실패: {e}")
+        print(f"\nAI 체인 실행 실패: {e}")
         import traceback
         traceback.print_exc()
         raise SystemExit(1)
     t_chain_end = perf_counter()
     chain_elapsed = t_chain_end - t_chain_start
-    print(f"⏱️  AI 체인 실행 시간: {chain_elapsed:.3f}초")
+    print(f"AI 체인 실행 시간: {chain_elapsed:.3f}초")
 
     # 3-1) chain4_out → 아두이노 전송 
     chain4_out = result["chain4_out"].strip()
-    print(f"🎛️  모터 제어 시작 (16-digit 코드: {chain4_out})")
+    print(f"모터 제어 시작 (16-digit 코드: {chain4_out})")
     try:
         RPI.connect_to_arduinos()
 
         connected = getattr(RPI, "arduino_connections", {})
         if not connected:
-            print("⚠️  연결된 아두이노가 없습니다. DRY-RUN 모드로 진행합니다.")
-            print(f"🔧 [DRY-RUN] 16-digit 코드: {chain4_out}")
+            print("연결된 아두이노가 없습니다. DRY-RUN 모드로 진행합니다.")
+            print(f"[DRY-RUN] 16-digit 코드: {chain4_out}")
         else:
             print(f"🔌 아두이노 {len(connected)}개 연결됨")
             # 연결 직후 약간 대기 (보드 리셋/초기화 여유)
             time.sleep(0.3)
 
             RPI.send_automated_command(chain4_out)
-            print("✅ 모터 제어 명령 전송 완료")
+            print("모터 제어 명령 전송 완료")
 
             # 동작할 시간 확보
             time.sleep(2.0)
 
     except Exception as e:
         # 하드웨어 제어 중 예외가 나도 결과 저장은 계속 진행
-        print(f"⚠️  하드웨어 제어 중 예외 발생 → DRY-RUN 전환: {e}")
-        print(f"🔧 [DRY-RUN] 16-digit 코드: {chain4_out}")
+        print(f"하드웨어 제어 중 예외 발생 → DRY-RUN 전환: {e}")
+        print(f"[DRY-RUN] 16-digit 코드: {chain4_out}")
 
     finally:
         # 연결 유무와 상관없이 안전 종료 시도
@@ -133,7 +133,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
             print("🔌 아두이노 연결 종료")
         except Exception:
             pass
-    print("🎛️  모터 제어 완료")
+    print("모터 제어 완료")
 
     # 4) 최종 출력 
     print("\n====================[ chain1_out ]====================")
@@ -182,15 +182,15 @@ def main():
     t_total_end = perf_counter()
     total_elapsed = t_total_end - t_total_start
 
-    print("\n🎉 TETRIS 시스템 실행 완료!")
-    print(f"⏱️  AI 체인 실행 시간: {res['chain_elapsed']:.3f}초")
-    print(f"⏱️  전체 실행 시간: {total_elapsed:.3f}초")
-    print(f"📄 결과 파일: {res['out_path']}")
+    print("\nTETRIS 시스템 실행 완료!")
+    print(f"AI 체인 실행 시간: {res['chain_elapsed']:.3f}초")
+    print(f"전체 실행 시간: {total_elapsed:.3f}초")
+    print(f"결과 파일: {res['out_path']}")
 
     with res["out_path"].open("a", encoding="utf-8") as f:
         f.write("\n====================[ tetris 시스템 실행 완료 ]====================]\n")
-        f.write(f"🕒 chain_run_time: {res['chain_elapsed']:.3f}s\n")
-        f.write(f"🕒 tetris_run_time: {total_elapsed:.3f}s\n")
+        f.write(f"chain_run_time: {res['chain_elapsed']:.3f}s\n")
+        f.write(f"tetris_run_time: {total_elapsed:.3f}s\n")
 
 
 if __name__ == "__main__":

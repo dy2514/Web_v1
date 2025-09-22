@@ -116,9 +116,9 @@ def get_user_input_web(
                 sys.path.insert(0, str(web_interface_path))
             from source.utils import get_global_status, update_status
 
-    print(f"🌐 통합 웹 서버에서 사용자 입력을 기다리는 중...")
-    print(f"📱 모바일 접속: http://localhost:{port}/mobile/input")
-    print(f"🖥️  데스크탑 접속: http://localhost:{port}/desktop/control")
+    print(f"통합 웹 서버에서 사용자 입력을 기다리는 중...")
+    print(f"모바일 접속: http://localhost:{port}/mobile/input")
+    print(f"데스크탑 접속: http://localhost:{port}/desktop/control")
     
     # 통합 웹 서버의 상태를 모니터링하여 입력 수집
     collected_people: Optional[int] = None

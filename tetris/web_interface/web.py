@@ -78,21 +78,21 @@ def system_performance():
 # WebSocket 기능 제거됨 - HTTP + SSE만 사용
 
 if __name__ == '__main__':
-    print("🍓 TETRIS Web Interface - 라즈베리파이5 최적화 버전 (HTTP + SSE)")
-    print("📱 모바일 접속: http://localhost:5002/mobile/input")
-    print("🖥️  데스크탑 접속: http://localhost:5002/desktop/control")
-    print("📊 상태 API: http://localhost:5002/api/status")
+    print("TETRIS Web Interface - 라즈베리파이5 최적화 버전 (HTTP + SSE)")
+    print("모바일 접속: http://localhost:5002/mobile/input")
+    print("데스크탑 접속: http://localhost:5002/desktop/control")
+    print("상태 API: http://localhost:5002/api/status")
     print("=" * 60)
     
     # 성능 모니터링 시작 (라즈베리파이5 최적화 설정)
     try:
         from utils.performance_monitor import start_performance_monitoring
         if start_performance_monitoring(interval=60):  # 간격 늘림
-            print("📈 성능 모니터링 시작됨 (라즈베리파이5 최적화)")
+            print("성능 모니터링 시작됨 (라즈베리파이5 최적화)")
         else:
-            print("⚠️  성능 모니터링 시작 실패")
+            print("성능 모니터링 시작 실패")
     except Exception as e:
-        print(f"⚠️  성능 모니터링 오류: {e}")
+        print(f"성능 모니터링 오류: {e}")
     
     # 통합 설정을 사용한 웹 서버 실행
     app.run(

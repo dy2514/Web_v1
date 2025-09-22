@@ -8,7 +8,15 @@ try:
     from ...config import get_config  # tetris.config
 except Exception:
     # 실행 컨텍스트에 따라 상대 임포트가 실패할 수 있어 안전 폴백
-    from tetris.config import get_config  # type: ignore
+    import sys
+    from pathlib import Path
+    
+    # tetris 디렉토리를 sys.path에 추가
+    tetris_dir = Path(__file__).resolve().parent.parent.parent
+    if str(tetris_dir) not in sys.path:
+        sys.path.insert(0, str(tetris_dir))
+    
+    from config import get_config
 
 _cfg = get_config()
 UPLOAD_FOLDER = str(_cfg['upload']['UPLOAD_FOLDER'])
