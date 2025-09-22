@@ -52,53 +52,106 @@ def upload_file():
     """파일 업로드 API - 표준화된 응답 형식"""
     log_api_request('/api/upload', 'POST')
     
+    # 요청 정보 로깅
+    logger.info(f"[시작] 업로드 요청 시작 - Content-Type: {request.content_type}, Files: {list(request.files.keys())}")
+    
     try:
         # 파일 검증
         if 'photo' not in request.files:
-            return APIResponse.error("No file provided", "NO_FILE", 400)
+            error_msg = "업로드할 파일이 선택되지 않았습니다. 'photo' 필드가 누락되었습니다."
+            logger.error(f"[에러] 파일 업로드 실패: {error_msg}")
+            return APIResponse.error(error_msg, "NO_FILE", 400)
         
         file = request.files['photo']
         people_count = request.form.get('people_count', '0')
         session_id = request.form.get('session_id')
         
+        logger.info(f"업로드 파일 정보 - 파일명: {file.filename}, 크기: {file.content_length if hasattr(file, 'content_length') else 'unknown'}, 세션: {session_id}")
+        
         if file.filename == '':
-            return APIResponse.error("No file selected", "NO_FILE", 400)
+            error_msg = "파일이 선택되지 않았습니다. 이미지를 선택해주세요."
+            logger.error(f"[에러] 파일 업로드 실패: {error_msg}")
+            return APIResponse.error(error_msg, "NO_FILE", 400)
         
         # 중앙 설정을 사용하여 업로드 제한 일치
         try:
-            from ..source.config_manager import get_config
-        except Exception:
-            from tetris.web_interface.source.config_manager import get_config  # type: ignore
+            from  web_interface.source.simple_config import get_config
+        except Exception as import_error:
+            logger.error(f"[에러] 상대 import 실패, 절대 import 시도: {import_error}")
+            import sys
+            import os
+            # Web_v1 디렉토리를 Python 경로에 추가
+            web_v1_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+            if web_v1_path not in sys.path:
+                sys.path.insert(0, web_v1_path)
+            try:
+                from web_interface.source.simple_config import get_config
+            except Exception as abs_import_error:
+                logger.error(f"[에러] 절대 import도 실패: {abs_import_error}")
+                # 기본 설정 사용
+                def get_config():
+                    return {
+                        'upload': {
+                            'ALLOWED_EXTENSIONS': {'jpg', 'jpeg', 'png', 'gif', 'webp'},
+                            'MAX_FILE_SIZE': 10 * 1024 * 1024  # 10MB
+                        }
+                    }
+        
         cfg = get_config()
         allowed_extensions = set(cfg['upload']['ALLOWED_EXTENSIONS'])
         max_size = int(cfg['upload']['MAX_FILE_SIZE'])
         
+        logger.info(f"업로드 설정 - 허용 확장자: {allowed_extensions}, 최대 크기: {max_size} bytes")
+        
         validation_error = validate_file_upload(file, allowed_extensions, max_size)
         if validation_error:
+            logger.error(f"[에러] 파일 검증 실패: {validation_error}")
             return validation_error
         
         # 파일 저장
-        filename, filepath = save_uploaded_file(file)
+        try:
+            filename, filepath = save_uploaded_file(file)
+            logger.info(f"[성공] 파일 저장 성공 - 파일명: {filename}, 경로: {filepath}")
+        except Exception as save_error:
+            error_msg = f"파일 저장 중 오류가 발생했습니다: {str(save_error)}"
+            logger.error(f"[에러] 파일 저장 실패: {save_error}", exc_info=True)
+            return APIResponse.error(error_msg, "SAVE_ERROR", 500)
         
         # 상태 업데이트: AI 체인이 기대하는 필드 채움
-        import base64, mimetypes
-        mime, _ = mimetypes.guess_type(filename)
-        if not mime:
-            mime = 'application/octet-stream'
-        with open(filepath, 'rb') as f:
-            image_data_url = 'data:{};base64,'.format(mime) + base64.b64encode(f.read()).decode('utf-8')
+        try:
+            import base64, mimetypes
+            mime, _ = mimetypes.guess_type(filename)
+            if not mime:
+                mime = 'application/octet-stream'
+            with open(filepath, 'rb') as f:
+                image_data = f.read()
+                image_data_url = 'data:{};base64,'.format(mime) + base64.b64encode(image_data).decode('utf-8')
+            
+            logger.info(f"[성공] 이미지 데이터 처리 완료 - MIME: {mime}, 크기: {len(image_data)} bytes")
+            
+        except Exception as process_error:
+            error_msg = f"이미지 처리 중 오류가 발생했습니다: {str(process_error)}"
+            logger.error(f"[에러] 이미지 처리 실패: {process_error}", exc_info=True)
+            return APIResponse.error(error_msg, "PROCESS_ERROR", 500)
+        
         scenario = f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
-        update_status(
-            progress=25,
-            status='uploaded',
-            message='파일 업로드 완료',
-            uploaded_file=True,
-            people_count=int(people_count),
-            image_path=filepath,
-            image_data_url=image_data_url,
-            scenario=scenario
-        )
+        # 상태 업데이트
+        try:
+            update_status(
+                progress=25,
+                status='uploaded',
+                message='파일 업로드 완료',
+                uploaded_file=True,
+                people_count=int(people_count),
+                image_path=filepath,
+                image_data_url=image_data_url,
+                scenario=scenario
+            )
+            logger.info(f"[성공] 상태 업데이트 완료 - 시나리오: {scenario}, 인원수: {people_count}")
+        except Exception as status_error:
+            logger.warning(f"[경고] 상태 업데이트 실패: {status_error}")
+            # 상태 업데이트 실패는 업로드 자체를 실패로 처리하지 않음
         
         # 응답 생성
         response_data = {
@@ -108,11 +161,19 @@ def upload_file():
             'scenario': scenario
         }
         
+        logger.info(f"[성공] 업로드 성공 - 파일: {filename}, 시나리오: {scenario}")
         log_api_response('/api/upload', 200, "File uploaded successfully")
-        return APIResponse.success(response_data, "File uploaded successfully")
+        return APIResponse.success(response_data, "파일이 성공적으로 업로드되었습니다")
         
     except Exception as e:
-        logger.error(f"파일 업로드 오류: {e}")
-        update_status(status='error', message=f'업로드 오류: {str(e)}')
+        error_msg = f"파일 업로드 중 예상치 못한 오류가 발생했습니다: {str(e)}"
+        logger.error(f"[에러] 파일 업로드 예외 발생: {e}", exc_info=True)
+        
+        # 상태 업데이트 시도 (실패해도 무시)
+        try:
+            update_status(status='error', message=error_msg)
+        except:
+            pass
+        
         log_api_response('/api/upload', 500, str(e))
-        return APIResponse.server_error(f"Upload failed: {str(e)}")
+        return APIResponse.server_error(error_msg)

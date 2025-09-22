@@ -28,7 +28,7 @@ class SSEManager {
         this.sessionId = sessionId;
         this.disconnect();
 
-        const url = `${this.baseUrl}/api/progress_stream?session_id=${sessionId}`;
+        const url = `${this.baseUrl}/desktop/api/progress_stream?session_id=${sessionId}`;
         console.log('SSE 연결 시도:', url);
         
         this.eventSource = new EventSource(url);

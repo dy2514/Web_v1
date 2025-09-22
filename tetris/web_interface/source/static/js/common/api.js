@@ -215,7 +215,7 @@ class ApiManager {
         
         // URL별 시뮬레이션 응답
         const simulationResponses = {
-            '/api/upload': {
+            '/mobile/api/upload': {
                 success: true,
                 file_id: 'sim_' + Math.random().toString(36).substr(2, 9),
                 filename: data?.name || 'test.jpg',
@@ -223,13 +223,13 @@ class ApiManager {
                 url: '/static/uploads/sample.jpg',
                 timestamp: new Date().toISOString()
             },
-            '/api/start_chain': {
+            '/desktop/api/start_processing': {
                 success: true,
                 chain_id: Math.floor(Math.random() * 1000),
                 status: 'started',
                 timestamp: new Date().toISOString()
             },
-            '/api/chain_status': {
+            '/desktop/api/session': {
                 success: true,
                 chain_id: 1,
                 status: 'running',
@@ -237,7 +237,7 @@ class ApiManager {
                 current_step: Math.floor(Math.random() * 4) + 1,
                 timestamp: new Date().toISOString()
             },
-            '/api/get_progress': {
+            '/desktop/api/status': {
                 success: true,
                 overall_progress: Math.floor(Math.random() * 100),
                 current_step: Math.floor(Math.random() * 4) + 1,
@@ -249,7 +249,7 @@ class ApiManager {
                 ],
                 timestamp: new Date().toISOString()
             },
-            '/api/trigger_hw': {
+            '/desktop/api/trigger_hardware': {
                 success: true,
                 hardware_id: 'sim_hw_' + Math.random().toString(36).substr(2, 9),
                 status: 'started',
@@ -330,42 +330,42 @@ window.api = {
             formData.append(key, additionalData[key]);
         });
         
-        return window.apiManager.upload('/api/upload', formData);
+        return window.apiManager.upload('/mobile/api/upload', formData);
     },
 
     /**
      * 체인 시작
      */
     async startChain(data) {
-        return window.apiManager.post('/api/start_chain', data);
+        return window.apiManager.post('/desktop/api/start_processing', data);
     },
 
     /**
      * 체인 상태 조회
      */
     async getChainStatus(chainId) {
-        return window.apiManager.get(`/api/chain_status/${chainId}`);
+        return window.apiManager.get(`/desktop/api/session/${chainId}/progress`);
     },
 
     /**
      * 진행상황 조회
      */
     async getProgress() {
-        return window.apiManager.get('/api/get_progress');
+        return window.apiManager.get('/desktop/api/status');
     },
 
     /**
      * 하드웨어 제어
      */
     async triggerHardware(data) {
-        return window.apiManager.post('/api/trigger_hw', data);
+        return window.apiManager.post('/desktop/api/trigger_hardware', data);
     },
 
     /**
      * 세션 목록 조회
      */
     async getSessions() {
-        return window.apiManager.get('/api/sessions');
+        return window.apiManager.get('/desktop/api/sessions');
     }
 };
 

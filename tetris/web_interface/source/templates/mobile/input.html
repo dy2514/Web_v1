@@ -412,14 +412,15 @@
                 fd.append('photo', photo.files[0]);
                 if (seatSelection !== null) fd.append('people', seatSelection);
 
-                const r = await fetch('/api/upload', { method: 'POST', body: fd });
+                const r = await fetch('/mobile/api/upload', { method: 'POST', body: fd });
                 const d = await r.json();
-                if (!r.ok || !d.ok) {
+                
+                if (!d.success) {
                     alert('업로드 실패');
                     return;
                 }
 
-                currentScenario = d.scenario;
+                currentScenario = d.data.scenario;
 
                 btnPhotoIn.style.display = 'none';
                 btnPhotoOut.style.display = 'flex';
@@ -429,6 +430,7 @@
                 submit.classList.add('active');
 
             } catch (e) {
+                console.error('네트워크 오류:', e);
                 alert('네트워크 오류');
             }
         });
@@ -451,7 +453,7 @@
             pollTimer = setInterval(async () => {
                 tries += 1;
                 try {
-                    const rs = await fetch('/api/status?scenario=' + encodeURIComponent(currentScenario));
+                    const rs = await fetch('/desktop/api/status?scenario=' + encodeURIComponent(currentScenario));
                     const dj = await rs.json();
                     if (dj.ok && dj.status === 'done') {
                         clearInterval(pollTimer);

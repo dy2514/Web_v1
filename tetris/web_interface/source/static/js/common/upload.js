@@ -7,7 +7,7 @@ class FileUploadManager {
     constructor(options = {}) {
         this.maxFileSize = options.maxFileSize || 10 * 1024 * 1024; // 10MB
         this.allowedTypes = options.allowedTypes || ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        this.uploadUrl = options.uploadUrl || '/api/upload';
+        this.uploadUrl = options.uploadUrl || '/mobile/api/upload';
         this.onProgress = options.onProgress || (() => {});
         this.onSuccess = options.onSuccess || (() => {});
         this.onError = options.onError || (() => {});
@@ -204,7 +204,7 @@ class FileUploadManager {
 window.fileUploadManager = new FileUploadManager({
     maxFileSize: 10 * 1024 * 1024, // 10MB
     allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-    uploadUrl: '/api/upload',
+    uploadUrl: '/mobile/api/upload',
     onProgress: (progress) => {
         console.log(`업로드 진행률: ${Math.round(progress)}%`);
     },

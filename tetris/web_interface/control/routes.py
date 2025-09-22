@@ -7,8 +7,10 @@ import time
 import uuid
 from datetime import datetime
 from pathlib import Path
+import qrcode  # pip install qrcode[pil]
+from io import BytesIO
 
-from flask import Response, jsonify, render_template, request, session
+from flask import Response, jsonify, render_template, request, session, make_response
 
 # Path configuration
 current_dir = Path(__file__).parent
@@ -36,6 +38,13 @@ session_metadata = {}  # 세션 메타데이터
 
 # Blueprint 참조를 위해 동적 import
 from . import control_bp
+
+# 서버 URL 생성 함수
+def _server_url():
+    """서버 URL 생성"""
+    from .control_utils import get_connection_info
+    conn_info = get_connection_info()
+    return conn_info['mobile_url']
 
 # 세션 관리 함수들
 def register_session(session_id, session_type='desktop'):
@@ -91,6 +100,7 @@ def desktop_control():
                          qr_code="QR_CODE_PLACEHOLDER", 
                          local_ip="192.168.1.100",
                          mobile_url="http://192.168.1.100:5002/mobile/input")
+
 
 @control_bp.route('/api/status')
 def get_status():
@@ -290,3 +300,26 @@ def trigger_hardware():
     except Exception as e:
         logger.error(f"하드웨어 제어 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# QR 이미지 생성 라우트
+@control_bp.route("/qr.png")
+def qr_png():
+    """QR 코드 이미지 생성"""
+    try:
+        url = _server_url()
+        qr = qrcode.QRCode(box_size=10, border=2)
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+        
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        
+        resp = make_response(buf.getvalue())
+        resp.headers["Content-Type"] = "image/png"
+        return resp
+        
+    except Exception as e:
+        logger.error(f"QR 코드 생성 오류: {e}")
+        return jsonify({'error': 'QR 코드 생성 실패'}), 500

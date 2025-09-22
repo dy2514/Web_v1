@@ -10,9 +10,16 @@ from pathlib import Path
 
 from flask import Flask, abort, jsonify, redirect, request, send_from_directory
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
+# 로깅 설정 - 에러 로그 표시를 위해 개선
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 logger = logging.getLogger(__name__)
+logger.info("로깅 시스템 초기화 완료")
 
 # Simplified configuration loading
 sys.path.insert(0, str(Path(__file__).parent.parent))

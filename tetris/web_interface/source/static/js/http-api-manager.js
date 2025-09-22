@@ -112,7 +112,7 @@ class HttpApiManager {
      * 세션 참여
      */
     async joinSession(sessionId, sessionType = 'desktop') {
-        return this.post('/api/join_session', { 
+        return this.post('/desktop/api/join_session', { 
             session_id: sessionId, 
             type: sessionType 
         });
@@ -122,7 +122,7 @@ class HttpApiManager {
      * AI 처리 시작
      */
     async startProcessing(sessionId) {
-        return this.post('/api/start_processing', { session_id: sessionId });
+        return this.post('/desktop/api/start_processing', { session_id: sessionId });
     }
 
     /**
@@ -134,42 +134,42 @@ class HttpApiManager {
         formData.append('people_count', peopleCount);
         formData.append('session_id', sessionId);
 
-        return this.upload('/api/upload', formData);
+        return this.upload('/mobile/api/upload', formData);
     }
 
     /**
      * 시스템 초기화
      */
     async resetSystem() {
-        return this.post('/api/reset');
+        return this.post('/desktop/api/reset');
     }
 
     /**
      * 시스템 상태 조회
      */
     async getStatus() {
-        return this.get('/api/status');
+        return this.get('/desktop/api/status');
     }
 
     /**
      * 활성 세션 목록 조회
      */
     async getSessions() {
-        return this.get('/api/sessions');
+        return this.get('/desktop/api/sessions');
     }
 
     /**
      * 특정 세션의 진행 상태 조회
      */
     async getSessionProgress(sessionId) {
-        return this.get(`/api/session/${sessionId}/progress`);
+        return this.get(`/desktop/api/session/${sessionId}/progress`);
     }
 
     /**
      * 하드웨어 제어
      */
     async triggerHardware(sessionId, command) {
-        return this.post('/api/trigger_hardware', { 
+        return this.post('/desktop/api/trigger_hardware', { 
             session_id: sessionId, 
             command: command 
         });

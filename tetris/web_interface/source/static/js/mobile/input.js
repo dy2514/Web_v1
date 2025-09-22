@@ -156,7 +156,7 @@ class InputController {
             };
 
             // 실제 업로드 실행
-            await window.fileUploadManager.uploadFile('/api/upload', this.selectedFile, additionalData);
+            await window.fileUploadManager.uploadFile('/mobile/api/upload', this.selectedFile, additionalData);
 
         } catch (error) {
             this.handleUploadError(error);
