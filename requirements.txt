@@ -1,0 +1,17 @@
+Flask==3.0.3
+Werkzeug==3.0.3
+websockets==12.0
+Pillow==10.4.0
+qrcode[pil]==7.4.2
+pyserial==3.5
+psutil==5.9.8
+
+# LangChain 0.3 stack
+langchain>=0.3,<0.4
+langchain-core>=0.3.15,<0.4
+langchain-google-genai>=2.0.4
+google-generativeai>=0.8.5
+
+readchar==4.0.5
+typing-extensions==4.12.2
+requests==2.32.3

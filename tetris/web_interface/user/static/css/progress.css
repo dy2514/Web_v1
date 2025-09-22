@@ -1,0 +1,389 @@
+/* 모바일 진행상황 페이지 스타일 */
+.progress-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* 진행상황 헤더 */
+.progress-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-white);
+}
+
+.progress-header h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing);
+    font-weight: var(--font-weight-bold);
+}
+
+.progress-subtitle {
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 전체 진행률 섹션 */
+.overall-progress-section {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing);
+}
+
+.progress-info h3 {
+    font-size: var(--font-size-xl);
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.progress-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+}
+
+.progress-percentage {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+}
+
+.progress-time {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.progress-bar-container {
+    margin-bottom: var(--spacing);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #20c997);
+    border-radius: var(--radius-lg);
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+.progress-description {
+    text-align: center;
+}
+
+.progress-description p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    font-style: italic;
+}
+
+/* 단계별 진행상황 */
+.steps-section {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.steps-section h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing);
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    transition: all var(--transition);
+}
+
+.step-item.active {
+    background: #e3f2fd;
+    border-left: 4px solid var(--primary-color);
+}
+
+.step-item.completed {
+    background: #e8f5e8;
+    border-left: 4px solid var(--success-color);
+}
+
+.step-item.error {
+    background: #ffebee;
+    border-left: 4px solid var(--danger-color);
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border-radius: 50%;
+    margin-right: var(--spacing);
+    font-size: var(--font-size-lg);
+}
+
+.step-item.active .step-icon {
+    background: var(--primary-color);
+    color: var(--text-white);
+}
+
+.step-item.completed .step-icon {
+    background: var(--success-color);
+    color: var(--text-white);
+}
+
+.step-item.error .step-icon {
+    background: var(--danger-color);
+    color: var(--text-white);
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-title {
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.step-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.step-status {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.step-item.active .step-status {
+    background: #cce7ff;
+    color: var(--primary-color);
+}
+
+.step-item.completed .step-status {
+    background: #d4edda;
+    color: var(--success-color);
+}
+
+.step-item.error .step-status {
+    background: #f8d7da;
+    color: var(--danger-color);
+}
+
+/* 제어 버튼 */
+.control-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.control-buttons {
+    display: flex;
+    gap: var(--spacing);
+    justify-content: center;
+}
+
+.btn {
+    padding: var(--spacing) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius);
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--text-white);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: var(--text-white);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* 완료 정보 */
+.completion-info {
+    margin-bottom: var(--spacing-lg);
+}
+
+.completion-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+}
+
+.completion-icon {
+    font-size: var(--font-size-2xl);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+}
+
+.completion-content h4 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.completion-content p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .progress-container {
+        padding: var(--spacing-sm);
+    }
+    
+    .progress-header h2 {
+        font-size: var(--font-size-xl);
+    }
+    
+    .progress-subtitle {
+        font-size: var(--font-size);
+    }
+    
+    .overall-progress-section,
+    .steps-section,
+    .completion-card {
+        padding: var(--spacing);
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        align-items: flex-end;
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .completion-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* 애니메이션 */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.step-item.active {
+    animation: pulse 2s infinite;
+}
+
+.progress-fill {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .2) 50%,
+        rgba(255, 255, 255, .2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 20px 20px;
+    animation: move 1s linear infinite;
+}
+
+@keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 20px; }
+}

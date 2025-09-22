@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}AI 분석 진행중 - AI TETRIS{% endblock %}
+
+{% block device_type %}Mobile{% endblock %}
+
+{% block content %}
+<div class="progress-container">
+    <!-- 진행상황 헤더 -->
+    <section class="progress-header">
+        <div class="header-content">
+            <h2>AI 분석 진행중</h2>
+            <p class="progress-subtitle">현대자동차 AI TETRIS 서비스가 최적의 시트 배치를 분석하고 있습니다.</p>
+        </div>
+    </section>
+
+    <!-- 전체 진행률 -->
+    <section class="overall-progress-section">
+        <div class="progress-info">
+            <h3>전체 진행률</h3>
+            <div class="progress-stats">
+                <span class="progress-percentage" id="overallProgress">0%</span>
+                <span class="progress-time" id="progressTime">00:00</span>
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="overallProgressBar"></div>
+            </div>
+        </div>
+        <div class="progress-description">
+            <p id="progressDescription">분석을 시작하고 있습니다...</p>
+        </div>
+    </section>
+
+    <!-- 단계별 진행상황 -->
+    <section class="steps-section">
+        <h3>분석 단계</h3>
+        <div class="steps-list" id="stepsList">
+            <!-- 동적으로 생성될 단계들 -->
+        </div>
+    </section>
+
+    <!-- 제어 버튼 -->
+    <section class="control-section">
+        <div class="control-buttons">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+            <button type="button" class="btn btn-primary" id="restartBtn" disabled>재시작</button>
+        </div>
+    </section>
+
+    <!-- 예상 완료 시간 -->
+    <section class="completion-info">
+        <div class="completion-card">
+            <div class="completion-icon">⏱️</div>
+            <div class="completion-content">
+                <h4>예상 완료 시간</h4>
+                <p id="estimatedTime">약 2분 후 완료 예정</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/progress.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/mobile/progress.js') }}"></script>
+{% endblock %}

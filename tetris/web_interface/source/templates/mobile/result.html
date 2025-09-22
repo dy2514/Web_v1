@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}분석 결과 - AI TETRIS{% endblock %}
+
+{% block device_type %}Mobile{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <!-- 결과 헤더 -->
+    <section class="result-header">
+        <div class="header-content">
+            <h2>분석 완료</h2>
+            <p class="result-subtitle">AI TETRIS가 최적의 시트 배치를 완성했습니다.</p>
+        </div>
+    </section>
+
+    <!-- 분석 결과 요약 -->
+    <section class="result-summary">
+        <div class="summary-card">
+            <div class="summary-icon">✅</div>
+            <div class="summary-content">
+                <h3>분석 결과</h3>
+                <p id="summaryText">탑승 인원 2명에 맞춰 최적의 시트 배치가 완성되었습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 16자리 코드 표시 -->
+    <section class="code-section">
+        <h3>하드웨어 제어 코드</h3>
+        <div class="code-display">
+            <div class="code-value" id="hardwareCode">0000000000000000</div>
+            <button type="button" class="btn btn-outline" id="copyBtn">복사</button>
+        </div>
+        <p class="code-description">이 코드를 하드웨어에 입력하여 자동으로 시트를 배치합니다.</p>
+    </section>
+
+    <!-- 하드웨어 제어 버튼 -->
+    <section class="hardware-control-section">
+        <h3>하드웨어 제어</h3>
+        <div class="control-buttons">
+            <button type="button" class="btn btn-primary btn-large" id="executeBtn">
+                <span class="btn-icon">🚗</span>
+                하드웨어 실행
+            </button>
+            <button type="button" class="btn btn-secondary" id="testBtn">
+                <span class="btn-icon">🧪</span>
+                테스트 실행
+            </button>
+        </div>
+    </section>
+
+    <!-- 센서 데이터 표시 -->
+    <section class="sensor-data-section">
+        <h3>실시간 센서 데이터</h3>
+        <div class="sensor-grid" id="sensorGrid">
+            <!-- 동적으로 생성될 센서 데이터들 -->
+        </div>
+    </section>
+
+    <!-- 추가 제어 옵션 -->
+    <section class="additional-controls">
+        <h3>추가 제어</h3>
+        <div class="control-options">
+            <button type="button" class="btn btn-outline" id="stopBtn">정지</button>
+            <button type="button" class="btn btn-outline" id="resetBtn">리셋</button>
+            <button type="button" class="btn btn-outline" id="statusBtn">상태 확인</button>
+        </div>
+    </section>
+
+    <!-- 로그 표시 -->
+    <section class="log-section">
+        <h3>실행 로그</h3>
+        <div class="log-container">
+            <div class="log-content" id="logContent">
+                <div class="log-entry">
+                    <span class="log-time">14:30:15</span>
+                    <span class="log-message">하드웨어 연결 확인 완료</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">14:30:16</span>
+                    <span class="log-message">시트 위치 초기화</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 액션 버튼 -->
+    <section class="action-buttons">
+        <div class="action-grid">
+            <button type="button" class="btn btn-secondary" id="newAnalysisBtn">
+                <span class="btn-icon">🔄</span>
+                새 분석
+            </button>
+            <button type="button" class="btn btn-primary" id="shareBtn">
+                <span class="btn-icon">📤</span>
+                결과 공유
+            </button>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/result.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/mobile/result.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,212 @@
+/* 모바일 입력 페이지 스타일 */
+.input-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-white);
+}
+
+.hero-content h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing);
+    font-weight: var(--font-weight-bold);
+}
+
+.hero-content p {
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.input-form {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.input-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.input-section h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.section-desc {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing);
+    line-height: 1.5;
+    font-size: var(--font-size-sm);
+}
+
+/* 탑승 인원 선택 */
+.chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.chip {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    text-align: center;
+}
+
+.chip:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.chip.selected {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* 사진 업로드 */
+.photo-upload {
+    text-align: center;
+    border: 2px dashed #dee2e6;
+    border-radius: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.photo-upload:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+}
+
+.photo-preview {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.photo-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.remove-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.upload-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.upload-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+/* 제출 버튼 */
+.submit-btn {
+    width: 100%;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 18px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.submit-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.submit-btn.enabled {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.submit-btn.enabled:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .input-container {
+        padding: 15px;
+    }
+    
+    .input-form {
+        padding: 20px;
+    }
+    
+    .hero-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .chip {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        min-width: 70px;
+    }
+    
+    .upload-btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    .submit-btn {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+}

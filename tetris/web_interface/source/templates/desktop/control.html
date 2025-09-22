@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRIS - 데스크탑 관제 (안정화 버전)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .qr-section {
+            text-align: center;
+        }
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .mobile-url {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 15px 0;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .status-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .status-item h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .status-message {
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .connection-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .connected {
+            background-color: #28a745;
+        }
+        .disconnected {
+            background-color: #dc3545;
+        }
+        .processing {
+            background-color: #ffc107;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍓 TETRIS 데스크탑 관제 시스템 (라즈베리 파이)</h1>
+        <p>안정화된 HTTP 기반 실시간 모니터링</p>
+    </div>
+    
+    <div class="container">
+        <div class="panel">
+            <h2>📱 모바일 접속</h2>
+            <div class="qr-section">
+                <div class="qr-code">
+                    QR 코드<br>
+                    <small>모바일에서 스캔하세요</small>
+                </div>
+                <div class="mobile-url">
+                    {{ mobile_url }}
+                </div>
+                <button class="btn" onclick="copyToClipboard('{{ mobile_url }}')">
+                    URL 복사
+                </button>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>📊 시스템 상태</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>연결 상태</h3>
+                    <div class="status-value">
+                        <span class="connection-indicator" id="connectionIndicator"></span>
+                        <span id="connectionStatus">대기중</span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <h3>진행률</h3>
+                    <div class="status-value" id="progressValue">0%</div>
+                </div>
+                <div class="status-item">
+                    <h3>업로드 상태</h3>
+                    <div class="status-value" id="uploadStatus">없음</div>
+                </div>
+                <div class="status-item">
+                    <h3>처리 상태</h3>
+                    <div class="status-value" id="processStatus">대기중</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="status-message" id="statusMessage">
+                시스템 준비됨
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn btn-success" onclick="startProcessing()">AI 처리 시작</button>
+                <button class="btn" onclick="refreshStatus()">상태 새로고침</button>
+                <button class="btn btn-danger" onclick="resetSystem()">시스템 초기화</button>
+            </div>
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="btn" onclick="toggleStream()" id="streamBtn">실시간 스트림 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 새로운 통신 구조 스크립트 -->
+    <script src="{{ url_for('static', filename='js/http-api-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sse-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/communication-manager.js') }}"></script>
+    
+    <script>
+        let streamActive = false;
+        let streamSource = null;
+        let sessionId = null;
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // 통신 매니저 초기화
+                await window.commManager.initialize();
+                
+                // 세션 시작
+                sessionId = await window.commManager.startSession('desktop');
+                console.log('세션 시작됨:', sessionId);
+                
+                // 이벤트 핸들러 등록
+                setupEventHandlers();
+                
+                // 초기 상태 조회
+                await refreshStatus();
+                
+                console.log('데스크탑 관제 화면 초기화 완료');
+            } catch (error) {
+                console.error('초기화 오류:', error);
+                updateConnectionStatus(false);
+            }
+        });
+        
+        // 이벤트 핸들러 설정
+        function setupEventHandlers() {
+            // 진행 상태 업데이트
+            window.commManager.on('progress_update', function(data) {
+                console.log('진행 상태 업데이트:', data);
+                updateUI({
+                    progress: data.progress,
+                    status: data.status,
+                    message: data.message
+                });
+            });
+            
+            // 업로드 완료
+            window.commManager.on('upload_complete', function(data) {
+                console.log('업로드 완료:', data);
+                updateUI({
+                    uploaded_file: true,
+                    people_count: data.data.people_count,
+                    message: '파일 업로드 완료'
+                });
+            });
+            
+            // 하드웨어 제어 시작
+            window.commManager.on('hardware_start', function(data) {
+                console.log('하드웨어 제어 시작:', data);
+                updateUI({
+                    message: data.message
+                });
+            });
+            
+            // 연결 상태
+            window.commManager.on('connected', function(data) {
+                console.log('SSE 연결됨:', data);
+                updateConnectionStatus(true);
+            });
+            
+            // 에러 처리
+            window.commManager.on('error', function(error) {
+                console.error('통신 오류:', error);
+                updateConnectionStatus(false);
+            });
+        }
+        
+        // URL 복사 기능
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('URL이 클립보드에 복사되었습니다!');
+            });
+        }
+        
+        // 상태 새로고침 (새로운 통신 구조)
+        async function refreshStatus() {
+            try {
+                const result = await window.commManager.getStatus();
+                if (result.data.success) {
+                    updateUI(result.data.data);
+                }
+            } catch (error) {
+                console.error('상태 새로고침 오류:', error);
+                updateConnectionStatus(false);
+            }
+        }
+        
+        // UI 업데이트
+        function updateUI(data) {
+            // 연결 상태
+            updateConnectionStatus(true);
+            
+            // 진행률
+            document.getElementById('progressValue').textContent = data.progress + '%';
+            document.getElementById('progressFill').style.width = data.progress + '%';
+            
+            // 상태 메시지
+            document.getElementById('statusMessage').textContent = data.message;
+            
+            // 업로드 상태
+            document.getElementById('uploadStatus').textContent = data.uploaded_file ? '완료' : '없음';
+            
+            // 처리 상태
+            document.getElementById('processStatus').textContent = data.status;
+            
+            // 연결 표시기 업데이트
+            const indicator = document.getElementById('connectionIndicator');
+            indicator.className = 'connection-indicator';
+            
+            if (data.status === 'processing' || data.status === 'analyzing' || 
+                data.status === 'generating' || data.status === 'finalizing') {
+                indicator.classList.add('processing');
+            } else if (data.status === 'completed') {
+                indicator.classList.add('connected');
+            } else {
+                indicator.classList.add('connected');
+            }
+        }
+        
+        // 연결 상태 업데이트
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('connectionIndicator');
+            const status = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.className = 'connection-indicator connected';
+                status.textContent = '연결됨';
+            } else {
+                indicator.className = 'connection-indicator disconnected';
+                status.textContent = '연결 끊김';
+            }
+        }
+        
+        // AI 처리 시작 (새로운 통신 구조)
+        async function startProcessing() {
+            try {
+                const result = await window.commManager.startProcessing();
+                
+                if (result.data.success) {
+                    alert('AI 처리가 시작되었습니다!');
+                    console.log('AI 처리 시작됨:', result);
+                } else {
+                    alert('오류: ' + result.data.error);
+                }
+            } catch (error) {
+                console.error('처리 시작 오류:', error);
+                alert('처리 시작 중 오류가 발생했습니다.');
+            }
+        }
+        
+        // 시스템 초기화 (새로운 통신 구조)
+        async function resetSystem() {
+            if (confirm('시스템을 초기화하시겠습니까?')) {
+                try {
+                    const result = await window.commManager.resetSystem();
+                    
+                    if (result.data.success) {
+                        alert('시스템이 초기화되었습니다.');
+                        refreshStatus();
+                    } else {
+                        alert('오류: ' + result.data.error);
+                    }
+                } catch (error) {
+                    console.error('시스템 초기화 오류:', error);
+                    alert('시스템 초기화 중 오류가 발생했습니다.');
+                }
+            }
+        }
+        
+        // 실시간 스트림 토글
+        function toggleStream() {
+            const btn = document.getElementById('streamBtn');
+            
+            if (!streamActive) {
+                // SSE 스트림 시작
+                streamSource = new EventSource('/api/stream');
+                
+                streamSource.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        updateUI(data);
+                    } catch (error) {
+                        console.error('스트림 데이터 파싱 오류:', error);
+                    }
+                };
+                
+                streamSource.onerror = function(event) {
+                    console.error('SSE 스트림 오류:', event);
+                    updateConnectionStatus(false);
+                };
+                
+                streamActive = true;
+                btn.textContent = '실시간 스트림 중지';
+                btn.style.background = '#dc3545';
+            } else {
+                // 스트림 중지
+                if (streamSource) {
+                    streamSource.close();
+                    streamSource = null;
+                }
+                streamActive = false;
+                btn.textContent = '실시간 스트림 시작';
+                btn.style.background = '#007bff';
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            refreshStatus();
+            
+            // 5초마다 자동 새로고침 (스트림이 비활성화된 경우에만)
+            setInterval(function() {
+                if (!streamActive) {
+                    refreshStatus();
+                }
+            }, 5000);
+        });
+        
+        // 페이지 종료 시 스트림 정리
+        window.addEventListener('beforeunload', function() {
+            if (streamSource) {
+                streamSource.close();
+            }
+        });
+    </script>
+</body>
+</html>

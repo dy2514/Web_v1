@@ -1,0 +1,273 @@
+/* 데스크탑 단계 인디케이터 스타일 */
+.krds-step-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+}
+
+.krds-step-wrap::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--border-light);
+    z-index: 1;
+}
+
+.step-item {
+    position: relative;
+    z-index: 2;
+    background: var(--bg-primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--border-light);
+    transition: all var(--transition);
+    cursor: pointer;
+}
+
+.step-item span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-sm);
+}
+
+.step-item .step {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.step-item .step-tit {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 단계 상태별 스타일 */
+.step-item:not(.done):not(.active) {
+    background: var(--bg-primary);
+    border-color: var(--border-light);
+}
+
+.step-item:not(.done):not(.active) .step,
+.step-item:not(.done):not(.active) .step-tit {
+    color: var(--text-muted);
+}
+
+.step-item.done {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    transform: scale(1.05);
+}
+
+.step-item.done .step,
+.step-item.done .step-tit {
+    color: var(--text-white);
+}
+
+.step-item.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+    animation: pulse 2s infinite;
+}
+
+.step-item.active .step,
+.step-item.active .step-tit {
+    color: var(--text-white);
+}
+
+/* 진행선 스타일 */
+.step-item.done::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -50%;
+    width: 100%;
+    height: 3px;
+    background: var(--success-color);
+    z-index: 1;
+}
+
+.step-item.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -50%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--border-light));
+    z-index: 1;
+}
+
+/* 마지막 단계는 진행선 제거 */
+.step-item:last-child::after {
+    display: none;
+}
+
+/* 호버 효과 */
+.step-item:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow);
+}
+
+.step-item.done:hover {
+    transform: scale(1.1);
+}
+
+.step-item.active:hover {
+    transform: scale(1.15);
+}
+
+/* 애니메이션 */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .krds-step-wrap {
+        flex-wrap: wrap;
+        gap: var(--spacing);
+    }
+    
+    .step-item {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .step-item .step-tit {
+        max-width: 60px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .krds-step-wrap {
+        flex-direction: column;
+        gap: var(--spacing);
+    }
+    
+    .krds-step-wrap::before {
+        display: none;
+    }
+    
+    .step-item {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius);
+    }
+    
+    .step-item span {
+        flex-direction: row;
+        gap: var(--spacing-sm);
+    }
+    
+    .step-item .step {
+        font-size: var(--font-size-sm);
+    }
+    
+    .step-item .step-tit {
+        font-size: var(--font-size-sm);
+        max-width: none;
+        white-space: normal;
+    }
+    
+    .step-item::after {
+        display: none;
+    }
+}
+
+/* 접근성 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 단계별 색상 테마 */
+.step-item[data-step="0"] {
+    --step-color: #007bff;
+}
+
+.step-item[data-step="1"] {
+    --step-color: #28a745;
+}
+
+.step-item[data-step="2"] {
+    --step-color: #ffc107;
+}
+
+.step-item[data-step="3"] {
+    --step-color: #dc3545;
+}
+
+/* 단계별 색상 적용 */
+.step-item.active[data-step="0"] {
+    background: var(--step-color);
+    border-color: var(--step-color);
+}
+
+.step-item.active[data-step="1"] {
+    background: var(--step-color);
+    border-color: var(--step-color);
+}
+
+.step-item.active[data-step="2"] {
+    background: var(--step-color);
+    border-color: var(--step-color);
+}
+
+.step-item.active[data-step="3"] {
+    background: var(--step-color);
+    border-color: var(--step-color);
+}
+
+/* 단계별 진행선 색상 */
+.step-item.active[data-step="0"]::after {
+    background: linear-gradient(90deg, var(--step-color), var(--border-light));
+}
+
+.step-item.active[data-step="1"]::after {
+    background: linear-gradient(90deg, var(--step-color), var(--border-light));
+}
+
+.step-item.active[data-step="2"]::after {
+    background: linear-gradient(90deg, var(--step-color), var(--border-light));
+}
+
+.step-item.active[data-step="3"]::after {
+    background: linear-gradient(90deg, var(--step-color), var(--border-light));
+}
+
