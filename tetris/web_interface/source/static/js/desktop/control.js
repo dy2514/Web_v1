@@ -161,8 +161,8 @@ class ControlController {
         const steps = [
             { name: '이미지 분석', duration: 30000 },
             { name: '데이터 처리', duration: 45000 },
-            { name: '결과 생성', duration: 30000 },
-            { name: '하드웨어 코드 생성', duration: 15000 }
+            { name: '최적화 생성', duration: 30000 },
+            { name: '하드웨어 구동', duration: 15000 }
         ];
         
         let currentStep = 0;

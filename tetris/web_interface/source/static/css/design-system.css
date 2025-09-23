@@ -1,0 +1,439 @@
+/* ========================================
+   TETRIS Design System - 현대차 브랜드 기반
+   ======================================== */
+
+/* ========================================
+   CSS Variables - Color Palette
+   ======================================== */
+:root {
+  /* 이미지 기반 색상 체계 */
+  --image-primary: #1e3a8a;         /* 이미지 헤더 진한 파란색 */
+  --image-primary-light: #3b82f6;   /* 이미지 헤더 밝은 파란색 */
+  --image-primary-dark: #1e40af;    /* 이미지 헤더 어두운 파란색 */
+  --image-secondary: #64748b;       /* 이미지 세컨더리 회색 */
+  --image-accent: #059669;          /* 이미지 활성 상태 녹색 */
+  --image-neutral: #f8fafc;         /* 이미지 카드 배경 흰색 */
+  --image-white: #ffffff;
+  --image-black: #0f172a;
+  
+  /* 현대차 브랜드 색상 (보조 활용) */
+  --hyundai-navy: #002c5f;
+  --hyundai-secondary: #a36b4f;
+  --hyundai-accent: #ce4dcd3;
+  --hyundai-neutral: #f6f3f2;
+  
+  /* 이미지 기반 시스템 컬러 */
+  --color-primary: var(--image-primary);          /* 이미지 헤더 파란색 */
+  --color-primary-light: var(--image-primary-light);
+  --color-primary-dark: var(--image-primary-dark);
+  --color-secondary: var(--image-secondary);      /* 이미지 세컨더리 회색 */
+  --color-accent: var(--image-accent);            /* 이미지 활성 녹색 */
+  --color-neutral: var(--image-neutral);          /* 이미지 카드 배경 */
+  --color-warm: #f1f5f9;           /* 이미지 웜 톤 */
+  --color-cool: #e2e8f0;           /* 이미지 쿨 톤 */
+  
+  /* 이미지 기반 상태 컬러 */
+  --color-success: var(--image-accent);        /* 이미지 활성 녹색 */
+  --color-success-light: #10b981;
+  --color-warning: #f59e0b;                   /* 이미지 대기 주황색 */
+  --color-warning-light: #fbbf24;
+  --color-error: #dc2626;                     /* 이미지 연결 대기 빨간색 */
+  --color-error-light: #ef4444;
+  --color-info: var(--image-primary);         /* 이미지 헤더 파란색 */
+  --color-info-light: var(--image-primary-light);
+  
+  /* 이미지 기반 중성 컬러 */
+  --color-white: var(--image-white);           /* 이미지 화이트 */
+  --color-gray-50: #f8fafc;         /* 이미지 카드 배경 */
+  --color-gray-100: #f1f5f9;        /* 이미지 연한 배경 */
+  --color-gray-200: #e2e8f0;        /* 이미지 보더 색상 */
+  --color-gray-300: #cbd5e1;        /* 이미지 중간 보더 */
+  --color-gray-400: #94a3b8;        /* 이미지 비활성 텍스트 */
+  --color-gray-500: #64748b;        /* 이미지 세컨더리 텍스트 */
+  --color-gray-600: #475569;        /* 이미지 메인 텍스트 */
+  --color-gray-700: #334155;        /* 이미지 진한 텍스트 */
+  --color-gray-800: #1e293b;        /* 이미지 매우 진한 텍스트 */
+  --color-gray-900: var(--image-black);        /* 이미지 블랙 */
+  
+  /* 이미지 기반 배경 컬러 */
+  --bg-primary: var(--color-white);             /* 이미지 화이트 기본 배경 */
+  --bg-secondary: var(--image-neutral);         /* 이미지 카드 배경 */
+  --bg-tertiary: var(--color-gray-100);         /* 이미지 연한 배경 */
+  --bg-accent: var(--color-warm);               /* 이미지 웜 톤 액센트 */
+  --bg-dark: var(--image-primary);              /* 이미지 헤더 배경 */
+  --bg-overlay: rgba(30, 58, 138, 0.8);        /* 이미지 헤더 오버레이 */
+  
+  /* 이미지 기반 텍스트 컬러 */
+  --text-primary: var(--color-gray-800);          /* 이미지 메인 텍스트 */
+  --text-secondary: var(--color-gray-600);        /* 이미지 세컨더리 텍스트 */
+  --text-tertiary: var(--color-gray-500);         /* 이미지 서브 텍스트 */
+  --text-inverse: var(--color-white);             /* 이미지 화이트 반전 텍스트 */
+  --text-link: var(--image-primary);              /* 이미지 헤더 파란색 링크 */
+  --text-link-hover: var(--image-primary-light);
+  
+  /* 이미지 기반 보더 컬러 */
+  --border-light: var(--color-gray-200);     /* 이미지 라이트 보더 */
+  --border-medium: var(--color-gray-300);    /* 이미지 미디엄 보더 */
+  --border-dark: var(--color-gray-400);      /* 이미지 다크 보더 */
+  --border-primary: var(--image-primary);    /* 이미지 헤더 파란색 보더 */
+  --border-accent: var(--image-accent);      /* 이미지 활성 녹색 보더 */
+  
+  /* KRDS 표준 엘리베이션 가이드 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);     /* KRDS Level 1 */
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);     /* KRDS Level 2 */
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);   /* KRDS Level 3 */
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 4px 12px rgba(30, 58, 138, 0.15); /* 이미지 헤더 파란색 기반 그림자 */
+  
+  /* KRDS 엘리베이션 레벨 */
+  --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.1);   /* 기본 */
+  --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.1);   /* 상승 */
+  --elevation-3: 0 10px 15px rgba(0, 0, 0, 0.1); /* 강조 */
+  
+  /* KRDS 표준 반지름 가이드 */
+  --radius-xs: 2px;        /* KRDS Xsmall */
+  --radius-sm: 4px;        /* KRDS Small */
+  --radius-md: 6px;        /* KRDS Medium */
+  --radius-lg: 10px;       /* KRDS Large */
+  --radius-xl: 12px;       /* KRDS Xlarge */
+  --radius-full: 9999px;
+  
+  /* 간격 */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  
+  /* 타이포그래피 */
+  --font-family-primary: 'HyundaiSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+  
+  /* 폰트 크기 */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  --text-6xl: 3.75rem;   /* 60px */
+  
+  /* 폰트 가중치 */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  
+  /* 라인 높이 */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  
+  /* 전환 */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* Z-인덱스 */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ========================================
+   다크 모드 지원 (향후 확장)
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: var(--color-gray-800);
+    --bg-secondary: var(--color-gray-900);
+    --bg-tertiary: var(--color-gray-700);
+    --text-primary: var(--color-gray-100);
+    --text-secondary: var(--color-gray-300);
+    --text-tertiary: var(--color-gray-400);
+    --border-light: var(--color-gray-600);
+    --border-medium: var(--color-gray-500);
+    --border-dark: var(--color-gray-400);
+  }
+}
+
+/* ========================================
+   기본 스타일 리셋 및 정규화
+   ======================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  line-height: var(--leading-normal);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+/* ========================================
+   타이포그래피 유틸리티 클래스
+   ======================================== */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+.text-6xl { font-size: var(--text-6xl); }
+
+.font-light { font-weight: var(--font-light); }
+.font-normal { font-weight: var(--font-normal); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+.font-extrabold { font-weight: var(--font-extrabold); }
+
+.leading-tight { line-height: var(--leading-tight); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+.text-link { color: var(--text-link); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-error { color: var(--color-error); }
+.text-info { color: var(--color-info); }
+
+/* ========================================
+   간격 유틸리티 클래스
+   ======================================== */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-5 { margin: var(--space-5); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+.m-10 { margin: var(--space-10); }
+.m-12 { margin: var(--space-12); }
+.m-16 { margin: var(--space-16); }
+.m-20 { margin: var(--space-20); }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-5 { padding: var(--space-5); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+.p-10 { padding: var(--space-10); }
+.p-12 { padding: var(--space-12); }
+.p-16 { padding: var(--space-16); }
+.p-20 { padding: var(--space-20); }
+
+/* ========================================
+   플렉스박스 유틸리티 클래스
+   ======================================== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+
+.flex-1 { flex: 1; }
+.flex-auto { flex: auto; }
+.flex-none { flex: none; }
+
+/* ========================================
+   그리드 유틸리티 클래스
+   ======================================== */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-5 { gap: var(--space-5); }
+.gap-6 { gap: var(--space-6); }
+.gap-8 { gap: var(--space-8); }
+.gap-10 { gap: var(--space-10); }
+.gap-12 { gap: var(--space-12); }
+
+/* ========================================
+   반응형 유틸리티 클래스
+   ======================================== */
+.hidden { display: none; }
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+
+/* 모바일 우선 반응형 */
+@media (min-width: 640px) {
+  .sm\:block { display: block; }
+  .sm\:hidden { display: none; }
+  .sm\:flex { display: flex; }
+  .sm\:grid { display: grid; }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+  .md\:block { display: block; }
+  .md\:hidden { display: none; }
+  .md\:flex { display: flex; }
+  .md\:grid { display: grid; }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:block { display: block; }
+  .lg\:hidden { display: none; }
+  .lg\:flex { display: flex; }
+  .lg\:grid { display: grid; }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lg\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .xl\:block { display: block; }
+  .xl\:hidden { display: none; }
+  .xl\:flex { display: flex; }
+  .xl\:grid { display: grid; }
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .xl\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .xl\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+
+/* ========================================
+   애니메이션 및 전환
+   ======================================== */
+.transition-all {
+  transition: all var(--transition-normal);
+}
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* 기본 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
