@@ -105,9 +105,36 @@ def desktop_control():
 @control_bp.route('/api/status')
 def get_status():
     """시스템 상태 조회 API (폴링용)"""
+    status_data = get_global_status().copy()
+    
+    # 진행률을 최상위 레벨에 추가 (모바일 호환성)
+    if 'processing' in status_data and 'progress' in status_data['processing']:
+        status_data['progress'] = status_data['processing']['progress']
+    
+    # 상태를 최상위 레벨에 추가 (모바일 호환성)
+    if 'system' in status_data and 'status' in status_data['system']:
+        status_data['status'] = status_data['system']['status']
+    
+    # done 상태일 때 최상위 레벨에 명시적으로 설정
+    if status_data.get('system', {}).get('status') == 'done':
+        status_data['status'] = 'done'
+    
+    # 메시지를 최상위 레벨에 추가 (모바일 호환성)
+    notifications = status_data.get('notifications', [])
+    if notifications:
+        latest_notification = notifications[-1]
+        status_data['message'] = latest_notification.get('message', '')
+    
+    # 분석 결과를 최상위 레벨에 추가 (모바일 호환성)
+    if 'analysis_result' in status_data:
+        status_data['result'] = status_data['analysis_result']
+
+    print("!!!!!!!!!!!!!!!", status_data)
+    
     return jsonify({
         'success': True,
-        'data': get_global_status().copy()
+        'ok': True,  # 모바일 호환성
+        'data': status_data
     })
 
 @control_bp.route('/api/progress_stream')
@@ -323,3 +350,91 @@ def qr_png():
     except Exception as e:
         logger.error(f"QR 코드 생성 오류: {e}")
         return jsonify({'error': 'QR 코드 생성 실패'}), 500
+
+
+@control_bp.route('/api/step_analysis', methods=['POST'])
+def start_step_analysis():
+    """단계별 AI 분석 시작"""
+    try:
+        data = request.get_json()
+        people_count = data.get('people_count', 0)
+        image_data_url = data.get('image_data_url', '')
+        scenario = data.get('scenario', f'step_analysis_{datetime.now().strftime("%Y%m%d_%H%M%S")}')
+        
+        if not image_data_url:
+            return jsonify({'success': False, 'error': '이미지 데이터가 필요합니다'}), 400
+        
+        # 이미지 데이터 형식 검증
+        if image_data_url.startswith('blob:'):
+            return jsonify({'success': False, 'error': 'blob URL은 지원되지 않습니다. 이미지를 다시 업로드해주세요.'}), 400
+        
+        # Base64 형식 또는 유효한 URL인지 확인
+        if not (image_data_url.startswith('data:image/') or 
+                (image_data_url.startswith('http://') or image_data_url.startswith('https://'))):
+            return jsonify({'success': False, 'error': '유효하지 않은 이미지 형식입니다.'}), 400
+        
+        # tetris.py의 단계별 실행 함수 import
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from tetris import run_step_by_step_analysis
+        
+        # 진행률 콜백 함수
+        def progress_callback(progress, status, message):
+            update_status(
+                progress=progress,
+                status=status,
+                message=message,
+                uploaded_file=True,
+                people_count=people_count
+            )
+            logger.info(f"단계별 진행률: {progress}% - {status}: {message}")
+        
+        # 백그라운드에서 단계별 분석 실행
+        def run_analysis():
+            try:
+                result = run_step_by_step_analysis(
+                    people_count=people_count,
+                    image_data_url=image_data_url,
+                    scenario=scenario,
+                    progress_callback=progress_callback
+                )
+                
+                # 분석 완료 후 상태 업데이트
+                update_status(
+                    progress=100,
+                    status='done',
+                    message='분석이 완료되었습니다!',
+                    uploaded_file=True,
+                    people_count=people_count,
+                    analysis_result=result
+                )
+                
+                logger.info(f"단계별 분석 완료: {result['out_path']}")
+                
+            except Exception as e:
+                logger.error(f"단계별 분석 실패: {e}")
+                import traceback
+                error_details = traceback.format_exc()
+                logger.error(f"상세 오류 정보: {error_details}")
+                
+                # 오류 상태로 업데이트
+                update_status(
+                    progress=0,
+                    status='error',
+                    message=f'분석 실패: {str(e)}',
+                    uploaded_file=False,
+                    error_details=str(e)
+                )
+        
+        # 별도 스레드에서 실행
+        analysis_thread = threading.Thread(target=run_analysis, daemon=True)
+        analysis_thread.start()
+        
+        return jsonify({
+            'success': True,
+            'message': '단계별 분석이 시작되었습니다',
+            'scenario': scenario
+        })
+        
+    except Exception as e:
+        logger.error(f"단계별 분석 시작 오류: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500

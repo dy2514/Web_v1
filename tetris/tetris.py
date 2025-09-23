@@ -167,6 +167,162 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     }
 
 
+def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: str, progress_callback=None) -> dict:
+    """단계별 AI 분석 실행"""
+    print("단계별 AI 분석 시작...")
+    
+    # 1단계: 이미지 분석 (Chain1)
+    if progress_callback:
+        progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...")
+    
+    print("1단계: 이미지 분석 시작")
+    t_step1_start = perf_counter()
+    try:
+        # Chain1 실행
+        user_msgs = MC.make_chain1_user_input(
+            people_count=people_count, image_data_url=image_data_url
+        )
+        chain1_result = MC.chain_1.invoke({"user_input": user_msgs})
+        chain1_out = chain1_result["chain1_out_raw"]
+        
+        # people_count 주입
+        from main_chain import _inject_people_into_json
+        chain1_out = _inject_people_into_json(chain1_out, people_count)
+        
+        print("1단계: 이미지 분석 완료")
+        t_step1_end = perf_counter()
+        step1_elapsed = t_step1_end - t_step1_start
+        print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
+        
+    except Exception as e:
+        print(f"1단계 실행 실패: {e}")
+        raise
+    
+    # 2단계: 짐 인식 및 분류 (Chain2)
+    if progress_callback:
+        progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...")
+    
+    print("2단계: 짐 인식 및 분류 시작")
+    t_step2_start = perf_counter()
+    try:
+        # Chain2 준비 - user_input에서 이미지 추출
+        prep_result = MC.prep_chain2_from_user_input.invoke({
+            "user_input": user_msgs
+        })
+        chain2_image = prep_result["chain2_image"]
+        
+        # Chain2 실행 - chain1_out과 chain2_image 사용
+        chain2_result = MC.chain_2.invoke({
+            "chain1_out": chain1_out,
+            "chain2_image": chain2_image
+        })
+        chain2_out = chain2_result["chain2_out"]
+        
+        print("2단계: 짐 인식 및 분류 완료")
+        t_step2_end = perf_counter()
+        step2_elapsed = t_step2_end - t_step2_start
+        print(f"2단계 실행 시간: {step2_elapsed:.3f}초")
+        
+    except Exception as e:
+        print(f"2단계 실행 실패: {e}")
+        raise
+    
+    # 3단계: 차량 공간 계산 (Chain3)
+    if progress_callback:
+        progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...")
+    
+    print("3단계: 차량 공간 계산 시작")
+    t_step3_start = perf_counter()
+    try:
+        # Chain3 준비 - 입력 변수 없음
+        prep_result = MC.prep_chain3_image.invoke({})
+        chain3_image = prep_result["chain3_image"]
+        
+        # Chain3 실행 - chain2_out과 chain3_image 사용
+        chain3_result = MC.chain_3.invoke({
+            "chain2_out": chain2_out,
+            "chain3_image": chain3_image
+        })
+        chain3_out = chain3_result["chain3_out"]
+        
+        print("3단계: 차량 공간 계산 완료")
+        t_step3_end = perf_counter()
+        step3_elapsed = t_step3_end - t_step3_start
+        print(f"3단계 실행 시간: {step3_elapsed:.3f}초")
+        
+    except Exception as e:
+        print(f"3단계 실행 실패: {e}")
+        raise
+    
+    # 4단계: 최적 배치 생성 (Chain4)
+    if progress_callback:
+        progress_callback(80, "최적 배치 생성", "최적의 배치를 생성하고 있습니다...")
+    
+    print("4단계: 최적 배치 생성 시작")
+    t_step4_start = perf_counter()
+    try:
+        # Chain4 실행
+        chain4_result = MC.chain_4.invoke({"chain3_out": chain3_out})
+        chain4_out = chain4_result["chain4_out"]
+        
+        print("4단계: 최적 배치 생성 완료")
+        t_step4_end = perf_counter()
+        step4_elapsed = t_step4_end - t_step4_start
+        print(f"4단계 실행 시간: {step4_elapsed:.3f}초")
+        
+    except Exception as e:
+        print(f"4단계 실행 실패: {e}")
+        raise
+    
+    # 5단계: 결과 검증 및 완료
+    if progress_callback:
+        progress_callback(100, "결과 검증 및 완료", "분석이 완료되었습니다!")
+    
+    print("5단계: 결과 검증 및 완료")
+    
+    # 전체 실행 시간 계산
+    total_elapsed = step1_elapsed + step2_elapsed + step3_elapsed + step4_elapsed
+    
+    # 결과 저장
+    OUT_ROOT = HERE / "tetris_out"
+    OUT_DIR = OUT_ROOT / "out_step_by_step"
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = OUT_DIR / f"{scenario}.txt"
+    
+    lines = []
+    lines.append("====================[ 단계별 AI 분석 결과 ]====================")
+    lines.append(f"총 실행 시간: {total_elapsed:.3f}초")
+    lines.append("")
+    lines.append("====================[ chain1_out ]====================")
+    lines.append(chain1_out)
+    lines.append("")
+    lines.append("====================[ chain2_out ]====================")
+    lines.append(chain2_out)
+    lines.append("")
+    lines.append("====================[ chain3_out ]====================")
+    lines.append(chain3_out)
+    lines.append("")
+    lines.append("====================[ chain4_out ]====================")
+    lines.append(chain4_out)
+    
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    
+    return {
+        "chain1_out": chain1_out,
+        "chain2_out": chain2_out,
+        "chain3_out": chain3_out,
+        "chain4_out": chain4_out,
+        "out_path": str(out_path),  # WindowsPath를 문자열로 변환
+        "total_elapsed": total_elapsed,
+        "step_times": {
+            "step1": step1_elapsed,
+            "step2": step2_elapsed,
+            "step3": step3_elapsed,
+            "step4": step4_elapsed
+        }
+    }
+
+
 def main():
     ap = argparse.ArgumentParser(description="AI TETRIS launcher")
     ap.add_argument("--mode", required=True, choices=["web", "scenario"])

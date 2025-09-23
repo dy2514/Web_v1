@@ -50,7 +50,7 @@ def mobile_input():
 @user_bp.route('/api/upload', methods=['POST'])
 def upload_file():
     """파일 업로드 API - 표준화된 응답 형식"""
-    log_api_request('/api/upload', 'POST')
+    log_api_request('/mobile/api/upload', 'POST')
     
     # 요청 정보 로깅
     logger.info(f"[시작] 업로드 요청 시작 - Content-Type: {request.content_type}, Files: {list(request.files.keys())}")
@@ -161,8 +161,8 @@ def upload_file():
             'scenario': scenario
         }
         
-        logger.info(f"[성공] 업로드 성공 - 파일: {filename}, 시나리오: {scenario}")
-        log_api_response('/api/upload', 200, "File uploaded successfully")
+        # logger.info(f"[성공] 업로드 성공 - 파일: {filename}, 시나리오: {scenario}")
+        log_api_response('/mobile/api/upload', 200, "File uploaded successfully")
         return APIResponse.success(response_data, "파일이 성공적으로 업로드되었습니다")
         
     except Exception as e:

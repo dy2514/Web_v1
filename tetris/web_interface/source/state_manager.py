@@ -92,7 +92,7 @@ class StateManager:
             return value
     
     def set(self, key: str, value: Any, save: bool = True):
-        """상태 값 설정"""
+        """상태 값 설정 (변경사항 있을 때만)"""
         with self.lock:
             keys = key.split('.')
             current = self.state
@@ -103,8 +103,15 @@ class StateManager:
                     current[k] = {}
                 current = current[k]
             
+            # 값이 실제로 변경되었는지 확인
+            old_value = current.get(keys[-1])
+            if old_value == value:
+                logger.debug(f"상태 변경 없음: {key} = {value}")
+                return False
+            
             # 값 설정
             current[keys[-1]] = value
+            logger.info(f"상태 변경: {key} = {old_value} -> {value}")
             
             # 타임스탬프 업데이트
             if key.startswith('system.'):
