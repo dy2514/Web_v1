@@ -53,7 +53,7 @@ def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
     
     # 웹 서버를 별도 스레드에서 실행
     def run_server():
-        app.run(host='0.0.0.0', port=port, debug=False, threaded=True, use_reloader=False)
+        app.run(host='0.0.0.0', port=port, debug=True, threaded=True, use_reloader=False)
     
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.css" type="text/css" rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 분석 진행 중 - AI TETRIS</title>
@@ -314,6 +316,112 @@
             box-shadow: 0 6px 24px rgba(26, 54, 93, 0.3);
         }
         
+        /* 상세 보기 패널 (오버레이) */
+        .detail-panel {
+            margin-top: 78px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            display: none;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .detail-panel.show { display: block; }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .detail-back-btn {
+            display: block;
+            margin: auto;
+            padding: 10px 16px;
+            border: 2px solid #30507a;
+            border-radius: 12px;
+            background: #f8fbff;
+            color: #203a59;
+            font-weight: 700;
+        }
+        .detail-toggle-btn {
+            display: inline-block;
+            margin: 10px auto 0;
+            padding: 10px 18px;
+            border: 2px solid #30507a;
+            background: #ffffff;
+            border-radius: 10px;
+            color: #203a59;
+            font-weight: 700;
+        }
+
+        /* 상세 패널 상단 진행 카드 */
+        .detail-progress-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e6eef6;
+            box-shadow: 0 4px 14px rgba(32, 58, 89, 0.06);
+            padding: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .detail-progress-percentage {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a365d;
+            letter-spacing: -0.3px;
+        }
+        .detail-progress-text {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        /* 상세 패널 - 진행 타임라인 */
+        .timeline {
+            margin: 6px 4px 16px 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .timeline:before {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 6px;
+            bottom: 6px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            border: 2px solid #cbd5e1;
+            box-sizing: content-box;
+        }
+        .timeline-item.active { color: #0f766e; }
+        .timeline-item.active .timeline-dot {
+            background: #14b8a6;
+            border-color: #0f766e;
+        }
+        .timeline-item.completed { color: #0f766e; }
+        .timeline-item.completed .timeline-dot {
+            background: #14b8a6;
+            border-color: #14b8a6;
+        }
+        
         /* 향상된 애니메이션 */
         @keyframes pulse {
             0%, 100% {
@@ -605,14 +713,6 @@
             <div class="progress-text" id="progressText">분석을 시작하고 있습니다...</div>
             </div>
         
-        <!-- 분석 결과 요약 영역 -->
-        <div class="analysis-summary" id="analysisSummary" style="display: none;">
-            <h3 class="summary-title">분석 결과 요약</h3>
-            <div class="summary-content" id="summaryContent">
-                <!-- 동적으로 생성될 요약 내용 -->
-            </div>
-        </div>
-        
         <div class="progress-steps">
             <div class="step" id="step1">
                 <div class="step-icon pending">1</div>
@@ -655,8 +755,8 @@
             </div>
         </div>
         
-        <!-- 단계별 분석 결과 표시 영역 -->
-        <div class="step-results" id="stepResults">
+        <!-- 단계별 분석 결과 표시 영역 (기본 화면에서는 숨김) -->
+        <div class="step-results" id="stepResults" style="display:none;">
             <div class="step-result-item" id="step1Result" style="display: none;">
                 <div class="step-result-title">1단계: 이미지 분석 결과</div>
                 <div class="step-result-content" id="step1ResultContent">분석 중...</div>
@@ -680,10 +780,46 @@
     </div>
     
     <div class="footer">
-        <button class="result-check-button" id="resultCheckButton" onclick="showResult()">
-            📊 분석 결과 확인
-        </button>
+        <button class="result-check-button" id="resultCheckButton" onclick="openDetailPanel()">상세 정보 보기</button>
 </div>
+
+    <!-- 상세 보기 패널 (분석 결과) -->
+    <div class="detail-panel" id="detailPanel" aria-hidden="true">
+        <div class="detail-header">
+            <h2 style="margin:0; font-size:18px; text-align: center; color:#203a59;">분석 상세</h2>
+        </div>
+        
+        <!-- 상세 진행 카드 -->
+        <div class="detail-progress-card">
+            <div class="detail-progress-percentage" id="detailProgressPercentage">0%</div>
+            <div class="detail-progress-text" id="detailProgressText">분석을 시작하고 있습니다...</div>
+        </div>
+        
+        <!-- 진행 타임라인 -->
+        <div class="timeline" id="detailTimeline">
+            <div class="timeline-item" id="tl-step-1">
+                <span class="timeline-dot"></span>
+                <span>이미지 분석</span>
+            </div>
+            <div class="timeline-item" id="tl-step-2">
+                <span class="timeline-dot"></span>
+                <span>짐 인식 및 분류</span>
+            </div>
+            <div class="timeline-item" id="tl-step-3">
+                <span class="timeline-dot"></span>
+                <span>차량 공간 계산</span>
+            </div>
+            <div class="timeline-item" id="tl-step-4">
+                <span class="timeline-dot"></span>
+                <span>최적 배치 생성</span>
+            </div>
+        </div>
+        
+        <!-- 기존 단계별 결과 블록을 그대로 재사용 (아코디언) -->
+        <div class="step-results" id="detailStepResults"></div>
+        
+        <button class="detail-back-btn" onclick="closeDetailPanel()">이전 화면</button>
+    </div>
     
     <script>
         let currentStep = 0;
@@ -691,6 +827,9 @@
         let doneWaitCount = 0;
         let currentScenario = null;
         let eventSource = null;
+        let detailPanelOpen = false;
+        let stepResultsOriginalParent = null;
+        let stepResultsNextSibling = null;
         let shownSteps = { 1: false, 2: false, 3: false, 4: false };
         
         // URL에서 시나리오 정보 가져오기
@@ -724,6 +863,10 @@
             if (typeof percentage === 'number') {
                 progressValue = Math.max(progressValue || 0, percentage);
                 document.getElementById('progressPercentage').textContent = progressValue + '%';
+                if (detailPanelOpen) {
+                    const dp = document.getElementById('detailProgressPercentage');
+                    if (dp) dp.textContent = progressValue + '%';
+                }
             }
             
             // 서버 단계가 없으면 종료
@@ -744,6 +887,11 @@
                 updateStepDisplay();
                 document.getElementById('progressText').textContent = getCurrentStepMessage(currentStep);
                 console.log('단계 변경:', currentStep + '단계로 업데이트');
+                if (detailPanelOpen) refreshDetailTimeline();
+                if (detailPanelOpen) {
+                    const dt = document.getElementById('detailProgressText');
+                    if (dt) dt.textContent = getCurrentStepMessage(currentStep);
+                }
             }
         }
         
@@ -843,29 +991,6 @@
                         clearAllStepResults();
                     }
                     
-                    // 이번 이벤트 payload에 포함된 '새로 완료된 스텝'만 표시
-                    const ar = statusData.analysis_result || {};
-                    if (ar.chain1_out && !shownSteps[1]) {
-                        displayStepResult(1, ar.chain1_out);
-                        updateAnalysisSummary(1, statusData);
-                        shownSteps[1] = true;
-                    }
-                    if (ar.chain2_out && !shownSteps[2]) {
-                        displayStepResult(2, ar.chain2_out);
-                        updateAnalysisSummary(2, statusData);
-                        shownSteps[2] = true;
-                    }
-                    if (ar.chain3_out && !shownSteps[3]) {
-                        displayStepResult(3, ar.chain3_out);
-                        updateAnalysisSummary(3, statusData);
-                        shownSteps[3] = true;
-                    }
-                    if (ar.chain4_out && !shownSteps[4]) {
-                        displayStepResult(4, ar.chain4_out);
-                        updateAnalysisSummary(4, statusData);
-                        shownSteps[4] = true;
-                    }
-                    
                     // 5단계 완료 시 - 실제 4단계 결과가 도착한 경우에만 완료 처리
                     const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
                     if (currentStep >= 5 && hasStep4Output) {
@@ -913,9 +1038,79 @@
             button.classList.add('show');
         }
         
-        // 결과 화면으로 이동
-        function showResult() {
-            window.location.href = '/mobile/result';
+        // 상세 패널 열기
+        function openDetailPanel() {
+            const panel = document.getElementById('detailPanel');
+            const source = document.getElementById('stepResults');
+            const target = document.getElementById('detailStepResults');
+            const tl = document.getElementById('detailTimeline');
+            if (panel && source && target) {
+                // 최초 오픈 시 원래 위치 기억
+                if (!stepResultsOriginalParent) {
+                    stepResultsOriginalParent = source.parentNode;
+                    stepResultsNextSibling = source.nextSibling;
+                }
+                // 동일 노드를 상세 패널 내부로 이동 → SSE 갱신이 그대로 반영됨
+                target.innerHTML = '';
+                target.appendChild(source);
+                source.style.display = 'block';
+                panel.classList.add('show');
+                panel.setAttribute('aria-hidden', 'false');
+                detailPanelOpen = true;
+                // 초기 타임라인 상태 갱신
+                refreshDetailTimeline();
+                // 상세 진행 카드 동기화
+                syncDetailProgressCard();
+            }
+        }
+
+        // 상세 패널 닫기
+        function closeDetailPanel() {
+            const panel = document.getElementById('detailPanel');
+            const source = document.getElementById('stepResults');
+            if (panel) {
+                panel.classList.remove('show');
+                panel.setAttribute('aria-hidden', 'true');
+            }
+            // 원래 위치로 되돌리기
+            if (source && stepResultsOriginalParent) {
+                try {
+                    if (stepResultsNextSibling && stepResultsNextSibling.parentNode === stepResultsOriginalParent) {
+                        stepResultsOriginalParent.insertBefore(source, stepResultsNextSibling);
+                    } else {
+                        stepResultsOriginalParent.appendChild(source);
+                    }
+                    source.style.display = 'none';
+                } catch (_) {}
+            }
+            detailPanelOpen = false;
+        }
+
+        // 상세 패널의 타임라인 상태를 현재 단계에 맞춰 갱신
+        function refreshDetailTimeline() {
+            const tlSteps = [1,2,3,4];
+            tlSteps.forEach((n) => {
+                const el = document.getElementById(`tl-step-${n}`);
+                if (!el) return;
+                el.classList.remove('active','completed');
+                if (currentStep > n) {
+                    el.classList.add('completed');
+                } else if (currentStep === n) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        // 상세 진행 카드(퍼센트/텍스트) 동기화
+        function syncDetailProgressCard() {
+            const dp = document.getElementById('detailProgressPercentage');
+            const dt = document.getElementById('detailProgressText');
+            const p = document.getElementById('progressPercentage');
+            const t = document.getElementById('progressText');
+            if (dp && dt && p && t) {
+                dp.textContent = p.textContent;
+                dt.textContent = t.textContent;
+            }
         }
         
         // 단계별 분석 결과 업데이트
@@ -991,15 +1186,6 @@
                 }
             }
             
-            // 요약 영역도 클리어
-            const summaryElement = document.getElementById('analysisSummary');
-            const summaryContent = document.getElementById('summaryContent');
-            if (summaryElement && summaryContent) {
-                summaryContent.innerHTML = '';
-                summaryElement.style.display = 'none';
-                console.log('🧹 분석 요약 클리어 완료');
-            }
-            
             console.log('🧹 모든 단계 결과 클리어 완료');
         }
         
@@ -1041,85 +1227,6 @@
             } catch (_) {
                 return null;
             }
-        }
-        
-        // 분석 결과 요약 업데이트
-        function updateAnalysisSummary(step, data) {
-            console.log(`📊 ${step}단계 요약 업데이트:`, data);
-            
-            const summaryElement = document.getElementById('analysisSummary');
-            const summaryContent = document.getElementById('summaryContent');
-            
-            if (!summaryElement || !summaryContent) {
-                console.error('요약 영역을 찾을 수 없습니다');
-                return;
-            }
-            
-            // 요약 영역 표시
-            summaryElement.style.display = 'block';
-            
-            // 단계별 요약 생성
-            let summaryHtml = '';
-            
-            // 1단계: 이미지 분석
-            if (step >= 1 && data.chain1_out) {
-                const chain1Data = typeof data.chain1_out === 'string' ? safeJsonParse(data.chain1_out) : data.chain1_out;
-                const peopleCount = chain1Data.people || chain1Data.people_count || 0;
-                const totalLuggage = chain1Data.total_luggage || chain1Data.total_luggage_count || 0;
-                
-                summaryHtml += `
-                    <div class="summary-item">
-                        <div class="summary-item-content">
-                            <strong>이미지 분석 결과</strong> 탑승자 수: ${peopleCount}명, 총 짐 개수: ${totalLuggage}개
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 2단계: 짐 인식 및 분류
-            if (step >= 2 && data.chain2_out) {
-                const chain2Data = typeof data.chain2_out === 'string' ? safeJsonParse(data.chain2_out) : data.chain2_out;
-                const instruction = chain2Data.instruction || '분류 정보 없음';
-                
-                summaryHtml += `
-                    <div class="summary-item">
-                        <div class="summary-item-content">
-                            <strong>짐 인식 및 분류 결과</strong> 분류 정보: ${instruction.length} -->
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 3단계: 차량 공간 계산
-            if (step >= 3 && data.chain3_out) {
-                const chain3Data = typeof data.chain3_out === 'string' ? safeJsonParse(data.chain3_out) : data.chain3_out;
-                const taskSequence = chain3Data.task_sequence || '작업 순서 없음';
-                
-                summaryHtml += `
-                    <div class="summary-item">
-                        <div class="summary-item-content">
-                            <strong>차량 공간 계산 결과</strong> 작업 순서: ${taskSequence.length}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 4단계: 최적 배치 생성
-            if (step >= 4 && data.chain4_out) {
-                const chain4Data = data.chain4_out;
-                const codeLength = chain4Data.length || 0;
-                
-                summaryHtml += `
-                    <div class="summary-item">
-                        <div class="summary-item-content">
-                            <strong>최적 배치 생성 결과</strong> 코드 길이: ${codeLength}자
-                        </div>
-                    </div>
-                `;
-            }
-            
-            summaryContent.innerHTML = summaryHtml;
-            console.log(`📊 ${step}단계 요약 업데이트 완료`);
         }
         
         // 특정 단계의 결과를 화면에 표시
@@ -1821,6 +1928,8 @@
             // 초기 상태 설정
             updateProgress(0);
             updateStepDisplay();
+            // 분석 중에도 상세보기 가능하도록 버튼 노출
+            showResultButton();
             
             // 분석 시작
             startAnalysis();
