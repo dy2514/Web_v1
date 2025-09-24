@@ -1476,6 +1476,211 @@
   }
 }
 
+/* ========================================
+   KRDS Accordion Styles
+   ======================================== */
+.krds-accordion {
+  margin: var(--krds-accordion--list-margin-y) 0;
+}
+
+.krds-accordion.type-line .accordion-item {
+  border-bottom: 1px solid var(--krds-accordion--color-divider);
+}
+
+.krds-accordion.type-line .accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-item {
+  margin-bottom: 0;
+}
+
+.accordion-header {
+  margin: 0;
+}
+
+.btn-accordion {
+  width: 100%;
+  padding: var(--krds-accordion--line-padding);
+  padding-right: var(--krds-accordion--line-button-padding-right);
+  font-size: var(--krds-accordion--button-pc-font-size);
+  font-weight: var(--font-semibold);
+  color: var(--krds-accordion--button-color-text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.btn-accordion:hover {
+  color: var(--krds-accordion--button-color-action-hover);
+  background: var(--bg-tertiary);
+}
+
+.btn-accordion:focus {
+  outline: 2px solid var(--krds-accordion--button-color-action);
+  outline-offset: -2px;
+}
+
+.btn-accordion::after {
+  content: '';
+  width: var(--krds-accordion--button-icon-size);
+  height: var(--krds-accordion--button-icon-size);
+  border: 2px solid var(--krds-accordion--button-color-action);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-accordion[aria-expanded="true"]::after {
+  transform: rotate(225deg);
+}
+
+.btn-accordion[aria-expanded="true"] {
+  color: var(--krds-accordion--button-color-text-open);
+  background: var(--bg-tertiary);
+}
+
+.accordion-collapse {
+  overflow: hidden;
+  transition: height var(--transition-normal);
+}
+
+.accordion-collapse.collapse {
+  display: none;
+}
+
+.accordion-collapse.collapse.show {
+  display: block;
+}
+
+.accordion-body {
+  padding: 0 var(--krds-accordion--line-padding) var(--krds-accordion--padding);
+  background: var(--bg-primary);
+}
+
+/* 아코디언 헤더 내부 요소 스타일 */
+.accordion-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--krds-accordion--button-color-action);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: var(--font-bold);
+  margin-right: var(--space-3);
+  flex-shrink: 0;
+}
+
+.accordion-step-title {
+  flex: 1;
+  margin-right: var(--space-3);
+}
+
+.accordion-step-status {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: var(--font-normal);
+  margin-right: var(--space-4);
+}
+
+/* 아코디언 본문 스타일 */
+.step-detail-content {
+  padding: var(--space-4) 0;
+}
+
+.step-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+.step-progress-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.step-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--krds-accordion--button-color-action), var(--krds-accordion--button-color-action-hover));
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+  width: 0%;
+}
+
+.step-progress-text {
+  font-size: 0.875rem;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.step-detail-info {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  border: 1px solid var(--border-light);
+}
+
+.step-detail-info p {
+  margin: 0 0 var(--space-2) 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.step-detail-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* 아코디언 반응형 스타일 */
+@media (max-width: 768px) {
+  .btn-accordion {
+    font-size: var(--krds-accordion--button-mobile-font-size);
+    padding: var(--space-4);
+    padding-right: calc(var(--space-4) + var(--krds-accordion--button-icon-size) + var(--space-2));
+  }
+  
+  .accordion-body {
+    padding: 0 var(--space-4) var(--space-4);
+  }
+  
+  .accordion-step-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    margin-right: var(--space-2);
+  }
+  
+  .step-detail-content {
+    padding: var(--space-3) 0;
+  }
+}
+
 /* 처리 세부 현황 */
 .ai-details-section {
   margin-top: var(--space-4);

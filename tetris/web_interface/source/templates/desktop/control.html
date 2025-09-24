@@ -255,72 +255,123 @@
                         <div class="step-status-text" id="aiProgressStatus">시스템 준비됨</div>
                     </div>
                     
-                    <!-- 처리 세부 현황 -->
+                    <!-- 처리 세부 현황 (KRDS 아코디언 형식) -->
                     <div class="ai-details-section">
                         <h3 class="ai-details-title">처리 세부 현황</h3>
-                        <div class="ai-steps-grid" role="region" aria-label="AI 처리 세부 현황">
-                            <div class="ai-step-item" id="step1" 
-                                role="progressbar" 
-                                aria-label="1단계: 이미지 분석 진행률"
-                                aria-valuenow="0" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                                <div class="ai-step-number">1</div>
-                                <div class="ai-step-info">
-                                    <h4 class="ai-step-title">이미지 분석</h4>
-                                    <p class="ai-step-description">업로드된 이미지에서 좌석과 승객 인식</p>
-                                    <div class="ai-step-progress-bar" role="progressbar" aria-label="이미지 분석 진행률">
-                                        <div class="ai-step-progress-fill" id="step1Progress" aria-hidden="true"></div>
+                        <div class="krds-accordion type-line" role="region" aria-label="AI 처리 세부 현황">
+                            <!-- 1단계: 이미지 분석 -->
+                            <div class="accordion-item">
+                                <h5 class="accordion-header">
+                                    <button type="button" id="accordionHeaderStep1" class="btn-accordion" aria-controls="accordionCollapseStep1">
+                                        <span class="accordion-step-number">1</span>
+                                        <span class="accordion-step-title">이미지 분석</span>
+                                        <span class="accordion-step-status" id="step1AccordionStatus">대기중</span>
+                                    </button>
+                                </h5>
+                                <div id="accordionCollapseStep1" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep1">
+                                    <div class="accordion-body">
+                                        <div class="step-detail-content">
+                                            <p class="step-description">업로드된 이미지에서 좌석과 승객 인식</p>
+                                            <div class="step-progress-section">
+                                                <div class="step-progress-bar" role="progressbar" aria-label="이미지 분석 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="step-progress-fill" id="step1Progress" aria-hidden="true"></div>
+                                                </div>
+                                                <span class="step-progress-text" id="step1ProgressText">0%</span>
+                                            </div>
+                                            <div class="step-detail-info" id="step1DetailInfo">
+                                                <p>• 이미지 업로드 대기중</p>
+                                                <p>• AI 모델 준비 완료</p>
+                                                <p>• 좌석 인식 알고리즘 활성화</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="sr-only" id="step1Status">대기중</span>
                                 </div>
                             </div>
-                            <div class="ai-step-item" id="step2" 
-                                role="progressbar" 
-                                aria-label="2단계: 데이터 처리 진행률"
-                                aria-valuenow="0" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                                <div class="ai-step-number">2</div>
-                                <div class="ai-step-info">
-                                    <h4 class="ai-step-title">데이터 처리</h4>
-                                    <p class="ai-step-description">인식된 데이터를 구조화하고 분석</p>
-                                    <div class="ai-step-progress-bar" role="progressbar" aria-label="데이터 처리 진행률">
-                                        <div class="ai-step-progress-fill" id="step2Progress" aria-hidden="true"></div>
+                            
+                            <!-- 2단계: 데이터 처리 -->
+                            <div class="accordion-item">
+                                <h5 class="accordion-header">
+                                    <button type="button" id="accordionHeaderStep2" class="btn-accordion" aria-controls="accordionCollapseStep2">
+                                        <span class="accordion-step-number">2</span>
+                                        <span class="accordion-step-title">데이터 처리</span>
+                                        <span class="accordion-step-status" id="step2AccordionStatus">대기중</span>
+                                    </button>
+                                </h5>
+                                <div id="accordionCollapseStep2" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep2">
+                                    <div class="accordion-body">
+                                        <div class="step-detail-content">
+                                            <p class="step-description">인식된 데이터를 구조화하고 분석</p>
+                                            <div class="step-progress-section">
+                                                <div class="step-progress-bar" role="progressbar" aria-label="데이터 처리 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="step-progress-fill" id="step2Progress" aria-hidden="true"></div>
+                                                </div>
+                                                <span class="step-progress-text" id="step2ProgressText">0%</span>
+                                            </div>
+                                            <div class="step-detail-info" id="step2DetailInfo">
+                                                <p>• 데이터 구조화 대기중</p>
+                                                <p>• 분석 알고리즘 준비 완료</p>
+                                                <p>• 데이터 검증 모듈 활성화</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="sr-only" id="step2Status">대기중</span>
                                 </div>
                             </div>
-                            <div class="ai-step-item" id="step3" 
-                                role="progressbar" 
-                                aria-label="3단계: 최적화 생성 진행률"
-                                aria-valuenow="0" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                                <div class="ai-step-number">3</div>
-                                <div class="ai-step-info">
-                                    <h4 class="ai-step-title">최적화 생성</h4>
-                                    <p class="ai-step-description">AI 알고리즘으로 최적 좌석 배치 생성</p>
-                                    <div class="ai-step-progress-bar" role="progressbar" aria-label="최적화 생성 진행률">
-                                        <div class="ai-step-progress-fill" id="step3Progress" aria-hidden="true"></div>
+                            
+                            <!-- 3단계: 최적화 생성 -->
+                            <div class="accordion-item">
+                                <h5 class="accordion-header">
+                                    <button type="button" id="accordionHeaderStep3" class="btn-accordion" aria-controls="accordionCollapseStep3">
+                                        <span class="accordion-step-number">3</span>
+                                        <span class="accordion-step-title">최적화 생성</span>
+                                        <span class="accordion-step-status" id="step3AccordionStatus">대기중</span>
+                                    </button>
+                                </h5>
+                                <div id="accordionCollapseStep3" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep3">
+                                    <div class="accordion-body">
+                                        <div class="step-detail-content">
+                                            <p class="step-description">AI 알고리즘으로 최적 좌석 배치 생성</p>
+                                            <div class="step-progress-section">
+                                                <div class="step-progress-bar" role="progressbar" aria-label="최적화 생성 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="step-progress-fill" id="step3Progress" aria-hidden="true"></div>
+                                                </div>
+                                                <span class="step-progress-text" id="step3ProgressText">0%</span>
+                                            </div>
+                                            <div class="step-detail-info" id="step3DetailInfo">
+                                                <p>• 최적화 알고리즘 대기중</p>
+                                                <p>• 좌석 배치 모델 준비 완료</p>
+                                                <p>• 시뮬레이션 엔진 활성화</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="sr-only" id="step3Status">대기중</span>
                                 </div>
                             </div>
-                            <div class="ai-step-item" id="step4" 
-                                role="progressbar" 
-                                aria-label="4단계: 하드웨어 구동 진행률"
-                                aria-valuenow="0" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                                <div class="ai-step-number">4</div>
-                                <div class="ai-step-info">
-                                    <h4 class="ai-step-title">하드웨어 구동</h4>
-                                    <p class="ai-step-description">모터 제어 코드 생성 및 실행</p>
-                                    <div class="ai-step-progress-bar" role="progressbar" aria-label="하드웨어 구동 진행률">
-                                        <div class="ai-step-progress-fill" id="step4Progress" aria-hidden="true"></div>
+                            
+                            <!-- 4단계: 하드웨어 구동 -->
+                            <div class="accordion-item">
+                                <h5 class="accordion-header">
+                                    <button type="button" id="accordionHeaderStep4" class="btn-accordion" aria-controls="accordionCollapseStep4">
+                                        <span class="accordion-step-number">4</span>
+                                        <span class="accordion-step-title">하드웨어 구동</span>
+                                        <span class="accordion-step-status" id="step4AccordionStatus">대기중</span>
+                                    </button>
+                                </h5>
+                                <div id="accordionCollapseStep4" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep4">
+                                    <div class="accordion-body">
+                                        <div class="step-detail-content">
+                                            <p class="step-description">모터 제어 코드 생성 및 실행</p>
+                                            <div class="step-progress-section">
+                                                <div class="step-progress-bar" role="progressbar" aria-label="하드웨어 구동 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="step-progress-fill" id="step4Progress" aria-hidden="true"></div>
+                                                </div>
+                                                <span class="step-progress-text" id="step4ProgressText">0%</span>
+                                            </div>
+                                            <div class="step-detail-info" id="step4DetailInfo">
+                                                <p>• 모터 제어 코드 대기중</p>
+                                                <p>• 하드웨어 연결 준비 완료</p>
+                                                <p>• 실행 모듈 활성화</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="sr-only" id="step4Status">대기중</span>
                                 </div>
                             </div>
                         </div>
@@ -516,11 +567,65 @@
             });
         }
 
-        // AI 단계 업데이트 (통합된 함수)
+        // AI 단계 업데이트 (통합된 함수 - 아코디언 형식)
         function updateAIStep(stepNumber, status, progress = 0) {
             // 전체 진행률로 변환 (stepNumber * 25 + progress)
             const overallProgress = (stepNumber - 1) * 25 + (progress * 0.25);
             updateAIOverallProgress(overallProgress);
+            
+            // 아코디언 진행률 업데이트
+            const accordionProgressFill = document.getElementById(`step${stepNumber}Progress`);
+            const accordionProgressText = document.getElementById(`step${stepNumber}ProgressText`);
+            const accordionStatus = document.getElementById(`step${stepNumber}AccordionStatus`);
+            
+            if (accordionProgressFill && accordionProgressText && accordionStatus) {
+                accordionProgressFill.style.width = `${progress}%`;
+                accordionProgressText.textContent = `${progress}%`;
+                
+                switch(status) {
+                    case 'completed':
+                        accordionStatus.textContent = '완료';
+                        accordionStatus.style.color = 'var(--color-success)';
+                        break;
+                    case 'active':
+                        accordionStatus.textContent = '진행중';
+                        accordionStatus.style.color = 'var(--color-info)';
+                        break;
+                    case 'waiting':
+                        accordionStatus.textContent = '대기중';
+                        accordionStatus.style.color = 'var(--text-secondary)';
+                        break;
+                    case 'error':
+                        accordionStatus.textContent = '오류';
+                        accordionStatus.style.color = 'var(--color-error)';
+                        break;
+                    default:
+                        accordionStatus.textContent = '대기중';
+                        accordionStatus.style.color = 'var(--text-secondary)';
+                }
+            }
+            
+            // 아코디언 단계 번호 스타일 업데이트
+            const accordionButton = document.getElementById(`accordionHeaderStep${stepNumber}`);
+            if (accordionButton) {
+                const stepNumberElement = accordionButton.querySelector('.accordion-step-number');
+                if (stepNumberElement) {
+                    stepNumberElement.className = 'accordion-step-number';
+                    switch(status) {
+                        case 'completed':
+                            stepNumberElement.style.background = 'var(--color-success)';
+                            break;
+                        case 'active':
+                            stepNumberElement.style.background = 'var(--color-info)';
+                            break;
+                        case 'error':
+                            stepNumberElement.style.background = 'var(--color-error)';
+                            break;
+                        default:
+                            stepNumberElement.style.background = 'var(--krds-accordion--button-color-action)';
+                    }
+                }
+            }
         }
 
         // 로그 추가
@@ -670,6 +775,28 @@
             }
         }
 
+        // 아코디언 토글 기능
+        function initializeAccordion() {
+            const accordionButtons = document.querySelectorAll('.btn-accordion');
+            
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('aria-controls');
+                    const targetCollapse = document.getElementById(targetId);
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    
+                    // 현재 상태 토글
+                    if (isExpanded) {
+                        this.setAttribute('aria-expanded', 'false');
+                        targetCollapse.classList.remove('show');
+                    } else {
+                        this.setAttribute('aria-expanded', 'true');
+                        targetCollapse.classList.add('show');
+                    }
+                });
+            });
+        }
+
         // 초기 UI 상태 설정
         function initializeUI() {
             updateRaspberryPiStatus(0, 0, '대기중', '비활성');
@@ -686,6 +813,9 @@
             
             // 헤더 연결 상태 업데이트
             updateHeaderConnectionStatus();
+            
+            // 아코디언 초기화
+            initializeAccordion();
         }
 
         // 통신 매니저 초기화

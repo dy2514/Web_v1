@@ -437,3 +437,28 @@ body {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ========================================
+   KRDS Accordion Variables
+   ======================================== */
+:root {
+  /* KRDS Accordion Variables */
+  --krds-accordion--list-margin-y: var(--space-2);
+  --krds-accordion--padding: var(--space-8);
+  --krds-accordion--button-padding-right: calc(var(--krds-accordion--padding) + var(--space-5) + var(--krds-accordion--button-icon-size));
+  --krds-accordion--line-padding: var(--space-7);
+  --krds-accordion--line-button-padding-right: calc(var(--space-5) + var(--krds-accordion--button-icon-size));
+  --krds-accordion--button-icon-size: var(--space-6);
+  --krds-accordion--radius: var(--radius-xl);
+  --krds-accordion--button-pc-font-size: var(--text-lg);
+  --krds-accordion--button-mobile-font-size: var(--text-base);
+  --krds-accordion--color-action: var(--image-primary);
+  --krds-accordion--button-color-action: var(--image-primary);
+  --krds-accordion--button-color-action-hover: var(--image-secondary);
+  --krds-accordion--button-color-action-pressed: var(--image-accent);
+  --krds-accordion--color-action-open: var(--image-secondary);
+  --krds-accordion--color-divider: var(--border-light);
+  --krds-accordion--color-divider-open: var(--border-medium);
+  --krds-accordion--button-color-text: var(--text-primary);
+  --krds-accordion--button-color-text-open: var(--text-secondary);
+}
