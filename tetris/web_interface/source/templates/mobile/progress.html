@@ -336,6 +336,7 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 12px;
+            text-align: center;
         }
         .detail-back-btn {
             display: block;
@@ -679,6 +680,11 @@
             color: #2d3748;
         }
         
+        .accordion-item {
+            font-size: 12px;
+            color: #000;
+        }
+
         @keyframes slideInFromRight {
             from {
                 opacity: 0;
@@ -797,26 +803,53 @@
         
         <!-- 진행 타임라인 -->
         <div class="timeline" id="detailTimeline">
-            <div class="timeline-item" id="tl-step-1">
-                <span class="timeline-dot"></span>
-                <span>이미지 분석</span>
-            </div>
-            <div class="timeline-item" id="tl-step-2">
-                <span class="timeline-dot"></span>
-                <span>짐 인식 및 분류</span>
-            </div>
-            <div class="timeline-item" id="tl-step-3">
-                <span class="timeline-dot"></span>
-                <span>차량 공간 계산</span>
-            </div>
-            <div class="timeline-item" id="tl-step-4">
-                <span class="timeline-dot"></span>
-                <span>최적 배치 생성</span>
+            <div style="border: none; color: black;" class="krds-accordion">
+                <div class="timeline-item" id="tl-step-1">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem01"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample01" class="btn-accordion" aria-controls="accordionCollapseSample01">이미지 분석</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample01" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample01">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-2">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem02"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample02" class="btn-accordion" aria-controls="accordionCollapseSample02">짐 인식 및 분류</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample02" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample02">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-3">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem03"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample03" class="btn-accordion" aria-controls="accordionCollapseSample03">차량 공간 계산</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample03" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample03">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-4">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem04"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample04" class="btn-accordion" aria-controls="accordionCollapseSample04">최적 배치 생성</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample04" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample04">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- 기존 단계별 결과 블록을 그대로 재사용 (아코디언) -->
-        <div class="step-results" id="detailStepResults"></div>
         
         <button class="detail-back-btn" onclick="closeDetailPanel()">이전 화면</button>
     </div>
@@ -991,6 +1024,68 @@
                         clearAllStepResults();
                     }
                     
+                    // 이번 이벤트 payload에 포함된 단계별 결과를 아코디언에 반영
+                    try {
+                        const ar = statusData.analysis_result || {};
+                        const pr = statusData.processed_results || {};
+
+                        // 가공된 결과 우선 표시
+                        if (pr.chain1_out && !shownSteps[1]) {
+                            displayProcessedStepResult(1, pr.chain1_out);
+                            shownSteps[1] = true;
+                        }
+                        if (pr.chain2_out && !shownSteps[2]) {
+                            displayProcessedStepResult(2, pr.chain2_out);
+                            shownSteps[2] = true;
+                        }
+                        if (pr.chain3_out && !shownSteps[3]) {
+                            displayProcessedStepResult(3, pr.chain3_out);
+                            shownSteps[3] = true;
+                        }
+                        if (pr.chain4_out && !shownSteps[4]) {
+                            displayProcessedStepResult(4, pr.chain4_out);
+                            shownSteps[4] = true;
+                        }
+
+                        // 원본 결과 표시 (가공된 결과가 없을 때)
+                        if (ar.chain1_out && !shownSteps[1]) {
+                            displayStepResult(1, ar.chain1_out);
+                            shownSteps[1] = true;
+                        }
+                        if (ar.chain2_out && !shownSteps[2]) {
+                            displayStepResult(2, ar.chain2_out);
+                            shownSteps[2] = true;
+                        }
+                        if (ar.chain3_out && !shownSteps[3]) {
+                            displayStepResult(3, ar.chain3_out);
+                            shownSteps[3] = true;
+                        }
+                        if (ar.chain4_out && !shownSteps[4]) {
+                            displayStepResult(4, ar.chain4_out);
+                            shownSteps[4] = true;
+                        }
+
+                        // 루트에 실린 경우도 대응
+                        if (statusData.chain1_out && !shownSteps[1]) {
+                            displayStepResult(1, statusData.chain1_out);
+                            shownSteps[1] = true;
+                        }
+                        if (statusData.chain2_out && !shownSteps[2]) {
+                            displayStepResult(2, statusData.chain2_out);
+                            shownSteps[2] = true;
+                        }
+                        if (statusData.chain3_out && !shownSteps[3]) {
+                            displayStepResult(3, statusData.chain3_out);
+                            shownSteps[3] = true;
+                        }
+                        if (statusData.chain4_out && !shownSteps[4]) {
+                            displayStepResult(4, statusData.chain4_out);
+                            shownSteps[4] = true;
+                        }
+                    } catch (e) {
+                        console.warn('단계별 결과 반영 중 오류:', e);
+                    }
+
                     // 5단계 완료 시 - 실제 4단계 결과가 도착한 경우에만 완료 처리
                     const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
                     if (currentStep >= 5 && hasStep4Output) {
@@ -1041,19 +1136,20 @@
         // 상세 패널 열기
         function openDetailPanel() {
             const panel = document.getElementById('detailPanel');
-            const source = document.getElementById('stepResults');
-            const target = document.getElementById('detailStepResults');
-            const tl = document.getElementById('detailTimeline');
-            if (panel && source && target) {
+            // const source = document.getElementById('stepResults');
+            // const target = document.getElementById('detailStepResults');
+            // const tl = document.getElementById('detailTimeline');
+            // if (panel && source && target) {
+            if (panel) {
                 // 최초 오픈 시 원래 위치 기억
-                if (!stepResultsOriginalParent) {
-                    stepResultsOriginalParent = source.parentNode;
-                    stepResultsNextSibling = source.nextSibling;
-                }
+                // if (!stepResultsOriginalParent) {
+                //     stepResultsOriginalParent = source.parentNode;
+                //     stepResultsNextSibling = source.nextSibling;
+                // }
                 // 동일 노드를 상세 패널 내부로 이동 → SSE 갱신이 그대로 반영됨
-                target.innerHTML = '';
-                target.appendChild(source);
-                source.style.display = 'block';
+                // target.innerHTML = '';
+                // target.appendChild(source);
+                // source.style.display = 'block';
                 panel.classList.add('show');
                 panel.setAttribute('aria-hidden', 'false');
                 detailPanelOpen = true;
@@ -1233,35 +1329,33 @@
         function displayStepResult(stepNumber, resultData) {
             console.log(`🎯 displayStepResult 호출됨: 단계 ${stepNumber}, 데이터:`, resultData);
             
-            const resultElement = document.getElementById(`step${stepNumber}Result`);
-            const contentElement = document.getElementById(`step${stepNumber}ResultContent`);
             
-            console.log(`🎯 요소 확인: resultElement=${!!resultElement}, contentElement=${!!contentElement}`);
+            const accordionItem = document.getElementById(`accordionItem0${stepNumber}`);
+            const accordionCollapse = document.getElementById(`accordionCollapseSample0${stepNumber}`);
             
-            if (!resultElement || !contentElement) {
+            if (!accordionItem || !accordionCollapse) {
                 console.error(`단계 ${stepNumber} 결과 요소를 찾을 수 없습니다.`);
                 return;
             }
             
             // 이전 데이터 클리어
-            contentElement.innerHTML = '';
-            resultElement.style.display = 'none';
+            accordionItem.classList.remove('active');
+            accordionCollapse.style.display = 'none';
             
             // 결과 데이터 포맷팅
             const formattedResult = formatStepResult(stepNumber, resultData);
             console.log(`🎯 포맷된 결과:`, formattedResult);
             
             // 내용 업데이트
-            contentElement.innerHTML = formattedResult;
+            accordionCollapse.innerHTML = formattedResult;
             
             // 결과 영역 표시
-            resultElement.style.display = 'block';
-            
-            // 애니메이션으로 표시
-            setTimeout(() => {
-                resultElement.classList.add('show', 'completed');
-                initResultToggle(stepNumber);
-            }, 100);
+            accordionItem.classList.add('accordion-item');
+            accordionCollapse.style.display = 'inline-block';
+
+            accordionItem.addEventListener('click', () => {
+                accordionItem.classList.toggle('active');
+            });
             
             console.log(`단계 ${stepNumber} 결과 표시 완료`);
         }
@@ -1425,8 +1519,33 @@
                         formattedResult = `
                             <strong>👥 인원 수:</strong> ${chain1Data.people || 0}명
                             <br><strong>🧳 총 짐 개수:</strong> ${chain1Data.total_luggage_count || 0}개
-                            <br><strong>📋 짐 상세 정보:</strong>
-                            <br><pre>${JSON.stringify(chain1Data.luggage_details || {}, null, 2)}</pre>
+                            <br><strong>📋 짐 상세 정보</strong>
+                        `;
+                        let luggageTableRows = '';
+                        
+                        for (let luggage in chain1Data.luggage_details) {
+                            luggageTableRows += `
+                                <tr>
+                                    <td>${chain1Data.luggage_details[luggage].object}</td>
+                                    <td>${chain1Data.luggage_details[luggage].color}</td>
+                                    <td>${chain1Data.luggage_details[luggage].material}</td>
+                                    <td>${chain1Data.luggage_details[luggage].shape}</td>
+                                </tr>
+                            `;
+                        }
+
+                        formattedResult += `
+                            <br><table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>물건</th>
+                                        <th>색상</th>
+                                        <th>재료</th>
+                                        <th>모양</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${luggageTableRows}</tbody>
+                            </table>
                         `;
                         break;
                         
@@ -1436,8 +1555,29 @@
                             return parsed && typeof parsed === 'object' ? parsed : {};
                         })();
                         formattedResult = `
-                            <strong>🪑 좌석 배치 지시사항:</strong>
-                            <br><pre>${JSON.stringify(chain2Data.instruction || {}, null, 2)}</pre>
+                            <strong>🪑 좌석 배치 지시사항</strong>
+                        `;
+                        let seatsTableRows = '';
+                        for (let seat in chain2Data.instruction.seats) {
+                            let seatDataArray = chain2Data.instruction.seats[seat];
+                            let tableSeatData = '';
+                            seatDataArray.forEach(data => {
+                                tableSeatData += `<td>${data}</td>`;
+                            });
+                            seatsTableRows += `<tr>${tableSeatData}</tr>`;
+                        }
+                        formattedResult += `
+                            <br><table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>위치</th>
+                                        <th>방법</th>
+                                        <th>용량</th>
+                                        <th>chair|storage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${seatsTableRows}</tbody>
+                            </table>
                         `;
                         break;
                         
@@ -1447,20 +1587,74 @@
                             const parsed = safeJsonParse(cleanData);
                             return parsed && typeof parsed === 'object' ? parsed : {};
                         })();
+
+                        let environmentBeforeTableRows = '';
+                        for (let seat in chain3Data.environment_before.seats) {
+                            environmentBeforeTableRows += `<tr>
+                                <td>${chain3Data.environment_before.seats[seat].rail_axis}</td>
+                                <td>${chain3Data.environment_before.seats[seat].position}</td>
+                                <td>${chain3Data.environment_before.seats[seat].facing}</td>
+                                <td>${chain3Data.environment_before.seats[seat].mode}</td>
+                            </tr>`;
+                        }
+
+                        let taskSequenceTableRows = '';
+                        for (let seq in chain3Data.task_sequence) {
+                            let taskSequenceDataArray = chain3Data.task_sequence[seq];
+                            let tabletaskSequenceData = '';
+                            taskSequenceDataArray.forEach(data => {
+                                tabletaskSequenceData += `<td>${data}</td>`;
+                            });
+                            taskSequenceTableRows += `<tr>${tabletaskSequenceData}</tr>`;
+                        }
+
+                        let environmentAfterTableRows = '';
+                        for (let seat in chain3Data.environment_after.seats) {
+                            environmentAfterTableRows += `<tr>
+                                <td>${chain3Data.environment_after.seats[seat].rail_axis}</td>
+                                <td>${chain3Data.environment_after.seats[seat].position}</td>
+                                <td>${chain3Data.environment_after.seats[seat].facing}</td>
+                                <td>${chain3Data.environment_after.seats[seat].mode}</td>
+                            </tr>`;
+                        }
+
+
                         formattedResult = `
                             <strong>🚗 환경 설정 (이전):</strong>
-                            <br><pre>${JSON.stringify(chain3Data.environment_before || {}, null, 2)}</pre>
+                            <br><table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>rail_axis</th>
+                                        <th>position</th>
+                                        <th>facing</th>
+                                        <th>mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${environmentBeforeTableRows}</tbody>
+                            </table>
                             <br><strong>📋 작업 순서:</strong>
-                            <br><pre>${JSON.stringify(chain3Data.task_sequence || {}, null, 2)}</pre>
+                            <br><table border="1">
+                                <tbody>${taskSequenceTableRows}</tbody>
+                            </table>
                             <br><strong>🚗 환경 설정 (이후):</strong>
-                            <br><pre>${JSON.stringify(chain3Data.environment_after || {}, null, 2)}</pre>
+                            <br><table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>rail_axis</th>
+                                        <th>position</th>
+                                        <th>facing</th>
+                                        <th>mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${environmentAfterTableRows}</tbody>
+                            </table>
                         `;
+
                         break;
                         
                     case 4: // 최적 배치 생성
                         formattedResult = `
-                            <strong>🎯 최적 배치 코드:</strong>
-                            <br><pre>${resultData}</pre>
+                            <strong>🎯 최적 배치 코드:</strong> ${resultData}
                             <br><em>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</em>
                         `;
                         break;
@@ -1537,30 +1731,7 @@
                             `;
                         } catch (error) {
                             console.error('1단계 결과 포맷팅 오류:', error);
-                            formattedResult = `
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>항목</th>
-                                            <th>값</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>👥 인원 수</strong></td>
-                                            <td>0명</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>🧳 총 짐 개수</strong></td>
-                                            <td>0개</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>📋 원본 데이터</strong></td>
-                                            <td><pre>${processedData}</pre></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            `;
+                            formattedResult = `포맷팅 오류 발생`;
                         }
                         break;
                         
@@ -1919,6 +2090,13 @@
                 document.getElementById('progressText').textContent = '분석 시작 중 오류가 발생했습니다: ' + error.message;
             }
         }
+
+        function initializeAccordions() {
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                item.classList.remove('active');
+            });
+        }
         
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
@@ -1933,6 +2111,9 @@
             
             // 분석 시작
             startAnalysis();
+            
+            // 아코디언 초기화
+            initializeAccordions();
             
             // SSE 시작
             try {
