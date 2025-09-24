@@ -106,6 +106,19 @@ def desktop_control():
 def get_status():
     """시스템 상태 조회 API (폴링용)"""
     status_data = get_global_status().copy()
+    # 호환성: 잘못 중첩된 analysis_result 구조를 평탄화
+    try:
+        ar = status_data.get('analysis_result')
+        if isinstance(ar, dict) and 'analysis_result' in ar and 'chain4_out' not in ar:
+            inner = ar.get('analysis_result')
+            if isinstance(inner, dict):
+                status_data['analysis_result'] = inner
+        # 보조 체크를 위해 최종 출력이 있으면 최상위에도 복사
+        ar2 = status_data.get('analysis_result')
+        if isinstance(ar2, dict) and 'chain4_out' in ar2:
+            status_data.setdefault('chain4_out', ar2.get('chain4_out'))
+    except Exception:
+        pass
     
     # 진행률을 최상위 레벨에 추가 (모바일 호환성)
     if 'processing' in status_data and 'progress' in status_data['processing']:
@@ -129,13 +142,120 @@ def get_status():
     if 'analysis_result' in status_data:
         status_data['result'] = status_data['analysis_result']
 
-    print("!!!!!!!!!!!!!!!", status_data)
-    
     return jsonify({
         'success': True,
         'ok': True,  # 모바일 호환성
         'data': status_data
     })
+
+@control_bp.route('/api/status_stream')
+def status_stream():
+    """전역 상태 SSE 스트림 (모바일용)"""
+    def generate():
+        # 초기 연결 신호
+        yield f"data: {json.dumps({'event': 'connected'})}\n\n"
+
+        last_sent_steps = set()
+        last_status = None
+        last_step = None
+        last_progress = None
+
+        def build_payload() -> dict:
+            data = get_global_status().copy()
+            # 호환성: analysis_result 중첩 평탄화 및 chain4_out 복사
+            try:
+                ar = data.get('analysis_result')
+                if isinstance(ar, dict) and 'analysis_result' in ar and 'chain4_out' not in ar:
+                    inner = ar.get('analysis_result')
+                    if isinstance(inner, dict):
+                        data['analysis_result'] = inner
+                ar2 = data.get('analysis_result')
+                if isinstance(ar2, dict) and 'chain4_out' in ar2:
+                    data.setdefault('chain4_out', ar2.get('chain4_out'))
+            except Exception:
+                pass
+
+            # 진행률/상태를 최상위에 노출 (모바일 호환)
+            if 'processing' in data and 'progress' in data['processing']:
+                data['progress'] = data['processing']['progress']
+            if 'system' in data and 'status' in data['system']:
+                data['status'] = data['system']['status']
+            if data.get('system', {}).get('status') == 'done':
+                data['status'] = 'done'
+
+            # 메시지 최신값 반영
+            notifications = data.get('notifications', [])
+            if notifications:
+                latest_notification = notifications[-1]
+                data['message'] = latest_notification.get('message', '')
+            return data
+
+        while True:
+            try:
+                status_data = build_payload()
+
+                # 현재 완료된 스텝 키 수집
+                ar = status_data.get('analysis_result')
+                current_steps = set()
+                if isinstance(ar, dict):
+                    for key in ('chain1_out', 'chain2_out', 'chain3_out', 'chain4_out'):
+                        if key in ar:
+                            current_steps.add(key)
+
+                new_steps = current_steps - last_sent_steps
+                status = status_data.get('status') or status_data.get('system', {}).get('status')
+                step_val = status_data.get('current_step') or status_data.get('processing', {}).get('current_step')
+                progress_val = status_data.get('progress') or status_data.get('processing', {}).get('progress')
+
+                should_emit = False
+                payload = None
+
+                if new_steps:
+                    # 새로 완료된 스텝만 담아 전송
+                    payload = status_data.copy()
+                    if isinstance(ar, dict):
+                        payload_ar = {k: ar[k] for k in new_steps if k in ar}
+                        payload['analysis_result'] = payload_ar
+                        payload['result'] = payload_ar
+                        if 'chain4_out' in payload_ar:
+                            payload.setdefault('chain4_out', payload_ar['chain4_out'])
+                    last_sent_steps.update(new_steps)
+                    should_emit = True
+
+                # 최종/에러 상태 변화 시에도 전송
+                if status != last_status and status in ('done', 'error'):
+                    if payload is None:
+                        payload = status_data
+                    should_emit = True
+                    last_status = status
+
+                # 진행 단계/진행률 변화 시에도 전송
+                if (step_val is not None and step_val != last_step) or (progress_val is not None and progress_val != last_progress):
+                    if payload is None:
+                        payload = status_data
+                    should_emit = True
+                    last_step = step_val
+                    last_progress = progress_val
+
+                if should_emit and payload is not None:
+                    yield f"data: {json.dumps(payload)}\n\n"
+
+                time.sleep(0.5)
+            except Exception as e:
+                logger.error(f"SSE 상태 스트림 오류: {e}")
+                yield f"data: {json.dumps({'event': 'error', 'message': str(e)})}\n\n"
+                break
+
+    return Response(
+        generate(),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Cache-Control'
+        }
+    )
 
 @control_bp.route('/api/progress_stream')
 def progress_stream():
@@ -359,7 +479,8 @@ def start_step_analysis():
         data = request.get_json()
         people_count = data.get('people_count', 0)
         image_data_url = data.get('image_data_url', '')
-        scenario = data.get('scenario', f'step_analysis_{datetime.now().strftime("%Y%m%d_%H%M%S")}')
+        # 항상 새로운 시나리오 생성 (잔여 데이터로 인한 오표시 방지)
+        scenario = f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
         if not image_data_url:
             return jsonify({'success': False, 'error': '이미지 데이터가 필요합니다'}), 400
@@ -373,20 +494,36 @@ def start_step_analysis():
                 (image_data_url.startswith('http://') or image_data_url.startswith('https://'))):
             return jsonify({'success': False, 'error': '유효하지 않은 이미지 형식입니다.'}), 400
         
+        # 새로운 분석 시작 시 상태 초기화 (중복 데이터 방지)
+        update_status(
+            status='processing',
+            message='분석을 시작합니다...',
+            current_step=0,
+            analysis_result={},
+            processed_results={},
+            **{
+                'processing.progress': 0,
+                'processing.current_scenario': scenario,
+                'upload.scenario': scenario,
+                'processing.sent_steps': {}
+            }
+        )
+
         # tetris.py의 단계별 실행 함수 import
         sys.path.insert(0, str(Path(__file__).parent.parent.parent))
         from tetris import run_step_by_step_analysis
         
         # 진행률 콜백 함수
-        def progress_callback(progress, status, message):
+        def progress_callback(progress, status, message, current_step=None):
             update_status(
                 progress=progress,
                 status=status,
                 message=message,
                 uploaded_file=True,
-                people_count=people_count
+                people_count=people_count,
+                current_step=current_step
             )
-            logger.info(f"단계별 진행률: {progress}% - {status}: {message}")
+            logger.info(f"단계별 진행률: step={current_step}, {progress}% - {status}: {message}")
         
         # 백그라운드에서 단계별 분석 실행
         def run_analysis():
@@ -405,7 +542,10 @@ def start_step_analysis():
                     message='분석이 완료되었습니다!',
                     uploaded_file=True,
                     people_count=people_count,
-                    analysis_result=result
+                    analysis_result=result.get('analysis_result', result),
+                    out_path=result.get('out_path'),
+                    total_elapsed=result.get('total_elapsed'),
+                    step_times=result.get('step_times')
                 )
                 
                 logger.info(f"단계별 분석 완료: {result['out_path']}")

@@ -130,9 +130,9 @@ class ProgressController {
         this.runNextStep();
         
         // 타이머 업데이트 (1초마다)
-        this.timerInterval = setInterval(() => {
-            this.updateTimer();
-        }, 1000);
+        // this.timerInterval = setInterval(() => {
+        //     this.updateTimer();
+        // }, 1000);
     }
     
     runNextStep() {
