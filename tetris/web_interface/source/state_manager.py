@@ -231,7 +231,7 @@ class StateManager:
     
     def get_system_status(self) -> Dict[str, Any]:
         """시스템 상태 조회"""
-        return {
+        status = {
             'system': self.get('system', {}),
             'processing': self.get_processing_status(),
             'upload': self.get_upload_status(),
@@ -239,6 +239,17 @@ class StateManager:
             'active_sessions': len(self.get('sessions', {})),
             'notifications_count': len(self.get('notifications', []))
         }
+        
+        # current_step이 있으면 추가
+        if 'current_step' in self.state:
+            status['current_step'] = self.state['current_step']
+        
+        # analysis_result가 있으면 추가
+        if 'analysis_result' in self.state:
+            status['analysis_result'] = self.state['analysis_result']
+            print(f"[DEBUG] get_system_status에서 analysis_result 추가: {list(self.state['analysis_result'].keys()) if isinstance(self.state['analysis_result'], dict) else 'Not a dict'}")
+        
+        return status
     
     def reset(self):
         """상태 초기화"""
@@ -265,4 +276,5 @@ def update_status(status: str = None, message: str = None, **kwargs):
     
     if kwargs:
         for key, value in kwargs.items():
+            logger.info(f"update_status: {key} = {value}")
             state_manager.set(key, value)

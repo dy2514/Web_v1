@@ -1601,7 +1601,7 @@
         });
 
         /* CTA → HTTP 통신 (간소화) */
-        submit.addEventListener('click', () => {
+        submit.addEventListener('click', async () => {
             if (!currentScenario) return;
             
             // 이전 결과 요소들 숨기기
@@ -1609,8 +1609,43 @@
             
             showNotice('최적의 차량 배치 설계를 시작합니다!');
             
-            // 단계별 분석 시작
-            startStepAnalysis();
+            // 이미지 데이터를 Base64로 변환
+            let imageDataUrl = 'default_image';
+            if (previewURL && previewURL.startsWith('blob:')) {
+                try {
+                    // Blob URL을 Base64로 변환
+                    const response = await fetch(previewURL);
+                    const blob = await response.blob();
+                    const reader = new FileReader();
+                    imageDataUrl = await new Promise((resolve) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (error) {
+                    console.error('이미지 변환 오류:', error);
+                }
+            } else if (previewURL) {
+                imageDataUrl = previewURL;
+            }
+            
+            // 분석 데이터를 세션에 저장
+            const analysisData = {
+                scenario: currentScenario,
+                people_count: seatSelection || 4,
+                image_data_url: imageDataUrl
+            };
+            
+            console.log('분석 데이터 저장:', {
+                scenario: analysisData.scenario,
+                people_count: analysisData.people_count,
+                image_data_url: analysisData.image_data_url.substring(0, 50) + '...'
+            });
+            
+            // 세션 스토리지에 저장
+            sessionStorage.setItem('analysisData', JSON.stringify(analysisData));
+            
+            // 새로운 진행률 페이지로 이동
+            window.location.href = `/mobile/progress?scenario=${encodeURIComponent(currentScenario)}`;
         });
         
         // 진행률 화면의 단계별 상세 정보 접기/펼치기
@@ -1991,8 +2026,8 @@
                 
                 if (result.success) {
                     console.log('단계별 분석 시작됨:', result);
-                    // 폴링 시작
-                    fallbackPolling();
+                    // SSE 기반 진행 화면으로 전환 (HTTP 폴링 제거)
+                    window.location.href = '/mobile/progress?scenario=' + encodeURIComponent(currentScenario);
                 } else {
                     throw new Error(result.error || '분석 시작 실패');
                 }
@@ -2009,115 +2044,7 @@
         /* 폴링 방식 폴백 - 최적화된 버전 */
         let lastPollingStatus = null;
         
-        function fallbackPolling() {
-            let tries = 0;
-            clearInterval(pollTimer);
-            pollTimer = setInterval(async () => {
-                tries += 1;
-                try {
-                    const rs = await fetch('/desktop/api/status?scenario=' + encodeURIComponent(currentScenario));
-                    const dj = await rs.json();
-                    
-                    // 디버깅을 위한 전체 응답 로깅
-                    console.log('전체 API 응답:', dj);
-                    console.log('응답 데이터 구조:', dj.data);
-                    console.log('dj.ok:', dj.ok);
-                    console.log('dj.success:', dj.success);
-                    console.log('dj.data.result:', dj.data?.result);
-                    
-                    // 상태 변경 감지
-                    const currentStatus = dj.data?.status || dj.data?.system?.status;
-                    const statusChanged = lastPollingStatus !== currentStatus;
-                    
-                    if (statusChanged) {
-                        console.log('상태 변경 감지:', lastPollingStatus, '->', currentStatus);
-                        lastPollingStatus = currentStatus;
-                    }
-                    
-                    // 상태나 진행률이 변경되었을 때마다 UI 업데이트
-                    const currentProgress = dj.progress || dj.data?.processing?.progress;
-                    if (currentProgress !== undefined) {
-                        console.log('진행률 감지:', currentProgress + '%');
-                        updateProgressFromServer(currentProgress);
-                        
-                        // 단계별 분석 결과 데이터 업데이트 (실시간)
-                        if (dj.data && dj.data.result) {
-                            const resultData = dj.data.result;
-                            console.log('실시간 분석 결과 데이터:', resultData);
-                            
-                            // 각 단계별로 데이터 업데이트
-                            if (resultData.chain1_out) {
-                                console.log('step1 데이터 발견:', resultData.chain1_out);
-                                updateProgressStepData('step1', resultData.chain1_out);
-                            }
-                            if (resultData.chain2_out) {
-                                console.log('step2 데이터 발견:', resultData.chain2_out);
-                                updateProgressStepData('step2', resultData.chain2_out);
-                            }
-                            if (resultData.chain3_out) {
-                                console.log('step3 데이터 발견:', resultData.chain3_out);
-                                updateProgressStepData('step3', resultData.chain3_out);
-                            }
-                            if (resultData.chain4_out) {
-                                console.log('step4 데이터 발견:', resultData.chain4_out);
-                                updateProgressStepData('step4', resultData.chain4_out);
-                            }
-                            if (currentProgress >= 100) {
-                                console.log('step5 완료 처리');
-                                updateProgressStepData('step5', '완료');
-                            }
-                        } else {
-                            console.log('분석 결과 데이터가 없습니다. dj.data:', dj.data);
-                        }
-                    }
-                    
-                    // 분석 완료 감지 (dj.ok 조건 제거)
-                    if (dj.data.status === 'done') {
-                        console.log('분석 완료 감지됨!');
-                        clearInterval(pollTimer);
-                        stopProgress();
-                        showNotice('분석이 완료되었습니다!');
-                        
-                        // 결과 데이터 표시 (dj.data.result 확인)
-                        if (dj.data && dj.data.result) {
-                            // 서버 데이터가 있는 경우 확인 다이얼로그 표시
-                            console.log('서버 결과 데이터 발견:', dj.data.result);
-                            showConfirmationDialog();
-                            // 서버 데이터를 전역 변수에 저장
-                            window.serverResultData = dj.data.result;
-                        } else {
-                            // 시뮬레이션 결과 표시
-                            console.log('서버 결과 데이터 없음, 시뮬레이션 결과 사용');
-                            showConfirmationDialog();
-                            window.serverResultData = null;
-                        }
-                    } else if (dj.status === 'error') {
-                        clearInterval(pollTimer);
-                        stopProgress();
-                        
-                        // 오류 메시지 표시
-                        const errorMsg = dj.error_details || dj.error_msg || '알 수 없는 오류가 발생했습니다';
-                        showNotice('분석 실패: ' + errorMsg);
-                        
-                        // 실패 다이얼로그 표시
-                        showFailureDialog(errorMsg);
-                        
-                    } else if (tries > 120) {
-                        clearInterval(pollTimer);
-                        stopProgress();
-                        showNotice('분석 대기 시간이 초과되었습니다.');
-                        showFailureDialog('분석 대기 시간이 초과되었습니다.');
-                    } else {
-                        // 상태가 변경되지 않았지만 진행률은 계속 확인
-                        console.log('폴링 상태 유지:', dj);
-                    }
-                } catch (e) {
-                    clearInterval(pollTimer);
-                    stopProgress();
-                    showFailureDialog('네트워크 오류가 발생했습니다.');
-                }
-            }, 3000); // 1.5초 -> 3초로 변경
-        }
+        // HTTP 폴링 폴백 제거됨
     </script>
 </body>
 </html>

@@ -1,71 +1,1864 @@
-{% extends "base.html" %}
-
-{% block title %}AI 분석 진행중 - AI TETRIS{% endblock %}
-
-{% block device_type %}Mobile{% endblock %}
-
-{% block content %}
-<div class="progress-container">
-    <!-- 진행상황 헤더 -->
-    <section class="progress-header">
-        <div class="header-content">
-            <h2>AI 분석 진행중</h2>
-            <p class="progress-subtitle">현대자동차 AI TETRIS 서비스가 최적의 시트 배치를 분석하고 있습니다.</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 분석 진행 중 - AI TETRIS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hyundai Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        .main-content {
+            /* background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); */
+            margin-top: 100px;
+            padding: 32px 20px;
+            text-align: center;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .status-message {
+            margin-bottom: 40px;
+        }
+        
+        .status-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a365d;
+            letter-spacing: -0.5px;
+        }
+        
+        .status-subtitle {
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        
+        .progress-info {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+            padding: 20px 24px;
+            border-radius: 10px;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-percentage {
+            font-size: 40px;
+            font-weight: 800;
+            color: #1a365d;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(26, 54, 93, 0.15);
+            letter-spacing: -1px;
+        }
+        
+        .progress-text {
+            font-size: 18px;
+            color: #4a5568;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .illustration {
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .ai-brain {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #4a5568 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: pulse 2s infinite;
+            box-shadow: 0 12px 40px rgba(26, 54, 93, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .ai-brain::before {
+            content: "🚗";
+            font-size: 48px;
+        }
+        
+        .ai-brain::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid #002c5f;
+            animation: ripple 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        
+        .progress-steps {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 44, 95, 0.15);
+            border: 1px solid rgba(0, 44, 95, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, #e9ecef 0%, #dee2e6 100%);
+            z-index: 1;
+        }
+        
+        .step.completed:not(:last-child)::after {
+            background: linear-gradient(90deg, #00a651 0%, #00c853 100%);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-icon.pending {
+            background: #f7fafc;
+            color: #a0aec0;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .step-icon.active {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.25);
+            transform: scale(1.05);
+        }
+        
+        .step-icon.completed {
+            background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.25);
+            transform: scale(1.02);
+        }
+        
+        .step-content {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .step-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            letter-spacing: -0.2px;
+        }
+        
+        .step-description {
+            font-size: 10px;
+            color: #718096;
+            line-height: 1.3;
+            font-weight: 500;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-check-button {
+            width: 100%;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(26, 54, 93, 0.25);
+            letter-spacing: -0.3px;
+            display: none;
+        }
+        
+        .result-check-button.show {
+            display: block;
+        }
+        
+        .result-check-button:hover {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 54, 93, 0.35);
+        }
+        
+        .result-check-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(26, 54, 93, 0.3);
+        }
+        
+        /* 향상된 애니메이션 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .main-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .progress-info {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .progress-steps {
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        /* 단계별 결과 표시 영역 */
+        .step-results {
+            margin-top: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-result-item {
+            margin-bottom: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .step-result-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .step-result-item.completed {
+            border-left-color: #38a169;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+        }
+        
+        .step-result-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-result-title::before {
+            content: "✓";
+            margin-right: 8px;
+            color: #38a169;
+            font-weight: 800;
+        }
+        
+        .step-result-content {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.5;
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .step-result-content pre {
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            background: transparent;
+            padding: 0;
+            border: none;
+        }
+        
+        /* 표 스타일 */
+        .step-result-content table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-result-content table thead {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .step-result-content table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .step-result-content table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #4a5568;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .step-result-content table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .step-result-content table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 표 내부 pre 태그 스타일 */
+        .step-result-content table pre {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 4px 0;
+            border: 1px solid #e9ecef;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        /* 분석 결과 요약 영역 스타일 */
+        .analysis-summary {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-title {
+            color: #2d3748;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            text-align: center;
+        }
+        
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .summary-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #00a651;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-item-title {
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+        
+        .summary-item-content {
+            color: #4a5568;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .summary-item-content strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        /* 단계별 완료 텍스트 표시 */
+        .step-completion-text {
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+            border-radius: 8px;
+            border-left: 4px solid #38a169;
+            font-size: 14px;
+            color: #2d3748;
+            line-height: 1.5;
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        .step-completion-text h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #38a169;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-completion-text h4::before {
+            content: "✅";
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .step-completion-text p {
+            margin: 8px 0;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .step-completion-text .highlight {
+            background: #e6fffa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="history.back()">✕</button>
+        <h1 class="title">현대자동차 AI TETRIS 서비스</h1>
+        <button class="refresh-btn" onclick="location.reload()">↻</button>
+    </div>
+    
+    <div class="main-content">
+        <div class="status-message">
+            <h2 class="status-title">차량 시트 배치 분석</h2>
+            <!-- <p class="status-subtitle">차량 시트 배치 분석</p> -->
         </div>
-    </section>
 
-    <!-- 전체 진행률 -->
-    <section class="overall-progress-section">
+        <div class="illustration">
+            <div class="ai-brain"></div>
+        </div>
+
         <div class="progress-info">
-            <h3>전체 진행률</h3>
-            <div class="progress-stats">
-                <span class="progress-percentage" id="overallProgress">0%</span>
-                <span class="progress-time" id="progressTime">00:00</span>
+            <div class="progress-percentage" id="progressPercentage">0%</div>
+            <div class="progress-text" id="progressText">분석을 시작하고 있습니다...</div>
+            </div>
+        
+        <!-- 분석 결과 요약 영역 -->
+        <div class="analysis-summary" id="analysisSummary" style="display: none;">
+            <h3 class="summary-title">분석 결과 요약</h3>
+            <div class="summary-content" id="summaryContent">
+                <!-- 동적으로 생성될 요약 내용 -->
             </div>
         </div>
-        <div class="progress-bar-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="overallProgressBar"></div>
+        
+        <div class="progress-steps">
+            <div class="step" id="step1">
+                <div class="step-icon pending">1</div>
+                <div class="step-content">
+                    <div class="step-title">이미지 분석</div>
+                    <div class="step-description">사진을 분석하고 있습니다</div>
+        </div>
+            </div>
+            
+            <div class="step" id="step2">
+                <div class="step-icon pending">2</div>
+                <div class="step-content">
+                    <div class="step-title">짐 인식 및 분류</div>
+                    <div class="step-description">짐을 인식하고 분류하고 있습니다</div>
             </div>
         </div>
-        <div class="progress-description">
-            <p id="progressDescription">분석을 시작하고 있습니다...</p>
+            
+            <div class="step" id="step3">
+                <div class="step-icon pending">3</div>
+                <div class="step-content">
+                    <div class="step-title">차량 공간 계산</div>
+                    <div class="step-description">차량 공간을 계산하고 있습니다</div>
+                </div>
         </div>
-    </section>
-
-    <!-- 단계별 진행상황 -->
-    <section class="steps-section">
-        <h3>분석 단계</h3>
-        <div class="steps-list" id="stepsList">
-            <!-- 동적으로 생성될 단계들 -->
+            
+            <div class="step" id="step4">
+                <div class="step-icon pending">4</div>
+                <div class="step-content">
+                    <div class="step-title">최적 배치 생성</div>
+                    <div class="step-description">최적의 배치를 생성하고 있습니다</div>
+                </div>
         </div>
-    </section>
-
-    <!-- 제어 버튼 -->
-    <section class="control-section">
-        <div class="control-buttons">
-            <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
-            <button type="button" class="btn btn-primary" id="restartBtn" disabled>재시작</button>
-        </div>
-    </section>
-
-    <!-- 예상 완료 시간 -->
-    <section class="completion-info">
-        <div class="completion-card">
-            <div class="completion-icon">⏱️</div>
-            <div class="completion-content">
-                <h4>예상 완료 시간</h4>
-                <p id="estimatedTime">약 2분 후 완료 예정</p>
+            
+            <div class="step" id="step5">
+                <div class="step-icon pending">5</div>
+                <div class="step-content">
+                    <div class="step-title">결과 검증 및 완료</div>
+                    <div class="step-description">결과를 검증하고 있습니다</div>
+                </div>
             </div>
         </div>
-    </section>
+        
+        <!-- 단계별 분석 결과 표시 영역 -->
+        <div class="step-results" id="stepResults">
+            <div class="step-result-item" id="step1Result" style="display: none;">
+                <div class="step-result-title">1단계: 이미지 분석 결과</div>
+                <div class="step-result-content" id="step1ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step2Result" style="display: none;">
+                <div class="step-result-title">2단계: 짐 인식 및 분류 결과</div>
+                <div class="step-result-content" id="step2ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step3Result" style="display: none;">
+                <div class="step-result-title">3단계: 차량 공간 계산 결과</div>
+                <div class="step-result-content" id="step3ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step4Result" style="display: none;">
+                <div class="step-result-title">4단계: 최적 배치 생성 결과</div>
+                <div class="step-result-content" id="step4ResultContent">분석 중...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <button class="result-check-button" id="resultCheckButton" onclick="showResult()">
+            📊 분석 결과 확인
+        </button>
 </div>
-{% endblock %}
+    
+    <script>
+        let currentStep = 0;
+        let progressValue = 0;
+        let doneWaitCount = 0;
+        let currentScenario = null;
+        let eventSource = null;
+        let shownSteps = { 1: false, 2: false, 3: false, 4: false };
+        
+        // URL에서 시나리오 정보 가져오기
+        function getScenarioFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('scenario') || 'default';
+        }
+        
+        // 뒤로가기
+        function goBack() {
+            window.history.back();
+        }
+        
+        // HTTP 폴링 제거됨: 상태 새로고침은 SSE로만 처리
+        
+        // 현재 단계에 맞는 문구 반환
+        function getCurrentStepMessage(step) {
+            const messages = {
+                1: "이미지 분석 중입니다...",
+                2: "짐 인식 및 분류 중입니다...",
+                3: "차량 공간 계산 중입니다...",
+                4: "최적 배치 생성 중입니다...",
+                5: "결과 검증 및 완료 중입니다..."
+            };
+            return messages[step] || "분석을 시작하고 있습니다...";
+        }
+        
+        // 진행률 업데이트 - 서버 값만 사용
+        function updateProgress(percentage, serverStep = null) {
+            // 진행률은 후퇴하지 않도록 보장
+            if (typeof percentage === 'number') {
+                progressValue = Math.max(progressValue || 0, percentage);
+                document.getElementById('progressPercentage').textContent = progressValue + '%';
+            }
+            
+            // 서버 단계가 없으면 종료
+            if (serverStep === null || serverStep === undefined) {
+                console.log('⚠️ 서버에서 단계 정보를 받지 못함, 현재 단계 유지');
+                return;
+            }
+            console.log('✅ 서버에서 받은 단계:', serverStep);
+            
+            // 단계는 후퇴하지 않도록 보장 (단, 1단계로의 초기화는 허용)
+            if (serverStep < currentStep && serverStep !== 1) {
+                console.log('⏭️ 단계 후퇴 감지, 무시합니다. (현재:', currentStep, '수신:', serverStep, ')');
+                return;
+            }
+            
+            if (serverStep !== currentStep) {
+                currentStep = serverStep;
+                updateStepDisplay();
+                document.getElementById('progressText').textContent = getCurrentStepMessage(currentStep);
+                console.log('단계 변경:', currentStep + '단계로 업데이트');
+            }
+        }
+        
+        // 단계 표시 업데이트
+        function updateStepDisplay() {
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`step${i}`);
+                const icon = step.querySelector('.step-icon');
+                const title = step.querySelector('.step-title');
+                const description = step.querySelector('.step-description');
+                
+                if (i < currentStep) {
+                    // 완료된 단계
+                    icon.className = 'step-icon completed';
+                    icon.textContent = '✓';
+                    title.style.color = '#28a745';
+                    description.textContent = '완료되었습니다';
+                } else if (i === currentStep) {
+                    // 현재 진행 중인 단계
+                    if (currentStep === 5) {
+                        // 5단계는 완료 상태로 표시
+                        icon.className = 'step-icon completed';
+                        icon.textContent = '✓';
+                        title.style.color = '#28a745';
+                        description.textContent = '분석이 완료되었습니다!';
+                    } else {
+                        icon.className = 'step-icon active';
+                        icon.textContent = i;
+                        title.style.color = '#007bff';
+                        description.textContent = '진행 중입니다...';
+                    }
+                } else {
+                    // 대기 중인 단계
+                    icon.className = 'step-icon pending';
+                    icon.textContent = i;
+                    title.style.color = '#999';
+                    description.textContent = '대기 중입니다';
+                }
+            }
+        }
+        
+        // SSE 상태 수신 핸들러
+        function handleStatusData(statusData) {
+            try {
+                if (statusData) {
+                    console.log('SSE 상태 데이터:', statusData);
+                    
+                    // 전체 statusData 로그 출력
+                    console.log('📊 전체 statusData:', statusData);
+                    console.log('🔍 statusData.current_step:', statusData.current_step);
+                    console.log('🔍 statusData.processing:', statusData.processing);
+                    console.log('🔍 statusData.progress:', statusData.progress);
+                    console.log('🔍 statusData.status:', statusData.status);
+                    
+                    // 서버에서 받은 단계 정보 확인
+                    const serverStep = statusData.current_step || statusData.processing?.current_step;
+                    console.log('✅ 서버 단계 정보:', serverStep);
+                    
+                    // current_step이 undefined인지 확인
+                    if (statusData.current_step === undefined) {
+                        console.warn('⚠️ current_step이 undefined입니다!');
+                    } else {
+                        console.log('✅ current_step 값:', statusData.current_step, '타입:', typeof statusData.current_step);
+                    }
+                    
+                    // 진행률 업데이트 (서버 값만 사용)
+                    const progress = statusData.progress || statusData.processing?.progress;
+                    if (progress !== undefined && serverStep !== null && serverStep !== undefined) {
+                        console.log('📊 서버 진행률 업데이트:', progress + '%', '단계:', serverStep);
+                        updateProgress(progress, serverStep);
+                    } else {
+                        console.log('⚠️ 서버에서 진행률 또는 단계 정보가 불완전함:', {
+                            progress: progress,
+                            serverStep: serverStep
+                        });
+                    }
+                    
+                    // 서버 메시지가 있으면 표시 (진행률과 독립적으로)
+                    const serverMessage = statusData.message;
+                    if (serverMessage) {
+                        document.getElementById('progressText').textContent = serverMessage;
+                        console.log('📝 서버 메시지 업데이트:', serverMessage);
+                    }
+                    
+                    // 현재 단계 확인
+                    const currentStep = statusData.current_step || 0;
+                    console.log(`현재 단계: ${currentStep}`);
+                    console.log(`현재 단계 타입: ${typeof currentStep}`);
+                    console.log(`currentStep >= 1: ${currentStep >= 1}`);
+                    console.log(`currentStep >= 2: ${currentStep >= 2}`);
+                    console.log(`currentStep >= 3: ${currentStep >= 3}`);
+                    console.log(`currentStep >= 4: ${currentStep >= 4}`);
+                    
+                    // 새로운 분석 시작 감지 (current_step이 1이고 이전에 더 높은 단계였던 경우)
+                    if (currentStep === 1) {
+                        console.log('🔄 새로운 분석 시작 감지 - 이전 결과 클리어');
+                        clearAllStepResults();
+                    }
+                    
+                    // 이번 이벤트 payload에 포함된 '새로 완료된 스텝'만 표시
+                    const ar = statusData.analysis_result || {};
+                    if (ar.chain1_out && !shownSteps[1]) {
+                        displayStepResult(1, ar.chain1_out);
+                        updateAnalysisSummary(1, statusData);
+                        shownSteps[1] = true;
+                    }
+                    if (ar.chain2_out && !shownSteps[2]) {
+                        displayStepResult(2, ar.chain2_out);
+                        updateAnalysisSummary(2, statusData);
+                        shownSteps[2] = true;
+                    }
+                    if (ar.chain3_out && !shownSteps[3]) {
+                        displayStepResult(3, ar.chain3_out);
+                        updateAnalysisSummary(3, statusData);
+                        shownSteps[3] = true;
+                    }
+                    if (ar.chain4_out && !shownSteps[4]) {
+                        displayStepResult(4, ar.chain4_out);
+                        updateAnalysisSummary(4, statusData);
+                        shownSteps[4] = true;
+                    }
+                    
+                    // 5단계 완료 시 - 실제 4단계 결과가 도착한 경우에만 완료 처리
+                    const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
+                    if (currentStep >= 5 && hasStep4Output) {
+                        console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
+                        updateProgress(100, 5);
+                        document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                        showResultButton();
+                    } else if (currentStep >= 5 && !hasStep4Output) {
+                        doneWaitCount = (doneWaitCount || 0) + 1;
+                        console.log(`⏳ 5단계 신호 수신, 그러나 step4 출력 미도착 → 완료 처리 보류 (시도 ${doneWaitCount})`);
+                        // 안전장치: 일정 횟수(예: 5회) 이상 대기 시 완료로 간주
+                        if (doneWaitCount >= 5) {
+                            console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
+                            document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                            updateProgress(100, 5);
+                            showResultButton();
+                        }
+                    }
+                    
+                    // 상태에 따른 처리
+                    const status = statusData.status || statusData.system?.status;
+                    if (status === 'done') {
+                        const hasFinal = !!(statusData.chain4_out || statusData.analysis_result?.chain4_out || statusData.processed_results?.chain4_out);
+                        if (hasFinal) {
+                            console.log('분석 완료! (최종 출력 확인)');
+                            document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                            showResultButton();
+                        } else {
+                            doneWaitCount = (doneWaitCount || 0) + 1;
+                            console.log(`분석 완료 신호 수신, 그러나 최종 출력 미도착 → 폴링 유지 (시도 ${doneWaitCount})`);
+                        }
+                    } else if (status === 'error') {
+                        console.log('분석 오류 발생');
+                        document.getElementById('progressText').textContent = '분석 중 오류가 발생했습니다.';
+                    }
+                }
+            } catch (error) {
+                console.error('상태 처리 오류:', error);
+            }
+        }
+        
+        // 결과 확인 버튼 표시
+        function showResultButton() {
+            const button = document.getElementById('resultCheckButton');
+            button.classList.add('show');
+        }
+        
+        // 결과 화면으로 이동
+        function showResult() {
+            window.location.href = '/mobile/result';
+        }
+        
+        // 단계별 분석 결과 업데이트
+        function updateStepResults(resultData) {
+            console.log('updateStepResults 호출됨:', resultData);
+            
+            // 1단계: 이미지 분석 결과
+            if (resultData.chain1_out) {
+                console.log('1단계 결과 발견:', resultData.chain1_out);
+                displayStepResult(1, resultData.chain1_out);
+            }
+            
+            // 2단계: 짐 인식 및 분류 결과
+            if (resultData.chain2_out) {
+                console.log('2단계 결과 발견:', resultData.chain2_out);
+                displayStepResult(2, resultData.chain2_out);
+            }
+            
+            // 3단계: 차량 공간 계산 결과
+            if (resultData.chain3_out) {
+                console.log('3단계 결과 발견:', resultData.chain3_out);
+                displayStepResult(3, resultData.chain3_out);
+            }
+            
+            // 4단계: 최적 배치 생성 결과
+            if (resultData.chain4_out) {
+                console.log('4단계 결과 발견:', resultData.chain4_out);
+                displayStepResult(4, resultData.chain4_out);
+            }
+        }
+        
+        // 가공된 단계별 분석 결과 업데이트
+        function updateProcessedStepResults(processedResults) {
+            console.log('updateProcessedStepResults 호출됨:', processedResults);
+            
+            // 1단계: 이미지 분석 결과
+            if (processedResults.chain1_out) {
+                console.log('가공된 1단계 결과 발견:', processedResults.chain1_out);
+                displayProcessedStepResult(1, processedResults.chain1_out);
+            }
+            
+            // 2단계: 짐 인식 및 분류 결과
+            if (processedResults.chain2_out) {
+                console.log('가공된 2단계 결과 발견:', processedResults.chain2_out);
+                displayProcessedStepResult(2, processedResults.chain2_out);
+            }
+            
+            // 3단계: 차량 공간 계산 결과
+            if (processedResults.chain3_out) {
+                console.log('가공된 3단계 결과 발견:', processedResults.chain3_out);
+                displayProcessedStepResult(3, processedResults.chain3_out);
+            }
+            
+            // 4단계: 최적 배치 생성 결과
+            if (processedResults.chain4_out) {
+                console.log('가공된 4단계 결과 발견:', processedResults.chain4_out);
+                displayProcessedStepResult(4, processedResults.chain4_out);
+            }
+        }
+        
+        // 모든 단계 결과 클리어
+        function clearAllStepResults() {
+            console.log('🧹 모든 단계 결과 클리어 시작');
+            
+            for (let i = 1; i <= 4; i++) {
+                const resultElement = document.getElementById(`step${i}Result`);
+                const contentElement = document.getElementById(`step${i}ResultContent`);
+                
+                if (resultElement && contentElement) {
+                    contentElement.innerHTML = '';
+                    resultElement.style.display = 'none';
+                    console.log(`🧹 ${i}단계 결과 클리어 완료`);
+                }
+            }
+            
+            // 요약 영역도 클리어
+            const summaryElement = document.getElementById('analysisSummary');
+            const summaryContent = document.getElementById('summaryContent');
+            if (summaryElement && summaryContent) {
+                summaryContent.innerHTML = '';
+                summaryElement.style.display = 'none';
+                console.log('🧹 분석 요약 클리어 완료');
+            }
+            
+            console.log('🧹 모든 단계 결과 클리어 완료');
+        }
+        
+        // 안전 유틸리티 (삭제되었을 수 있어 재정의)
+        function safeSliceText(value, max = 100) {
+            try {
+                if (typeof value !== 'string') {
+                    value = JSON.stringify(value);
+                }
+            } catch (_) {
+                value = String(value);
+            }
+            if (!value) return '';
+            return value.length > max ? value.slice(0, max) + '...' : value;
+        }
+        
+        function safeJsonParse(data) {
+            if (data && typeof data === 'object') {
+                return data;
+            }
+            if (typeof data !== 'string') {
+                return null;
+            }
+            let s = data.trim();
+            // 코드펜스 제거
+            if (s.startsWith('```')) {
+                s = s.replace(/^```json\s*/i, '')
+                     .replace(/^```/i, '')
+                     .replace(/```$/i, '')
+                     .trim();
+            }
+            s = s.replace(/```json\s*|```/gi, '').trim();
+            // JSON 형식이 아니면 스킵
+            if (!(s.startsWith('{') || s.startsWith('['))) {
+                return null;
+            }
+            try {
+                return JSON.parse(s);
+            } catch (_) {
+                return null;
+            }
+        }
+        
+        // 분석 결과 요약 업데이트
+        function updateAnalysisSummary(step, data) {
+            console.log(`📊 ${step}단계 요약 업데이트:`, data);
+            
+            const summaryElement = document.getElementById('analysisSummary');
+            const summaryContent = document.getElementById('summaryContent');
+            
+            if (!summaryElement || !summaryContent) {
+                console.error('요약 영역을 찾을 수 없습니다');
+                return;
+            }
+            
+            // 요약 영역 표시
+            summaryElement.style.display = 'block';
+            
+            // 단계별 요약 생성
+            let summaryHtml = '';
+            
+            // 1단계: 이미지 분석
+            if (step >= 1 && data.chain1_out) {
+                const chain1Data = typeof data.chain1_out === 'string' ? safeJsonParse(data.chain1_out) : data.chain1_out;
+                const peopleCount = chain1Data.people || chain1Data.people_count || 0;
+                const totalLuggage = chain1Data.total_luggage || chain1Data.total_luggage_count || 0;
+                
+                summaryHtml += `
+                    <div class="summary-item">
+                        <div class="summary-item-content">
+                            <strong>이미지 분석 결과</strong> 탑승자 수: ${peopleCount}명, 총 짐 개수: ${totalLuggage}개
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 2단계: 짐 인식 및 분류
+            if (step >= 2 && data.chain2_out) {
+                const chain2Data = typeof data.chain2_out === 'string' ? safeJsonParse(data.chain2_out) : data.chain2_out;
+                const instruction = chain2Data.instruction || '분류 정보 없음';
+                
+                summaryHtml += `
+                    <div class="summary-item">
+                        <div class="summary-item-content">
+                            <strong>짐 인식 및 분류 결과</strong> 분류 정보: ${instruction.length} -->
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 3단계: 차량 공간 계산
+            if (step >= 3 && data.chain3_out) {
+                const chain3Data = typeof data.chain3_out === 'string' ? safeJsonParse(data.chain3_out) : data.chain3_out;
+                const taskSequence = chain3Data.task_sequence || '작업 순서 없음';
+                
+                summaryHtml += `
+                    <div class="summary-item">
+                        <div class="summary-item-content">
+                            <strong>차량 공간 계산 결과</strong> 작업 순서: ${taskSequence.length}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 4단계: 최적 배치 생성
+            if (step >= 4 && data.chain4_out) {
+                const chain4Data = data.chain4_out;
+                const codeLength = chain4Data.length || 0;
+                
+                summaryHtml += `
+                    <div class="summary-item">
+                        <div class="summary-item-content">
+                            <strong>최적 배치 생성 결과</strong> 코드 길이: ${codeLength}자
+                        </div>
+                    </div>
+                `;
+            }
+            
+            summaryContent.innerHTML = summaryHtml;
+            console.log(`📊 ${step}단계 요약 업데이트 완료`);
+        }
+        
+        // 특정 단계의 결과를 화면에 표시
+        function displayStepResult(stepNumber, resultData) {
+            console.log(`🎯 displayStepResult 호출됨: 단계 ${stepNumber}, 데이터:`, resultData);
+            
+            const resultElement = document.getElementById(`step${stepNumber}Result`);
+            const contentElement = document.getElementById(`step${stepNumber}ResultContent`);
+            
+            console.log(`🎯 요소 확인: resultElement=${!!resultElement}, contentElement=${!!contentElement}`);
+            
+            if (!resultElement || !contentElement) {
+                console.error(`단계 ${stepNumber} 결과 요소를 찾을 수 없습니다.`);
+                return;
+            }
+            
+            // 이전 데이터 클리어
+            contentElement.innerHTML = '';
+            resultElement.style.display = 'none';
+            
+            // 결과 데이터 포맷팅
+            const formattedResult = formatStepResult(stepNumber, resultData);
+            console.log(`🎯 포맷된 결과:`, formattedResult);
+            
+            // 내용 업데이트
+            contentElement.innerHTML = formattedResult;
+            
+            // 결과 영역 표시
+            resultElement.style.display = 'block';
+            
+            // 애니메이션으로 표시
+            setTimeout(() => {
+                resultElement.classList.add('show', 'completed');
+                initResultToggle(stepNumber);
+            }, 100);
+            
+            console.log(`단계 ${stepNumber} 결과 표시 완료`);
+        }
+        
+        // 가공된 특정 단계의 결과를 화면에 표시
+        function displayProcessedStepResult(stepNumber, processedData) {
+            const resultElement = document.getElementById(`step${stepNumber}Result`);
+            const contentElement = document.getElementById(`step${stepNumber}ResultContent`);
+            
+            if (!resultElement || !contentElement) {
+                console.error(`단계 ${stepNumber} 결과 요소를 찾을 수 없습니다.`);
+                return;
+            }
+            
+            // 이전 데이터 클리어
+            contentElement.innerHTML = '';
+            resultElement.style.display = 'none';
+            
+            // 가공된 결과 데이터 포맷팅
+            const formattedResult = formatProcessedStepResult(stepNumber, processedData);
+            
+            // 내용 업데이트
+            contentElement.innerHTML = formattedResult;
+            
+            // 결과 영역 표시
+            resultElement.style.display = 'block';
+            
+            // 애니메이션으로 표시
+            setTimeout(() => {
+                resultElement.classList.add('show', 'completed');
+                initResultToggle(stepNumber);
+            }, 100);
+            
+            // 단계별 완료 텍스트 표시
+            showStepCompletionText(stepNumber, processedData);
+            
+            console.log(`가공된 단계 ${stepNumber} 결과 표시 완료`);
+        }
+        
+        // 단계별 완료 텍스트 표시
+        function showStepCompletionText(stepNumber, processedData) {
+            const stepResultsContainer = document.getElementById('stepResults');
+            if (!stepResultsContainer) return;
+            
+            // 기존 완료 텍스트 제거 (중복 방지)
+            const existingText = document.getElementById(`step${stepNumber}CompletionText`);
+            if (existingText) {
+                existingText.remove();
+            }
+            
+            // 완료 텍스트 생성
+            const completionText = createStepCompletionText(stepNumber, processedData);
+            
+            // 완료 텍스트를 해당 단계 결과 아래에 삽입
+            const resultElement = document.getElementById(`step${stepNumber}Result`);
+            if (resultElement) {
+                resultElement.insertAdjacentHTML('afterend', completionText);
+            } else {
+                // 결과 요소가 없으면 컨테이너에 직접 추가
+                stepResultsContainer.insertAdjacentHTML('beforeend', completionText);
+            }
+            
+            console.log(`단계 ${stepNumber} 완료 텍스트 표시 완료`);
+        }
+        
+        // 결과 블록 접기/펼치기 토글 초기화
+        function initResultToggle(stepNumber) {
+            const item = document.getElementById(`step${stepNumber}Result`);
+            if (!item) return;
+            const title = item.querySelector('.step-result-title');
+            const content = item.querySelector('.step-result-content');
+            if (!title || !content) return;
 
-{% block additional_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/progress.css') }}">
-{% endblock %}
+            // 초기 높이 설정
+            if (!item.classList.contains('expanded')) {
+                content.style.maxHeight = '0px';
+            }
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/mobile/progress.js') }}"></script>
-{% endblock %}
+            // 중복 바인딩 방지
+            title.removeEventListener('click', title._toggleHandler);
+            title._toggleHandler = () => {
+                const isExpanded = item.classList.contains('expanded');
+                if (isExpanded) {
+                    item.classList.remove('expanded');
+                    content.style.maxHeight = '0px';
+                } else {
+                    item.classList.add('expanded');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            };
+            title.addEventListener('click', title._toggleHandler);
+        }
+
+        // 단계별 완료 텍스트 생성
+        function createStepCompletionText(stepNumber, processedData) {
+            let title = '';
+            let content = '';
+            
+            switch(stepNumber) {
+                case 1: // 이미지 분석
+                    title = '1단계: 이미지 분석 완료';
+                    content = `
+                        <p><span class="highlight">${processedData.people_count || 0}명</span></p>
+                        <p><strong>🧳 총 짐 개수:</strong> <span class="highlight">${processedData.total_luggage || 0}개</span></p>
+                        <p>이미지에서 <span class="highlight">${processedData.people_count || 0}명의 인원</span>과 <span class="highlight">${processedData.total_luggage || 0}개의 짐</span>을 성공적으로 인식했습니다.</p>
+                    `;
+                    break;
+                    
+                case 2: // 짐 인식 및 분류
+                    title = '2단계: 짐 인식 및 분류 완료';
+                    content = `
+                        <p><strong>🪑 좌석 배치 지시사항 생성 완료</strong></p>
+                        <p>각 짐의 특성에 맞는 <span class="highlight">좌석 배치 지시사항</span>을 성공적으로 생성했습니다.</p>
+                    `;
+                    break;
+                    
+                case 3: // 차량 공간 계산
+                    title = '3단계: 차량 공간 계산 완료';
+                    content = `
+                        <p><strong>🚗 차량 환경 분석 완료</strong></p>
+                        <p>차량의 <span class="highlight">공간 구조</span>와 <span class="highlight">작업 순서</span>를 성공적으로 계산했습니다.</p>
+                    `;
+                    break;
+                    
+                case 4: // 최적 배치 생성
+                    title = '4단계: 최적 배치 생성 완료';
+                    content = `
+                        <p><strong>🎯 최적 배치 코드 생성 완료</strong></p>
+                        <p><span class="highlight">${processedData.code_length || 0}자리 배치 코드</span>를 성공적으로 생성했습니다.</p>
+                        <p>코드: <span class="highlight">${processedData.placement_code || ''}</span></p>
+                    `;
+                    break;
+                    
+                default:
+                    title = `${stepNumber}단계: 분석 완료`;
+                    content = `<p>분석이 성공적으로 완료되었습니다.</p>`;
+            }
+            
+            return `
+                <div class="step-completion-text" id="step${stepNumber}CompletionText">
+                    <h4>${title}</h4>
+                    ${content}
+                </div>
+            `;
+        }
+        
+        // 단계별 결과 데이터 포맷팅
+        function formatStepResult(stepNumber, resultData) {
+            console.log(`🔧 formatStepResult 호출됨: 단계 ${stepNumber}, 데이터 타입: ${typeof resultData}`);
+            try {
+                let formattedResult = '';
+                
+                switch(stepNumber) {
+                    case 1: // 이미지 분석
+                        console.log(`🔧 1단계 데이터 파싱 시도:`, resultData);
+                        const chain1Data = (function(){
+                            const parsed = safeJsonParse(resultData);
+                            return parsed && typeof parsed === 'object' ? parsed : {};
+                        })();
+                        console.log(`🔧 1단계 파싱 완료:`, chain1Data);
+                        formattedResult = `
+                            <strong>👥 인원 수:</strong> ${chain1Data.people || 0}명
+                            <br><strong>🧳 총 짐 개수:</strong> ${chain1Data.total_luggage_count || 0}개
+                            <br><strong>📋 짐 상세 정보:</strong>
+                            <br><pre>${JSON.stringify(chain1Data.luggage_details || {}, null, 2)}</pre>
+                        `;
+                        break;
+                        
+                    case 2: // 짐 인식 및 분류
+                        const chain2Data = (function(){
+                            const parsed = safeJsonParse(resultData);
+                            return parsed && typeof parsed === 'object' ? parsed : {};
+                        })();
+                        formattedResult = `
+                            <strong>🪑 좌석 배치 지시사항:</strong>
+                            <br><pre>${JSON.stringify(chain2Data.instruction || {}, null, 2)}</pre>
+                        `;
+                        break;
+                        
+                    case 3: // 차량 공간 계산
+                        const cleanData = (typeof resultData === 'string') ? resultData.replace(/```json\s*|```/g, '') : resultData;
+                        const chain3Data = (function(){
+                            const parsed = safeJsonParse(cleanData);
+                            return parsed && typeof parsed === 'object' ? parsed : {};
+                        })();
+                        formattedResult = `
+                            <strong>🚗 환경 설정 (이전):</strong>
+                            <br><pre>${JSON.stringify(chain3Data.environment_before || {}, null, 2)}</pre>
+                            <br><strong>📋 작업 순서:</strong>
+                            <br><pre>${JSON.stringify(chain3Data.task_sequence || {}, null, 2)}</pre>
+                            <br><strong>🚗 환경 설정 (이후):</strong>
+                            <br><pre>${JSON.stringify(chain3Data.environment_after || {}, null, 2)}</pre>
+                        `;
+                        break;
+                        
+                    case 4: // 최적 배치 생성
+                        formattedResult = `
+                            <strong>🎯 최적 배치 코드:</strong>
+                            <br><pre>${resultData}</pre>
+                            <br><em>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</em>
+                        `;
+                        break;
+                        
+                    default:
+                        formattedResult = `<pre>${resultData}</pre>`;
+                }
+                
+                return formattedResult;
+                
+            } catch (error) {
+                console.error(`단계 ${stepNumber} 결과 포맷팅 오류:`, error);
+                return `<p>데이터 파싱 오류: ${error.message}</p><pre>${resultData}</pre>`;
+            }
+        }
+        
+        // 가공된 단계별 결과 데이터 포맷팅
+        function formatProcessedStepResult(stepNumber, processedData) {
+            try {
+                let formattedResult = '';
+                
+                switch(stepNumber) {
+                    case 1: // 이미지 분석
+                        try {
+                            // processedData가 문자열인 경우 JSON 파싱 시도
+                            let chain1Data = processedData;
+                            if (typeof processedData === 'string') {
+                                chain1Data = safeJsonParse(processedData) || {};
+                            }
+                            
+                            const peopleCount = chain1Data.people || chain1Data.people_count || 0;
+                            const totalLuggage = chain1Data.total_luggage_count || chain1Data.total_luggage || 0;
+                            const luggageDetails = chain1Data.luggage_details || {};
+                            
+                            // 짐 상세 정보를 표 형태로 변환
+                            let luggageTableRows = '';
+                            if (typeof luggageDetails === 'object' && luggageDetails !== null) {
+                                console.log("luggageDetails" + luggageDetails);
+                                Object.entries(luggageDetails).forEach(([key, value]) => {
+                                    luggageTableRows += `
+                                        <tr>
+                                            <td>${key}</td>
+                                            <td>${typeof value === 'object' ? JSON.stringify(value) : value}</td>
+                                        </tr>
+                                    `;
+                                });
+                            }
+                            
+                            formattedResult = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>항목</th>
+                                            <th>값</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👥 인원 수</strong></td>
+                                            <td>${peopleCount}명</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🧳 총 짐 개수</strong></td>
+                                            <td>${totalLuggage}개</td>
+                                        </tr>
+                                        ${luggageTableRows ? `
+                                        <tr>
+                                            <td colspan="2"><strong>📋 짐 상세 정보</strong></td>
+                                        </tr>
+                                        ${luggageTableRows}
+                                        ` : ''}
+                                    </tbody>
+                                </table>
+                            `;
+                        } catch (error) {
+                            console.error('1단계 결과 포맷팅 오류:', error);
+                            formattedResult = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>항목</th>
+                                            <th>값</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👥 인원 수</strong></td>
+                                            <td>0명</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🧳 총 짐 개수</strong></td>
+                                            <td>0개</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>📋 원본 데이터</strong></td>
+                                            <td><pre>${processedData}</pre></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `;
+                        }
+                        break;
+                        
+                    case 2: // 짐 인식 및 분류
+                        try {
+                            // 가공된 좌석 배치 데이터가 있는 경우
+                            if (processedData.seat_assignments && Array.isArray(processedData.seat_assignments)) {
+                                const seatAssignments = processedData.seat_assignments;
+                                const seatsCount = processedData.seats_count || seatAssignments.length;
+                                
+                                // 좌석 배치 표 생성
+                                let tableRows = '';
+                                seatAssignments.forEach(seat => {
+                                    tableRows += `
+                                        <tr>
+                                            <td>${seat.seat_id}</td>
+                                            <td>${seat.type}</td>
+                                            <td>${seat.size}</td>
+                                            <td>${seat.category}</td>
+                                        </tr>
+                                    `;
+                                });
+                                
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>좌석 번호</th>
+                                                <th>타입</th>
+                                                <th>크기</th>
+                                                <th>카테고리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                `;
+                            } else {
+                                // 가공된 데이터가 없는 경우 원본 표시
+                                let instructionData = processedData && processedData.instruction ? processedData.instruction : {};
+                                if (typeof processedData === 'string') {
+                                    const parsed = safeJsonParse(processedData) || {};
+                                    instructionData = parsed.instruction || parsed;
+                                }
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>항목</th>
+                                                <th>값</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>🪑 좌석 배치 지시사항</strong></td>
+                                                <td><pre>${JSON.stringify(instructionData, null, 2)}</pre></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('2단계 결과 포맷팅 오류:', error);
+                            formattedResult = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>항목</th>
+                                            <th>값</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>🪑 좌석 배치 지시사항</strong></td>
+                                            <td><pre>${processedData}</pre></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `;
+                        }
+                        break;
+                        
+                    case 3: // 차량 공간 계산
+                        try {
+                            // 가공된 작업 순서 데이터가 있는 경우
+                            if (processedData.task_sequence_list && Array.isArray(processedData.task_sequence_list)) {
+                                const taskSequenceList = processedData.task_sequence_list;
+                                
+                                // 작업 순서 표 생성
+                                let taskRows = '';
+                                taskSequenceList.forEach(task => {
+                                    taskRows += `
+                                        <tr>
+                                            <td>${task.step_id}</td>
+                                            <td>${task.action}</td>
+                                            <td>${task.target}</td>
+                                            <td>${task.description}</td>
+                                        </tr>
+                                    `;
+                                });
+                                
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>단계</th>
+                                                <th>작업</th>
+                                                <th>대상</th>
+                                                <th>설명</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${taskRows}
+                                        </tbody>
+                                    </table>
+                                    <br>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>환경 설정</th>
+                                                <th>값</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>🌍 환경 설정 (이전)</strong></td>
+                                                <td><pre>${JSON.stringify(processedData.environment_before || {}, null, 2)}</pre></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>🌍 환경 설정 (이후)</strong></td>
+                                                <td><pre>${JSON.stringify(processedData.environment_after || {}, null, 2)}</pre></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+                            } else {
+                                // 가공된 데이터가 없는 경우 원본 표시
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>항목</th>
+                                                <th>값</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>🌍 환경 설정 (이전)</strong></td>
+                                                <td><pre>${JSON.stringify(processedData.environment_before || {}, null, 2)}</pre></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>📋 작업 순서</strong></td>
+                                                <td><pre>${JSON.stringify(processedData.task_sequence || {}, null, 2)}</pre></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>🌍 환경 설정 (이후)</strong></td>
+                                                <td><pre>${JSON.stringify(processedData.environment_after || {}, null, 2)}</pre></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('3단계 결과 포맷팅 오류:', error);
+                            formattedResult = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>항목</th>
+                                            <th>값</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>🚗 차량 공간 계산 결과</strong></td>
+                                            <td><pre>${processedData}</pre></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `;
+                        }
+                        break;
+                        
+                    case 4: // 최적 배치 생성
+                        try {
+                            // 가공된 배치 분석 데이터가 있는 경우
+                            if (processedData.placement_analysis) {
+                                const analysis = processedData.placement_analysis;
+                                const complexityText = {
+                                    'basic': '기본',
+                                    'medium': '중간',
+                                    'high': '고급'
+                                }[analysis.complexity_level] || '기본';
+                                
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>항목</th>
+                                                <th>값</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>📏 코드 길이</strong></td>
+                                                <td>${processedData.code_length || 0}자</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>📋 지시사항 수</strong></td>
+                                                <td>${analysis.total_instructions}개</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>⚡ 복잡도</strong></td>
+                                                <td>${complexityText}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>📝 배치 코드</strong></td>
+                                                <td><pre>${processedData.placement_code || ''}</pre></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+                            } else {
+                                // 가공된 데이터가 없는 경우 원본 표시
+                                formattedResult = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>항목</th>
+                                                <th>값</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>🎯 최적 배치 코드</strong></td>
+                                                <td><pre>${processedData.placement_code || ''}</pre></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>📏 코드 길이</strong></td>
+                                                <td>${processedData.code_length || 0}자</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('4단계 결과 포맷팅 오류:', error);
+                            formattedResult = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>항목</th>
+                                            <th>값</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>🎯 최적 배치 생성 결과</strong></td>
+                                            <td><pre>${processedData}</pre></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `;
+                        }
+                        break;
+                        
+                    default:
+                        formattedResult = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>항목</th>
+                                        <th>값</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>📊 분석 결과</strong></td>
+                                        <td><pre>${JSON.stringify(processedData, null, 2)}</pre></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `;
+                }
+                
+                return formattedResult;
+                
+            } catch (error) {
+                console.error(`가공된 단계 ${stepNumber} 결과 포맷팅 오류:`, error);
+                return `<p>데이터 포맷팅 오류: ${error.message}</p><pre>${JSON.stringify(processedData, null, 2)}</pre>`;
+            }
+        }
+        
+        // 분석 시작
+        async function startAnalysis() {
+            try {
+                // 새로운 시나리오 생성 (이전 데이터 방지)
+                const newScenario = `step_analysis_${new Date().toISOString().replace(/[:.]/g, '-')}`;
+                console.log('새로운 시나리오 생성:', newScenario);
+                
+                // 세션 스토리지에서 분석 데이터 가져오기
+                const analysisDataStr = sessionStorage.getItem('analysisData');
+                let analysisData = {
+                    people_count: 4,
+                    image_data_url: 'default_image',
+                    scenario: newScenario  // 새로운 시나리오 사용
+                };
+                
+                if (analysisDataStr) {
+                    analysisData = (function(){
+                        try { return JSON.parse(analysisDataStr); } catch { return {}; }
+                    })();
+                    // 새로운 시나리오로 덮어쓰기
+                    analysisData.scenario = newScenario;
+                    console.log('세션에서 분석 데이터 가져옴 (새로운 시나리오 적용):', {
+                        scenario: analysisData.scenario,
+                        people_count: analysisData.people_count,
+                        image_data_url: analysisData.image_data_url.substring(0, 50) + '...'
+                    });
+                } else {
+                    console.warn('세션에서 분석 데이터를 찾을 수 없습니다. 기본값 사용');
+                }
+                
+                // 분석 시작 API 호출
+                console.log('분석 API 호출 시작...');
+                const response = await fetch('/desktop/api/step_analysis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        people_count: analysisData.people_count,
+                        image_data_url: analysisData.image_data_url,
+                        scenario: analysisData.scenario
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('분석 시작 응답:', result);
+                
+                if (result.success) {
+                    console.log('분석이 성공적으로 시작되었습니다.');
+                    // currentScenario 업데이트
+                    currentScenario = newScenario;
+                    console.log('현재 시나리오 업데이트:', currentScenario);
+                    // 진행률 텍스트 업데이트
+                    document.getElementById('progressText').textContent = 'AI가 분석을 시작했습니다...';
+                } else {
+                    console.error('분석 시작 실패:', result.message);
+                    // 오류 메시지 표시
+                    document.getElementById('progressText').textContent = '분석 시작에 실패했습니다: ' + result.message;
+                }
+            } catch (error) {
+                console.error('분석 시작 오류:', error);
+                document.getElementById('progressText').textContent = '분석 시작 중 오류가 발생했습니다: ' + error.message;
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            currentScenario = getScenarioFromURL();
+            console.log('시나리오:', currentScenario);
+            
+            // 초기 상태 설정
+            updateProgress(0);
+            updateStepDisplay();
+            
+            // 분석 시작
+            startAnalysis();
+            
+            // SSE 시작
+            try {
+                if (eventSource) {
+                    eventSource.close();
+                }
+                eventSource = new EventSource('/desktop/api/status_stream');
+                eventSource.onmessage = (e) => {
+                    try {
+                        const payload = JSON.parse(e.data);
+                        // 연결 이벤트는 건너뜀
+                        if (payload && payload.event === 'connected') return;
+                        handleStatusData(payload);
+                        const status = payload.status || payload.system?.status;
+                        const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out || payload.processed_results?.chain4_out);
+                        if (status === 'done' && hasFinal) {
+                            document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                            showResultButton();
+                            eventSource.close();
+                        } else if (status === 'error') {
+                            document.getElementById('progressText').textContent = '분석 중 오류가 발생했습니다.';
+                            eventSource.close();
+                        }
+                    } catch (err) {
+                        console.error('SSE 메시지 처리 오류:', err);
+                    }
+                };
+                eventSource.onerror = (e) => {
+                    console.warn('SSE 오류 또는 종료:', e);
+                    try { eventSource.close(); } catch (_) {}
+                };
+            } catch (e) {
+                console.error('SSE 연결 실패:', e);
+            }
+        });
+    </script>
+</body>
+</html>
