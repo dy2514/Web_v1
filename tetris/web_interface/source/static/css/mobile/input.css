@@ -70,14 +70,14 @@ html, body {
     margin-top: 7px;
 }
 
-.hero {
+/* .hero {
     background-image: url('/static/images/pv5.png');
     background-size: cover;
     background-position: 105% 90%;
     background-size: 40%;
     background-repeat: no-repeat;
-    min-height: 150px; /* 최소 높이 설정 */
-}
+    min-height: 150px; 최소 높이 설정
+} */
 
 /* 태블릿/데스크톱용 */
 /* @media (min-width: 768px) {
@@ -126,7 +126,7 @@ html, body {
 
 .wrap {
     padding: 8px var(--padX) 16px;
-    margin: 0 7px;
+    margin: 15px 7px;
 }
 
 .section-head {
@@ -441,7 +441,7 @@ html, body {
 .sheet-content { overflow-y: auto; padding: 8px 16px 18px; }
 .sheet-header { padding: 10px 10px 20px; }
 .sheet-title { margin: 15px 0 20px 0; font-size: 21px; font-weight: 700; color: #111827; }
-.sheet-desc { margin: 0; padding: 12px; background: #f3f4f6; border-radius: 10px; color: #4b5563; font-size: 14px; line-height: 2; word-break: keep-all; overflow-wrap: break-word; }
+.sheet-desc { margin: 0; padding: 12px; background: #f3f4f6; border-radius: 10px; color: #4b5563; font-size: 13px; line-height: 2; word-break: keep-all; overflow-wrap: break-word; }
 .sheet-desc .i { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: #e5e7eb; color: #6b7280; font-size: 11px; margin-right: 4px; }
 .sheet-desc-row { display: grid; grid-template-columns: 18px 1fr; align-items: start; column-gap: 6px; }
 .sheet-desc-text { display: block; word-break: keep-all; overflow-wrap: break-word; }
@@ -450,9 +450,11 @@ html, body {
 .photo-thumb { background: #f3f4f6; border-radius: 10px; overflow: hidden; aspect-ratio: 12/10; display: flex; align-items: center; justify-content: center; }
 .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-.sheet-actions { display: flex; justify-content: center; align-items: center; margin: 0 50px 0; gap: 12px; padding: 30px 0 10px; }
-.sheet-btn { height: 52px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; border: 2px solid var(--navy); }
-.sheet-actions .sheet-btn { width: 70%; max-width: 360px; }
+.sheet-actions { display: flex; justify-content: center; align-items: center; margin: 0 20px 0; gap: 12px; padding: 30px 0 10px; }
+.sheet-btn { height: 52px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; border: 2px solid var(--navy); flex: 1; }
+.sheet-actions .sheet-btn { max-width: 180px; }
 .sheet-btn.ghost { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
 .sheet-btn.primary { background: var(--navy); color: #fff; }
+.sheet-btn.secondary { background: #f8f9fa; color: var(--navy); border-color: var(--navy); }
+.sheet-btn.secondary:hover { background: #e9ecef; }
 

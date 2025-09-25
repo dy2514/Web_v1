@@ -15,8 +15,8 @@
     </div>
     <div class="krds-card__body">
         <!-- QR 코드 섹션 -->
-        <div class="krds-row">
-            <div class="krds-col krds-col--6">
+        <div class="krds-row" style="display: flex;">
+            <div class="krds-col krds-col--6" style="flex: 1;">
                 <div class="qr-section">
                     <div class="qr-code-container" id="qrCodeContainer">
                         <div class="qr-code-loading" id="qrCodeText">QR 코드 로딩 중...</div>
@@ -29,7 +29,7 @@
             </div>
             
             <!-- 상태 테이블 섹션 -->
-            <div class="krds-col krds-col--6">
+            <div class="krds-col krds-col--6" style="flex: 2;">
                 <div class="status-section">
                     <table class="krds-table" role="table" aria-label="모바일 접속 현황">
                         <caption class="sr-only">모바일 기기 접속 상태, 이미지 업로드 상태, 실행 트리거 상태를 표시하는 테이블</caption>

@@ -31,6 +31,13 @@ class ControlController {
         this.setupWebSocket();
         this.startSimulation();
         this.updateConnectionStatus();
+        
+        // AI 분석 시작 (모바일 연결 시뮬레이션 후)
+        setTimeout(() => {
+            if (window.startAIAnalysis) {
+                window.startAIAnalysis();
+            }
+        }, 5000);
     }
     
     bindEvents() {

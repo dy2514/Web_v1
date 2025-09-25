@@ -5,9 +5,7 @@
 
 /* 메인 컨테이너 */
 .krds-container {
-    max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
     background-color: var(--color-background, #f8f9fa);
     min-height: 100vh;
 }
@@ -567,4 +565,132 @@
 
 .krds-card {
     animation: fadeIn 0.5s ease;
+}
+
+/* AI 분석 결과 스타일 */
+.step-result-content {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    margin-top: 1rem;
+}
+
+.step-result-content h4 {
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.step-result-content h5 {
+    margin: 1rem 0 0.5rem 0;
+    color: #374151;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.step-result-content p {
+    margin: 0.5rem 0;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.step-result-content strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.step-result-content code {
+    background-color: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+}
+
+.result-details {
+    margin-top: 1rem;
+}
+
+.result-details pre {
+    background-color: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: #374151;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* 단계별 상태 스타일 개선 */
+.krds-step-wrap li.completed .step {
+    background-color: #10b981;
+    color: white;
+}
+
+.krds-step-wrap li.completed::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #10b981;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* 진행률 바 애니메이션 */
+.krds-progress__bar {
+    position: relative;
+    overflow: hidden;
+}
+
+.krds-progress__bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 아코디언 자동 열기 애니메이션 */
+.accordion-collapse.show {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+/* 결과 표시 시 하이라이트 */
+.step-detail-info.has-result {
+    background-color: #f0f9ff;
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+}
+
+.step-detail-info.has-result .step-result-content {
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

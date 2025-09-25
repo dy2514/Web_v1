@@ -19,7 +19,8 @@ const photoBox = document.querySelector('.photo-box');
 const sheet = document.getElementById('photoSheet');
 const sheetOverlay = document.getElementById('sheetOverlay');
 const sheetNoIssue = document.getElementById('sheetNoIssue');
-const sheetUpload = document.getElementById('sheetUpload');
+const sheetGallery = document.getElementById('sheetGallery');
+const sheetCamera = document.getElementById('sheetCamera');
 
 let previewURL = null;
 let currentScenario = null;
@@ -373,10 +374,23 @@ if (sheetOverlay) {
 if (sheetNoIssue) {
     sheetNoIssue.addEventListener('click', () => { closePhotoSheet(); });
 }
-if (sheetUpload) {
-    sheetUpload.addEventListener('click', () => {
+if (sheetGallery) {
+    sheetGallery.addEventListener('click', () => {
         closePhotoSheet();
-        document.getElementById('photo').click();
+        // 갤러리에서 선택 (capture 속성 제거)
+        const photoInput = document.getElementById('photo');
+        photoInput.removeAttribute('capture');
+        photoInput.click();
+    });
+}
+
+if (sheetCamera) {
+    sheetCamera.addEventListener('click', () => {
+        closePhotoSheet();
+        // 카메라로 촬영 (capture 속성 추가)
+        const photoInput = document.getElementById('photo');
+        photoInput.setAttribute('capture', 'environment');
+        photoInput.click();
     });
 }
 
