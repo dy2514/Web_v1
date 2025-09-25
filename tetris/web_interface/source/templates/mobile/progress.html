@@ -166,9 +166,9 @@
             </div>
             <div class="modal-body">
                 <p>차량 시트 배치 분석 결과를 실제 하드웨어에 적용하시겠습니까?</p>
-                <div class="placement-code-preview" id="placementCodePreview">
+                <!-- <div class="placement-code-preview" id="placementCodePreview">
                     <strong>배치 코드:</strong> <span id="placementCodeValue">로딩 중...</span>
-                </div>
+                </div> -->
                 <div class="warning-message">
                     ⚠️ 이 작업은 실제 하드웨어를 제어합니다.
                 </div>
@@ -185,33 +185,33 @@
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>하드웨어 제어 진행 중</h3>
+                <h3>하드웨어 제어 진행</h3>
             </div>
             <div class="modal-body">
-                <div class="progress-container">
+                <!-- <div class="progress-container">
                     <div class="progress-bar-hw" id="hardwareProgressBar">
                         <div class="progress-fill-hw" id="hardwareProgressFill"></div>
                     </div>
                     <div class="progress-text" id="hardwareProgressText">하드웨어 연결 중...</div>
-                </div>
+                </div> -->
                 <div class="hardware-status" id="hardwareStatus">
                     <div class="status-item">
                         <span class="status-icon" id="connectionStatus">⏳</span>
-                        <span>아두이노 연결</span>
+                        <span>실행이 완료되었습니다</span>
                     </div>
-                    <div class="status-item">
+                    <!-- <div class="status-item">
                         <span class="status-icon" id="commandStatus">⏳</span>
                         <span>명령 전송</span>
                     </div>
                     <div class="status-item">
                         <span class="status-icon" id="executionStatus">⏳</span>
                         <span>실행 완료</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-close" onclick="closeHardwareProgress()" id="closeProgressBtn" style="display: none;">닫기</button>
-                <button class="btn-retry" onclick="retryHardwareControl()" id="retryBtn" style="display: none;">재시도</button>
+                <button class="btn-retry" onclick="retryHardwareControl()" id="retryBtn" style="display: none;">확인</button>
             </div>
         </div>
     </div>

@@ -325,61 +325,61 @@ function applyAnalysisResult() {
     }
     
     // 4단계 결과에서 배치 코드 추출
-    const placementCode = extractPlacementCode();
+    // const placementCode = extractPlacementCode();
     
-    if (!placementCode) {
-        alert('분석 결과에서 배치 코드를 찾을 수 없습니다. 분석이 완료된 후 다시 시도해주세요.');
-        return;
-    }
+    // if (!placementCode) {
+    //     alert('분석 결과에서 배치 코드를 찾을 수 없습니다. 분석이 완료된 후 다시 시도해주세요.');
+    //     return;
+    // }
     
-    currentPlacementCode = placementCode;
+    // currentPlacementCode = placementCode;
     showHardwareConfirmModal();
 }
 
 // 배치 코드 추출 함수
-function extractPlacementCode() {
-    // 여러 소스에서 배치 코드 찾기
-    let placementCode = null;
+// function extractPlacementCode() {
+//     // 여러 소스에서 배치 코드 찾기
+//     let placementCode = null;
     
-    // 1. sessionStorage에서 최신 분석 결과 확인
-    const analysisDataStr = sessionStorage.getItem('analysisData');
-    if (analysisDataStr) {
-        try {
-            const analysisData = JSON.parse(analysisDataStr);
-            if (analysisData.placement_code) {
-                placementCode = analysisData.placement_code;
-            }
-        } catch (e) {
-            console.warn('세션 데이터 파싱 오류:', e);
-        }
-    }
+//     // 1. sessionStorage에서 최신 분석 결과 확인
+//     const analysisDataStr = sessionStorage.getItem('analysisData');
+//     if (analysisDataStr) {
+//         try {
+//             const analysisData = JSON.parse(analysisDataStr);
+//             if (analysisData.placement_code) {
+//                 placementCode = analysisData.placement_code;
+//             }
+//         } catch (e) {
+//             console.warn('세션 데이터 파싱 오류:', e);
+//         }
+//     }
     
-    // 2. 전역 변수에서 확인 (SSE로 받은 데이터)
-    if (!placementCode && window.latestAnalysisResult) {
-        const result = window.latestAnalysisResult;
-        if (result.chain4_out) {
-            placementCode = result.chain4_out;
-        } else if (result.processed_results && result.processed_results.chain4_out) {
-            placementCode = result.processed_results.chain4_out.placement_code;
-        }
-    }
+//     // 2. 전역 변수에서 확인 (SSE로 받은 데이터)
+//     if (!placementCode && window.latestAnalysisResult) {
+//         const result = window.latestAnalysisResult;
+//         if (result.chain4_out) {
+//             placementCode = result.chain4_out;
+//         } else if (result.processed_results && result.processed_results.chain4_out) {
+//             placementCode = result.processed_results.chain4_out.placement_code;
+//         }
+//     }
     
-    // 3. DOM에서 직접 찾기
-    if (!placementCode) {
-        const step4Result = document.getElementById('step4ResultContent');
-        if (step4Result) {
-            const text = step4Result.textContent || step4Result.innerText;
-            // 16자리 숫자 패턴 찾기
-            const match = text.match(/\b\d{16}\b/);
-            if (match) {
-                placementCode = match[0];
-            }
-        }
-    }
+//     // 3. DOM에서 직접 찾기
+//     if (!placementCode) {
+//         const step4Result = document.getElementById('step4ResultContent');
+//         if (step4Result) {
+//             const text = step4Result.textContent || step4Result.innerText;
+//             // 16자리 숫자 패턴 찾기
+//             const match = text.match(/\b\d{16}\b/);
+//             if (match) {
+//                 placementCode = match[0];
+//             }
+//         }
+//     }
     
-    console.log('추출된 배치 코드:', placementCode);
-    return placementCode;
-}
+//     console.log('추출된 배치 코드:', placementCode);
+//     return placementCode;
+// }
 
 // 하드웨어 확인 모달 표시
 function showHardwareConfirmModal() {
@@ -402,20 +402,20 @@ function cancelHardwareControl() {
 
 // 하드웨어 제어 확인
 function confirmHardwareControl() {
-    if (!currentPlacementCode) {
-        alert('배치 코드가 없습니다.');
-        return;
-    }
+    // if (!currentPlacementCode) {
+    //     alert('배치 코드가 없습니다.');
+    //     return;
+    // }
     
     // 확인 모달 닫기
     const confirmModal = document.getElementById('hardwareConfirmModal');
     confirmModal.style.display = 'none';
     
-    // 진행 모달 표시
-    showHardwareProgressModal();
-    
     // 하드웨어 제어 실행
     executeHardwareControl();
+
+    // 진행 모달 표시 (임시..)
+    showHardwareProgressModal();
 }
 
 // 하드웨어 진행 모달 표시
@@ -424,8 +424,8 @@ function showHardwareProgressModal() {
     modal.style.display = 'flex';
     
     // 초기 상태 설정
-    resetHardwareStatus();
-    updateHardwareProgress(0, '하드웨어 연결 중...');
+    // resetHardwareStatus();
+    // updateHardwareProgress(0, '하드웨어 연결 중...');
 }
 
 // 하드웨어 진행 모달 닫기
@@ -475,14 +475,14 @@ async function executeHardwareControl() {
         updateHardwareProgress(50, '명령 전송 중...');
         
         // API 호출
-        const response = await fetch('/control/api/trigger_hardware', {
+        const response = await fetch('/desktop/api/trigger_hardware', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 session_id: currentScenario || 'default',
-                placement_code: currentPlacementCode
+                // placement_code: currentPlacementCode
             })
         });
         

@@ -431,6 +431,21 @@ def trigger_hardware():
         if session_id not in session_connections:
             return jsonify({'success': False, 'error': 'Invalid session ID'}), 400
         
+        # 저장된 분석 결과에서 placement_code 자동 추출
+        if not placement_code:
+            global_status = get_global_status()
+            analysis_result = global_status.get('analysis_result', {})
+            
+            if isinstance(analysis_result, dict) and 'chain4_out' in analysis_result:
+                placement_code = analysis_result['chain4_out']
+                logger.info(f"분석 결과에서 placement_code 자동 추출: {placement_code}")
+            else:
+                logger.warning("분석 결과에서 chain4_out을 찾을 수 없습니다.")
+                return jsonify({
+                    'success': False, 
+                    'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 이미지 분석을 완료해주세요.'
+                }), 400
+        
         # 배치 코드 검증
         if placement_code:
             if not isinstance(placement_code, str) or len(placement_code) != 16:
@@ -449,7 +464,7 @@ def trigger_hardware():
         # 하드웨어 제어 시작 알림
         update_progress_stream(session_id, {
             'event': 'hardware_start',
-            'message': '하드웨어 제어 시작',
+            'message': f'하드웨어 제어 시작 - 배치 코드: {placement_code}',
             'command': command,
             'placement_code': placement_code
         })
