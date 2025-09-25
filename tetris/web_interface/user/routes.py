@@ -139,7 +139,8 @@ def upload_file():
         # 상태 업데이트
         try:
             update_status(
-                progress=25,
+                current_step=0,
+                progress=0,
                 status='uploaded',
                 message='파일 업로드 완료',
                 uploaded_file=True,
@@ -177,3 +178,8 @@ def upload_file():
         
         log_api_response('/api/upload', 500, str(e))
         return APIResponse.server_error(error_msg)
+
+@user_bp.route('/progress')
+def progress():
+    """진행률 페이지"""
+    return render_template('mobile/progress.html')

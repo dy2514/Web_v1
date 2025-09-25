@@ -1,71 +1,187 @@
-{% extends "base.html" %}
-
-{% block title %}AI 분석 진행중 - AI TETRIS{% endblock %}
-
-{% block device_type %}Mobile{% endblock %}
-
-{% block content %}
-<div class="progress-container">
-    <!-- 진행상황 헤더 -->
-    <section class="progress-header">
-        <div class="header-content">
-            <h2>AI 분석 진행중</h2>
-            <p class="progress-subtitle">현대자동차 AI TETRIS 서비스가 최적의 시트 배치를 분석하고 있습니다.</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.css" type="text/css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 분석 진행 중 - AI TETRIS</title>
+    <link rel="stylesheet" href="/static/css/mobile/progress.css">
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="history.back()">✕</button>
+        <h1 class="title">현대자동차 AI TETRIS 서비스</h1>
+        <button class="refresh-btn" onclick="location.reload()">↻</button>
+    </div>
+    
+    <div class="main-content">
+        <div class="status-message">
+            <h2 class="status-title">차량 시트 배치 분석</h2>
+            <!-- <p class="status-subtitle">차량 시트 배치 분석</p> -->
         </div>
-    </section>
 
-    <!-- 전체 진행률 -->
-    <section class="overall-progress-section">
+        <div class="illustration">
+            <div class="ai-brain"></div>
+        </div>
+
         <div class="progress-info">
-            <h3>전체 진행률</h3>
-            <div class="progress-stats">
-                <span class="progress-percentage" id="overallProgress">0%</span>
-                <span class="progress-time" id="progressTime">00:00</span>
+            <div class="progress-percentage" id="progressPercentage">0%</div>
+            <div class="progress-text" id="progressText">분석을 시작하고 있습니다...</div>
+            </div>
+        
+        <div class="progress-steps">
+            <div class="step" id="step1">
+                <div class="step-icon pending">1</div>
+                <div class="step-content">
+                    <div class="step-title">이미지 분석</div>
+                    <div class="step-description">사진을 분석하고 있습니다</div>
+        </div>
+            </div>
+            
+            <div class="step" id="step2">
+                <div class="step-icon pending">2</div>
+                <div class="step-content">
+                    <div class="step-title">짐 인식 및 분류</div>
+                    <div class="step-description">짐을 인식하고 분류하고 있습니다</div>
             </div>
         </div>
-        <div class="progress-bar-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="overallProgressBar"></div>
+            
+            <div class="step" id="step3">
+                <div class="step-icon pending">3</div>
+                <div class="step-content">
+                    <div class="step-title">차량 공간 계산</div>
+                    <div class="step-description">차량 공간을 계산하고 있습니다</div>
+                </div>
+        </div>
+            
+            <div class="step" id="step4">
+                <div class="step-icon pending">4</div>
+                <div class="step-content">
+                    <div class="step-title">최적 배치 생성</div>
+                    <div class="step-description">최적의 배치를 생성하고 있습니다</div>
+                </div>
+        </div>
+            
+            <div class="step" id="step5">
+                <div class="step-icon pending">5</div>
+                <div class="step-content">
+                    <div class="step-title">결과 검증 및 완료</div>
+                    <div class="step-description">결과를 검증하고 있습니다</div>
+                </div>
             </div>
         </div>
-        <div class="progress-description">
-            <p id="progressDescription">분석을 시작하고 있습니다...</p>
-        </div>
-    </section>
-
-    <!-- 단계별 진행상황 -->
-    <section class="steps-section">
-        <h3>분석 단계</h3>
-        <div class="steps-list" id="stepsList">
-            <!-- 동적으로 생성될 단계들 -->
-        </div>
-    </section>
-
-    <!-- 제어 버튼 -->
-    <section class="control-section">
-        <div class="control-buttons">
-            <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
-            <button type="button" class="btn btn-primary" id="restartBtn" disabled>재시작</button>
-        </div>
-    </section>
-
-    <!-- 예상 완료 시간 -->
-    <section class="completion-info">
-        <div class="completion-card">
-            <div class="completion-icon">⏱️</div>
-            <div class="completion-content">
-                <h4>예상 완료 시간</h4>
-                <p id="estimatedTime">약 2분 후 완료 예정</p>
+        
+        <!-- 단계별 분석 결과 표시 영역 (기본 화면에서는 숨김) -->
+        <div class="step-results" id="stepResults" style="display:none;">
+            <div class="step-result-item" id="step1Result" style="display: none;">
+                <div class="step-result-title">1단계: 이미지 분석 결과</div>
+                <div class="step-result-content" id="step1ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step2Result" style="display: none;">
+                <div class="step-result-title">2단계: 짐 인식 및 분류 결과</div>
+                <div class="step-result-content" id="step2ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step3Result" style="display: none;">
+                <div class="step-result-title">3단계: 차량 공간 계산 결과</div>
+                <div class="step-result-content" id="step3ResultContent">분석 중...</div>
+            </div>
+            
+            <div class="step-result-item" id="step4Result" style="display: none;">
+                <div class="step-result-title">4단계: 최적 배치 생성 결과</div>
+                <div class="step-result-content" id="step4ResultContent">분석 중...</div>
             </div>
         </div>
-    </section>
+    </div>
+    
+    <div class="footer">
+        <button class="result-check-button" id="resultCheckButton" onclick="openDetailPanel()">상세 정보 보기</button>
 </div>
-{% endblock %}
 
-{% block additional_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/progress.css') }}">
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/mobile/progress.js') }}"></script>
-{% endblock %}
+    <!-- 상세 보기 패널 (분석 결과) -->
+    <div class="detail-panel" id="detailPanel" aria-hidden="true">
+        <div class="detail-header">
+            <h2 style="margin:0; font-size:18px; text-align: center; color:#203a59;">분석 상세</h2>
+        </div>
+        
+        <!-- 상세 진행 카드 -->
+        <div class="detail-progress-card">
+            <div class="detail-progress-percentage" id="detailProgressPercentage">0%</div>
+            <div class="detail-progress-text" id="detailProgressText">분석을 시작하고 있습니다...</div>
+        </div>
+        
+        <!-- 진행 타임라인 -->
+        <div class="timeline" id="detailTimeline">
+            <div style="border: none; color: black;" class="krds-accordion">
+                <div class="timeline-item" id="tl-step-1">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem01"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample01" class="btn-accordion" aria-controls="accordionCollapseSample01">이미지 분석</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample01" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample01">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-2">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem02"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample02" class="btn-accordion" aria-controls="accordionCollapseSample02">짐 인식 및 분류</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample02" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample02">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-3">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem03"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample03" class="btn-accordion" aria-controls="accordionCollapseSample03">차량 공간 계산</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample03" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample03">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item" id="tl-step-4">
+                    <span class="timeline-dot"></span>
+                    <div id="accordionItem04"> <!-- class="accordion-item"-->
+                        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample04" class="btn-accordion" aria-controls="accordionCollapseSample04">최적 배치 생성</button></h5>
+                        <div style="display: none;" id="accordionCollapseSample04" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample04">
+                        <div class="accordion-body">
+                            <!-- 아코디언 내용 영역 -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="detail-back-btn" onclick="closeDetailPanel()">이전 화면</button>
+    </div>
+    
+    <script src="/static/js/mobile/progress.js"></script>
+    <script>
+        // KRDS 아코디언 초기화 오류 방지
+        document.addEventListener('DOMContentLoaded', function() {
+            // KRDS 라이브러리가 로드된 후 아코디언 초기화
+            if (typeof window.krds !== 'undefined' && window.krds.accordion) {
+                try {
+                    // 아코디언 요소들이 존재하는지 확인 후 초기화
+                    const accordionElements = document.querySelectorAll('.krds-accordion');
+                    if (accordionElements.length > 0) {
+                        window.krds.accordion.init();
+                    }
+                } catch (error) {
+                    console.warn('KRDS 아코디언 초기화 중 오류:', error);
+                }
+            }
+        });
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.js"></script>
+</body>
+</html>

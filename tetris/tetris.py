@@ -53,7 +53,7 @@ def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
     
     # 웹 서버를 별도 스레드에서 실행
     def run_server():
-        app.run(host='0.0.0.0', port=port, debug=False, threaded=True, use_reloader=False)
+        app.run(host='0.0.0.0', port=port, debug=True, threaded=True, use_reloader=False)
     
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
@@ -169,11 +169,17 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
 
 def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: str, progress_callback=None) -> dict:
     """단계별 AI 분석 실행"""
-    print("단계별 AI 분석 시작...")
+    print("[DEBUG] 단계별 AI 분석 시작...")
+    print(f"[DEBUG] 파라미터: people_count={people_count}, scenario={scenario}")
+    print(f"[DEBUG] progress_callback: {progress_callback}")
     
     # 1단계: 이미지 분석 (Chain1)
     if progress_callback:
-        progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...")
+        print("[DEBUG] progress_callback 호출 중...")
+        progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...", current_step=1)
+        print("[DEBUG] progress_callback 호출 완료")
+    else:
+        print("[DEBUG] progress_callback이 None입니다!")
     
     print("1단계: 이미지 분석 시작")
     t_step1_start = perf_counter()
@@ -194,13 +200,21 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         step1_elapsed = t_step1_end - t_step1_start
         print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
         
+        # 1단계 결과를 analysis_result에 저장 (새로운 분석 시작)
+        from source.state_manager import state_manager
+        # 새로운 analysis_result 시작 (이전 데이터 완전 제거)
+        new_analysis_result = {}
+        new_analysis_result['chain1_out'] = chain1_out
+        state_manager.set('analysis_result', new_analysis_result)
+        print(f"[DEBUG] 1단계 결과를 새로운 analysis_result에 저장: {len(chain1_out)}자")
+        
     except Exception as e:
         print(f"1단계 실행 실패: {e}")
         raise
     
     # 2단계: 짐 인식 및 분류 (Chain2)
     if progress_callback:
-        progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...")
+        progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...", current_step=2)
     
     print("2단계: 짐 인식 및 분류 시작")
     t_step2_start = perf_counter()
@@ -223,13 +237,19 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         step2_elapsed = t_step2_end - t_step2_start
         print(f"2단계 실행 시간: {step2_elapsed:.3f}초")
         
+        # 2단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+        current_analysis_result = state_manager.get('analysis_result', {})
+        current_analysis_result['chain2_out'] = chain2_out
+        state_manager.set('analysis_result', current_analysis_result)
+        print(f"[DEBUG] 2단계 결과를 analysis_result에 저장: {len(chain2_out)}자")
+        
     except Exception as e:
         print(f"2단계 실행 실패: {e}")
         raise
     
     # 3단계: 차량 공간 계산 (Chain3)
     if progress_callback:
-        progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...")
+        progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...", current_step=3)
     
     print("3단계: 차량 공간 계산 시작")
     t_step3_start = perf_counter()
@@ -250,13 +270,19 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         step3_elapsed = t_step3_end - t_step3_start
         print(f"3단계 실행 시간: {step3_elapsed:.3f}초")
         
+        # 3단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+        current_analysis_result = state_manager.get('analysis_result', {})
+        current_analysis_result['chain3_out'] = chain3_out
+        state_manager.set('analysis_result', current_analysis_result)
+        print(f"[DEBUG] 3단계 결과를 analysis_result에 저장: {len(chain3_out)}자")
+        
     except Exception as e:
         print(f"3단계 실행 실패: {e}")
         raise
     
     # 4단계: 최적 배치 생성 (Chain4)
     if progress_callback:
-        progress_callback(80, "최적 배치 생성", "최적의 배치를 생성하고 있습니다...")
+        progress_callback(80, "최적 배치 생성", "최적의 배치를 생성하고 있습니다...", current_step=4)
     
     print("4단계: 최적 배치 생성 시작")
     t_step4_start = perf_counter()
@@ -270,13 +296,19 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         step4_elapsed = t_step4_end - t_step4_start
         print(f"4단계 실행 시간: {step4_elapsed:.3f}초")
         
+        # 4단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+        current_analysis_result = state_manager.get('analysis_result', {})
+        current_analysis_result['chain4_out'] = chain4_out
+        state_manager.set('analysis_result', current_analysis_result)
+        print(f"[DEBUG] 4단계 결과를 analysis_result에 저장: {len(chain4_out)}자")
+        
     except Exception as e:
         print(f"4단계 실행 실패: {e}")
         raise
     
     # 5단계: 결과 검증 및 완료
     if progress_callback:
-        progress_callback(100, "결과 검증 및 완료", "분석이 완료되었습니다!")
+        progress_callback(100, "결과 검증 및 완료", "분석이 완료되었습니다!", current_step=5)
     
     print("5단계: 결과 검증 및 완료")
     
@@ -307,11 +339,12 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
     
     out_path.write_text("\n".join(lines), encoding="utf-8")
     
+    # analysis_result만 반환 (result 제거)
+    final_analysis_result = state_manager.get('analysis_result', {})
+    print(f"[DEBUG] 최종 analysis_result 반환: {list(final_analysis_result.keys())}")
+    
     return {
-        "chain1_out": chain1_out,
-        "chain2_out": chain2_out,
-        "chain3_out": chain3_out,
-        "chain4_out": chain4_out,
+        "analysis_result": final_analysis_result,
         "out_path": str(out_path),  # WindowsPath를 문자열로 변환
         "total_elapsed": total_elapsed,
         "step_times": {
