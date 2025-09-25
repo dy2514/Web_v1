@@ -1,7 +1,7 @@
 {
   "system": {
-    "status": "connected",
-    "last_updated": "2025-09-25T01:12:38.708275",
+    "status": "mobile_connected",
+    "last_updated": "2025-09-25T22:26:31.540085",
     "version": "1.0.0"
   },
   "sessions": {},
@@ -26,42 +26,6 @@
     "last_command": null
   },
   "notifications": [
-    {
-      "id": "notif_1758626995.122744",
-      "message": "데스크탑 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:29:55.122750"
-    },
-    {
-      "id": "notif_1758626995.189012",
-      "message": "모바일 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:29:55.189041"
-    },
-    {
-      "id": "notif_1758626995.264875",
-      "message": "데스크탑 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:29:55.264882"
-    },
-    {
-      "id": "notif_1758626995.88416",
-      "message": "데스크탑 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:29:55.884172"
-    },
-    {
-      "id": "notif_1758627140.950629",
-      "message": "데스크탑 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:32:20.950639"
-    },
-    {
-      "id": "notif_1758627141.039485",
-      "message": "모바일 연결됨",
-      "level": "info",
-      "timestamp": "2025-09-23T20:32:21.039500"
-    },
     {
       "id": "notif_1758627141.113424",
       "message": "데스크탑 연결됨",
@@ -625,6 +589,42 @@
       "message": "데스크탑 연결됨",
       "level": "info",
       "timestamp": "2025-09-25T01:12:39.285725"
+    },
+    {
+      "id": "notif_1758806788.198417",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:28.198417"
+    },
+    {
+      "id": "notif_1758806788.236",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:28.236000"
+    },
+    {
+      "id": "notif_1758806788.2639",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:28.263900"
+    },
+    {
+      "id": "notif_1758806788.519695",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:28.519695"
+    },
+    {
+      "id": "notif_1758806791.553762",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:31.553762"
+    },
+    {
+      "id": "notif_1758806793.236757",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-09-25T22:26:33.236757"
     }
   ],
   "uploaded_file": false,
