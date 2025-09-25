@@ -1,0 +1,129 @@
+<!--
+    AI 단계별 아코디언 컴포넌트
+    - 4단계 AI 처리 과정의 세부 정보
+    - 각 단계별 진행률과 상태 표시
+-->
+<!-- 1단계: 이미지 분석 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep1" class="btn-accordion" aria-controls="accordionCollapseStep1" aria-expanded="false">
+            <span class="accordion-step-number">1</span>
+            <span class="accordion-step-title">이미지 분석</span>
+            <span class="accordion-step-status" id="step1AccordionStatus">대기중</span>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep1" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep1" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content">
+                <p class="krds-text">업로드된 이미지에서 좌석과 승객 인식</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="이미지 분석 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="이미지 분석 진행률: 0%">
+                        <div class="krds-progress__bar" id="step1Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step1ProgressText">0%</span>
+                </div>
+                <div class="step-detail-info" id="step1DetailInfo">
+                    <ul class="krds-list">
+                        <li>이미지 업로드 대기중</li>
+                        <li>AI 모델 준비 완료</li>
+                        <li>좌석 인식 알고리즘 활성화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2단계: 데이터 처리 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep2" class="btn-accordion" aria-controls="accordionCollapseStep2" aria-expanded="false">
+            <span class="accordion-step-number">2</span>
+            <span class="accordion-step-title">데이터 처리</span>
+            <span class="accordion-step-status" id="step2AccordionStatus">대기중</span>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep2" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep2" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content">
+                <p class="krds-text">인식된 데이터를 구조화하고 분석</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="데이터 처리 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="데이터 처리 진행률: 0%">
+                        <div class="krds-progress__bar" id="step2Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step2ProgressText">0%</span>
+                </div>
+                <div class="step-detail-info" id="step2DetailInfo">
+                    <ul class="krds-list">
+                        <li>데이터 구조화 대기중</li>
+                        <li>분석 알고리즘 준비 완료</li>
+                        <li>데이터 검증 모듈 활성화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3단계: 최적화 생성 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep3" class="btn-accordion" aria-controls="accordionCollapseStep3" aria-expanded="false">
+            <span class="accordion-step-number">3</span>
+            <span class="accordion-step-title">최적화 생성</span>
+            <span class="accordion-step-status" id="step3AccordionStatus">대기중</span>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep3" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep3" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content">
+                <p class="krds-text">AI 알고리즘으로 최적 좌석 배치 생성</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="최적화 생성 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="최적화 생성 진행률: 0%">
+                        <div class="krds-progress__bar" id="step3Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step3ProgressText">0%</span>
+                </div>
+                <div class="step-detail-info" id="step3DetailInfo">
+                    <ul class="krds-list">
+                        <li>최적화 알고리즘 대기중</li>
+                        <li>좌석 배치 모델 준비 완료</li>
+                        <li>시뮬레이션 엔진 활성화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4단계: 하드웨어 구동 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep4" class="btn-accordion" aria-controls="accordionCollapseStep4" aria-expanded="false">
+            <span class="accordion-step-number">4</span>
+            <span class="accordion-step-title">하드웨어 구동</span>
+            <span class="accordion-step-status" id="step4AccordionStatus">대기중</span>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep4" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep4" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content">
+                <p class="krds-text">모터 제어 코드 생성 및 실행</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="하드웨어 구동 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="하드웨어 구동 진행률: 0%">
+                        <div class="krds-progress__bar" id="step4Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step4ProgressText">0%</span>
+                </div>
+                <div class="step-detail-info" id="step4DetailInfo">
+                    <ul class="krds-list">
+                        <li>모터 제어 코드 대기중</li>
+                        <li>하드웨어 연결 준비 완료</li>
+                        <li>실행 모듈 활성화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

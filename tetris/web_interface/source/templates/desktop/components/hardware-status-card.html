@@ -1,0 +1,96 @@
+<!--
+    하드웨어 동작 현황 카드 컴포넌트
+    - 라즈베리파이5 리소스 현황
+    - 아두이노 통신 현황
+-->
+<div class="krds-card">
+    <div class="krds-card__header">
+        <div class="krds-card__title">
+            <span class="material-icons krds-icon krds-icon--lg" aria-hidden="true">settings</span>
+            <h2 class="krds-title krds-title--lg">하드웨어 동작 현황</h2>
+        </div>
+        <p class="krds-text krds-text--secondary">라즈베리파이5 리소스 현황 및 아두이노 통신 현황</p>
+    </div>
+    <div class="krds-card__body">
+        <div class="krds-row">
+            <!-- 라즈베리파이 섹션 -->
+            <div class="krds-col krds-col--6">
+                <div class="raspberry-section">
+                    <h3 class="krds-title krds-title--md">
+                        <span class="material-icons krds-icon" aria-hidden="true">memory</span>
+                        라즈베리파이5 리소스 현황
+                    </h3>
+                    <div class="krds-grid krds-grid--2">
+                        <div class="krds-col krds-col--6">
+                            <div class="krds-stat">
+                                <div class="krds-stat__label">CPU</div>
+                                <div class="krds-stat__value" id="cpuStatusValue">00%</div>
+                            </div>
+                        </div>
+                        <div class="krds-col krds-col--6">
+                            <div class="krds-stat">
+                                <div class="krds-stat__label">RAM</div>
+                                <div class="krds-stat__value" id="memoryStatusValue">00%</div>
+                            </div>
+                        </div>
+                        <div class="krds-col krds-col--6">
+                            <div class="krds-stat">
+                                <div class="krds-stat__label">세션</div>
+                                <div class="krds-stat__value" id="sessionStatusValue">00%</div>
+                            </div>
+                        </div>
+                        <div class="krds-col krds-col--6">
+                            <div class="krds-stat">
+                                <div class="krds-stat__label">네트워크</div>
+                                <div class="krds-stat__value" id="networkStatusValue">00%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 아두이노 섹션 -->
+            <div class="krds-col krds-col--6">
+                <div class="arduino-section">
+                    <h3 class="krds-title krds-title--md">
+                        <span class="material-icons krds-icon" aria-hidden="true">usb</span>
+                        아두이노 통신 현황
+                    </h3>
+                    <div class="arduino-connection-status">
+                        <div class="arduino-status-table">
+                            <div class="arduino-header-row">
+                                <div class="arduino-cell-header">Cell1</div>
+                                <div class="arduino-cell-header">Cell2</div>
+                                <div class="arduino-cell-header">Cell3</div>
+                                <div class="arduino-cell-header">Cell4</div>
+                            </div>
+                            <div class="arduino-status-row">
+                                <div class="arduino-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="port1Status" data-status="disconnected">
+                                        연결 끊김
+                                    </span>
+                                </div>
+                                <div class="arduino-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="port2Status" data-status="disconnected">
+                                        연결 끊김
+                                    </span>
+                                </div>
+                                <div class="arduino-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="port3Status" data-status="disconnected">
+                                        연결 끊김
+                                    </span>
+                                </div>
+                                <div class="arduino-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="port4Status" data-status="disconnected">
+                                        연결 끊김
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
