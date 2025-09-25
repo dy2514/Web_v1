@@ -47,10 +47,8 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 7l9-4 9 4-9 4-9-4zm0 4l9 4 9-4v7l-9 4-9-4v-7z" fill="#9ca3af"/>
             </svg>
-            <h3 class="section-title">짐</h3>
+            <h3 class="section-title">어떤 짐을 가지고 가시나요?</h3>
         </div>
-        <p class="section-desc tight">대각선 방향에서 짐 이외의 배경은 최대한 보이지 않도록 촬영해주세요.</p>
-        <p class="section-desc tight">개별 짐이 가려지는 부분이 없도록 주의하세요!</p>
 
         <div class="photo-box" aria-label="사진 촬영 영역">
             <img id="photo-preview" alt="업로드된 사진 미리보기">
@@ -211,6 +209,31 @@
             <div class="dialog-buttons">
                 <button class="dialog-btn secondary" onclick="hideConfirmationDialog()">나중에</button>
                 <button class="dialog-btn primary" onclick="confirmResult()">네</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 시트 (사진 촬영 선택) -->
+    <div class="sheet-overlay" id="sheetOverlay" aria-hidden="true"></div>
+    <div class="bottom-sheet" id="photoSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-content">
+            <div class="sheet-header">
+                <h3 id="sheetTitle" class="sheet-title">짐의 모습을 촬영해주세요.</h3>
+                <p class="sheet-desc">
+                    <span class="sheet-desc-row"><span class="i">i</span><span class="sheet-desc-text">짐 이외의 배경은 최대한 보이지 않도록 촬영해주세요.</span></span>
+                    <span class="sheet-desc-row"><span class="i">i</span><span class="sheet-desc-text">대각선 방향에서 개별 짐이 가려지는 부분이 없도록 주의해주세요.</span></span>
+                </p>
+            </div>
+
+            <div class="recent-photos" aria-label="최근 사용자 사진">
+                <div class="photo-thumb"><img src="/user_input/luggage_image/0.jpg" alt="최근 사진 1"></div>
+                <div class="photo-thumb"><img src="/user_input/luggage_image/1-1.jpg" alt="최근 사진 2"></div>
+                <div class="photo-thumb"><img src="/user_input/luggage_image/1-2.jpg" alt="최근 사진 3"></div>
+            </div>
+
+            <div class="sheet-actions">
+                <button type="button" class="sheet-btn primary" id="sheetUpload">사진등록</button>
             </div>
         </div>
     </div>

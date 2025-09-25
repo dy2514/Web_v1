@@ -16,6 +16,11 @@ const notice = document.querySelector('#notice');
 const preview = document.querySelector('#photo-preview');
 const btnPhotoIn = document.querySelector('#btnPhotoIn');
 const btnPhotoOut = document.querySelector('#btnPhotoOut');
+const photoBox = document.querySelector('.photo-box');
+const sheet = document.getElementById('photoSheet');
+const sheetOverlay = document.getElementById('sheetOverlay');
+const sheetNoIssue = document.getElementById('sheetNoIssue');
+const sheetUpload = document.getElementById('sheetUpload');
 
 let previewURL = null;
 let currentScenario = null;
@@ -330,6 +335,39 @@ photo.addEventListener('change', async () => {
         alert('네트워크 오류');
     }
 });
+
+/* Bottom sheet open/close */
+function openPhotoSheet() {
+    if (!sheet || !sheetOverlay) return;
+    sheet.classList.add('show');
+    sheetOverlay.classList.add('show');
+    sheet.setAttribute('aria-hidden', 'false');
+    sheetOverlay.setAttribute('aria-hidden', 'false');
+}
+
+function closePhotoSheet() {
+    if (!sheet || !sheetOverlay) return;
+    sheet.classList.remove('show');
+    sheetOverlay.classList.remove('show');
+    sheet.setAttribute('aria-hidden', 'true');
+    sheetOverlay.setAttribute('aria-hidden', 'true');
+}
+
+if (photoBox) {
+    photoBox.addEventListener('click', () => { openPhotoSheet(); });
+}
+if (sheetOverlay) {
+    sheetOverlay.addEventListener('click', () => { closePhotoSheet(); });
+}
+if (sheetNoIssue) {
+    sheetNoIssue.addEventListener('click', () => { closePhotoSheet(); });
+}
+if (sheetUpload) {
+    sheetUpload.addEventListener('click', () => {
+        closePhotoSheet();
+        document.getElementById('photo').click();
+    });
+}
 
 /* CTA → HTTP 통신 (간소화) */
 submit.addEventListener('click', async () => {
