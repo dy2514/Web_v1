@@ -418,11 +418,12 @@ def get_session_progress_api(session_id):
 
 @control_bp.route('/api/trigger_hardware', methods=['POST'])
 def trigger_hardware():
-    """하드웨어 제어 (HTTP API)"""
+    """하드웨어 제어 (HTTP API) - 배치 코드 처리"""
     try:
         data = request.get_json()
         session_id = data.get('session_id')
         command = data.get('command')
+        placement_code = data.get('placement_code')  # 16자리 배치 코드
         
         if not session_id:
             return jsonify({'success': False, 'error': 'Session ID required'}), 400
@@ -430,18 +431,79 @@ def trigger_hardware():
         if session_id not in session_connections:
             return jsonify({'success': False, 'error': 'Invalid session ID'}), 400
         
-        # 하드웨어 제어 로직 (기존 rpi_controller 사용)
-        # 여기서는 시뮬레이션으로 처리
+        # 배치 코드 검증
+        if placement_code:
+            if not isinstance(placement_code, str) or len(placement_code) != 16:
+                return jsonify({
+                    'success': False, 
+                    'error': 'Invalid placement code. Must be 16 characters.'
+                }), 400
+            
+            # 숫자만 허용 (0-3)
+            if not all(c.isdigit() and 0 <= int(c) <= 3 for c in placement_code):
+                return jsonify({
+                    'success': False, 
+                    'error': 'Invalid placement code. Must contain only digits 0-3.'
+                }), 400
+        
+        # 하드웨어 제어 시작 알림
         update_progress_stream(session_id, {
             'event': 'hardware_start',
             'message': '하드웨어 제어 시작',
-            'command': command
+            'command': command,
+            'placement_code': placement_code
         })
+        
+        # 실제 아두이노 제어 실행
+        try:
+            from tetris.rpi_controller.rpi_controller import send_automated_command, connect_to_arduinos, arduino_connections
+            
+            # 아두이노 연결 확인 및 연결
+            if not arduino_connections:
+                connect_to_arduinos()
+            
+            if placement_code:
+                # 배치 코드로 자동 제어
+                send_automated_command(placement_code)
+                update_progress_stream(session_id, {
+                    'event': 'hardware_progress',
+                    'message': f'배치 코드 {placement_code} 적용 중...',
+                    'progress': 50
+                })
+            elif command:
+                # 기존 명령어 처리
+                from tetris.rpi_controller.rpi_controller import broadcast_command
+                broadcast_command(command)
+                update_progress_stream(session_id, {
+                    'event': 'hardware_progress',
+                    'message': f'명령어 {command} 실행 중...',
+                    'progress': 50
+                })
+            
+            # 제어 완료 알림
+            update_progress_stream(session_id, {
+                'event': 'hardware_complete',
+                'message': '하드웨어 제어가 완료되었습니다.',
+                'progress': 100
+            })
+            
+        except Exception as hardware_error:
+            logger.error(f"하드웨어 제어 실행 오류: {hardware_error}")
+            update_progress_stream(session_id, {
+                'event': 'hardware_error',
+                'message': f'하드웨어 제어 오류: {str(hardware_error)}',
+                'error': str(hardware_error)
+            })
+            return jsonify({
+                'success': False, 
+                'error': f'Hardware control failed: {str(hardware_error)}'
+            }), 500
         
         return jsonify({
             'success': True,
-            'message': '하드웨어 제어 명령이 전송되었습니다.',
-            'command': command
+            'message': '하드웨어 제어 명령이 성공적으로 실행되었습니다.',
+            'command': command,
+            'placement_code': placement_code
         })
         
     except Exception as e:

@@ -8,6 +8,11 @@ let stepResultsOriginalParent = null;
 let stepResultsNextSibling = null;
 let shownSteps = { 1: false, 2: false, 3: false, 4: false };
 
+// 하드웨어 제어 관련 변수
+let currentPlacementCode = null;
+let hardwareControlRetryCount = 0;
+const MAX_RETRY_ATTEMPTS = 3;
+
 // URL에서 시나리오 정보 가져오기
 function getScenarioFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -33,12 +38,37 @@ function getCurrentStepMessage(step) {
     return messages[step] || "분석을 시작하고 있습니다...";
 }
 
+// Progress Bar 업데이트 함수
+function updateProgressBar(percentage) {
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+        progressFill.style.width = percentage + '%';
+        
+        // 진행률에 따른 색상 변경
+        if (percentage < 20) {
+            progressFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)';
+        } else if (percentage < 40) {
+            progressFill.style.background = 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)';
+        } else if (percentage < 60) {
+            progressFill.style.background = 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)';
+        } else if (percentage < 80) {
+            progressFill.style.background = 'linear-gradient(90deg, #22c55e 0%, #16a34a 100%)';
+        } else {
+            progressFill.style.background = 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)';
+        }
+    }
+}
+
 // 진행률 업데이트 - 서버 값만 사용
 function updateProgress(percentage, serverStep = null) {
     // 진행률은 후퇴하지 않도록 보장
     if (typeof percentage === 'number') {
         progressValue = Math.max(progressValue || 0, percentage);
         document.getElementById('progressPercentage').textContent = progressValue + '%';
+        
+        // Progress Bar 업데이트
+        updateProgressBar(progressValue);
+        
         if (detailPanelOpen) {
             const dp = document.getElementById('detailProgressPercentage');
             if (dp) dp.textContent = progressValue + '%';
@@ -60,7 +90,7 @@ function updateProgress(percentage, serverStep = null) {
     
     if (serverStep !== currentStep) {
         currentStep = serverStep;
-        updateStepDisplay();
+        // updateStepDisplay();
         document.getElementById('progressText').textContent = getCurrentStepMessage(currentStep);
         console.log('단계 변경:', currentStep + '단계로 업데이트');
         if (detailPanelOpen) refreshDetailTimeline();
@@ -71,7 +101,7 @@ function updateProgress(percentage, serverStep = null) {
     }
 }
 
-// 단계 표시 업데이트
+// 단계 표시 업데이트 (임시 비활성화)
 function updateStepDisplay() {
     for (let i = 1; i <= 5; i++) {
         const step = document.getElementById(`step${i}`);
@@ -235,7 +265,7 @@ function handleStatusData(statusData) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
                 updateProgress(100, 5);
                 document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
-                showResultButton();
+                showResultButton(); // 분석 완료 시 버튼 활성화
             } else if (currentStep >= 5 && !hasStep4Output) {
                 doneWaitCount = (doneWaitCount || 0) + 1;
                 console.log(`⏳ 5단계 신호 수신, 그러나 step4 출력 미도착 → 완료 처리 보류 (시도 ${doneWaitCount})`);
@@ -244,7 +274,7 @@ function handleStatusData(statusData) {
                     console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
                     document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
                     updateProgress(100, 5);
-                    showResultButton();
+                    showResultButton(); // 분석 완료 시 버튼 활성화
                 }
             }
             
@@ -255,7 +285,7 @@ function handleStatusData(statusData) {
                 if (hasFinal) {
                     console.log('분석 완료! (최종 출력 확인)');
                     document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
-                    showResultButton();
+                    showResultButton(); // 분석 완료 시 버튼 활성화
                 } else {
                     doneWaitCount = (doneWaitCount || 0) + 1;
                     console.log(`분석 완료 신호 수신, 그러나 최종 출력 미도착 → 폴링 유지 (시도 ${doneWaitCount})`);
@@ -274,6 +304,301 @@ function handleStatusData(statusData) {
 function showResultButton() {
     const button = document.getElementById('resultCheckButton');
     button.classList.add('show');
+    button.disabled = false; // 분석 완료 시 버튼 활성화
+    button.textContent = '분석 결과 적용하기'; // 원래 텍스트로 복원
+}
+
+// 결과 확인 버튼 비활성화
+function disableResultButton() {
+    const button = document.getElementById('resultCheckButton');
+    button.disabled = true;
+    button.textContent = '분석 완료 후 적용 가능';
+}
+
+// 분석 결과 적용하기 버튼 클릭
+function applyAnalysisResult() {
+    const button = document.getElementById('resultCheckButton');
+    
+    // 버튼이 비활성화된 경우 처리
+    if (button.disabled) {
+        return;
+    }
+    
+    // 4단계 결과에서 배치 코드 추출
+    const placementCode = extractPlacementCode();
+    
+    if (!placementCode) {
+        alert('분석 결과에서 배치 코드를 찾을 수 없습니다. 분석이 완료된 후 다시 시도해주세요.');
+        return;
+    }
+    
+    currentPlacementCode = placementCode;
+    showHardwareConfirmModal();
+}
+
+// 배치 코드 추출 함수
+function extractPlacementCode() {
+    // 여러 소스에서 배치 코드 찾기
+    let placementCode = null;
+    
+    // 1. sessionStorage에서 최신 분석 결과 확인
+    const analysisDataStr = sessionStorage.getItem('analysisData');
+    if (analysisDataStr) {
+        try {
+            const analysisData = JSON.parse(analysisDataStr);
+            if (analysisData.placement_code) {
+                placementCode = analysisData.placement_code;
+            }
+        } catch (e) {
+            console.warn('세션 데이터 파싱 오류:', e);
+        }
+    }
+    
+    // 2. 전역 변수에서 확인 (SSE로 받은 데이터)
+    if (!placementCode && window.latestAnalysisResult) {
+        const result = window.latestAnalysisResult;
+        if (result.chain4_out) {
+            placementCode = result.chain4_out;
+        } else if (result.processed_results && result.processed_results.chain4_out) {
+            placementCode = result.processed_results.chain4_out.placement_code;
+        }
+    }
+    
+    // 3. DOM에서 직접 찾기
+    if (!placementCode) {
+        const step4Result = document.getElementById('step4ResultContent');
+        if (step4Result) {
+            const text = step4Result.textContent || step4Result.innerText;
+            // 16자리 숫자 패턴 찾기
+            const match = text.match(/\b\d{16}\b/);
+            if (match) {
+                placementCode = match[0];
+            }
+        }
+    }
+    
+    console.log('추출된 배치 코드:', placementCode);
+    return placementCode;
+}
+
+// 하드웨어 확인 모달 표시
+function showHardwareConfirmModal() {
+    const modal = document.getElementById('hardwareConfirmModal');
+    const codeElement = document.getElementById('placementCodeValue');
+    
+    if (codeElement && currentPlacementCode) {
+        codeElement.textContent = currentPlacementCode;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// 하드웨어 확인 모달 닫기
+function cancelHardwareControl() {
+    const modal = document.getElementById('hardwareConfirmModal');
+    modal.style.display = 'none';
+    currentPlacementCode = null;
+}
+
+// 하드웨어 제어 확인
+function confirmHardwareControl() {
+    if (!currentPlacementCode) {
+        alert('배치 코드가 없습니다.');
+        return;
+    }
+    
+    // 확인 모달 닫기
+    const confirmModal = document.getElementById('hardwareConfirmModal');
+    confirmModal.style.display = 'none';
+    
+    // 진행 모달 표시
+    showHardwareProgressModal();
+    
+    // 하드웨어 제어 실행
+    executeHardwareControl();
+}
+
+// 하드웨어 진행 모달 표시
+function showHardwareProgressModal() {
+    const modal = document.getElementById('hardwareProgressModal');
+    modal.style.display = 'flex';
+    
+    // 초기 상태 설정
+    resetHardwareStatus();
+    updateHardwareProgress(0, '하드웨어 연결 중...');
+}
+
+// 하드웨어 진행 모달 닫기
+function closeHardwareProgress() {
+    const modal = document.getElementById('hardwareProgressModal');
+    modal.style.display = 'none';
+    hardwareControlRetryCount = 0;
+}
+
+// 하드웨어 상태 초기화
+function resetHardwareStatus() {
+    const statusItems = document.querySelectorAll('.status-item');
+    statusItems.forEach(item => {
+        item.classList.remove('completed', 'error', 'processing');
+        const icon = item.querySelector('.status-icon');
+        icon.textContent = '⏳';
+    });
+    
+    document.getElementById('closeProgressBtn').style.display = 'none';
+    document.getElementById('retryBtn').style.display = 'none';
+}
+
+// 하드웨어 진행 상황 업데이트
+function updateHardwareProgress(progress, message) {
+    const progressFill = document.getElementById('hardwareProgressFill');
+    const progressText = document.getElementById('hardwareProgressText');
+    
+    if (progressFill) {
+        progressFill.style.width = progress + '%';
+    }
+    
+    if (progressText) {
+        progressText.textContent = message;
+    }
+}
+
+// 하드웨어 제어 실행
+async function executeHardwareControl() {
+    try {
+        // 1단계: 아두이노 연결
+        updateHardwareStatus('connection', 'processing');
+        updateHardwareProgress(20, '아두이노 연결 중...');
+        
+        // 2단계: 명령 전송
+        updateHardwareStatus('connection', 'completed');
+        updateHardwareStatus('command', 'processing');
+        updateHardwareProgress(50, '명령 전송 중...');
+        
+        // API 호출
+        const response = await fetch('/control/api/trigger_hardware', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                session_id: currentScenario || 'default',
+                placement_code: currentPlacementCode
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // 성공 처리
+            updateHardwareStatus('command', 'completed');
+            updateHardwareStatus('execution', 'completed');
+            updateHardwareProgress(100, '하드웨어 제어 완료!');
+            
+            // 완료 버튼 표시
+            document.getElementById('closeProgressBtn').style.display = 'block';
+            
+            console.log('하드웨어 제어 성공:', result);
+        } else {
+            throw new Error(result.error || '하드웨어 제어 실패');
+        }
+        
+    } catch (error) {
+        console.error('하드웨어 제어 오류:', error);
+        
+        // 에러 상태 표시
+        updateHardwareStatus('command', 'error');
+        updateHardwareStatus('execution', 'error');
+        updateHardwareProgress(0, `오류: ${error.message}`);
+        
+        // 재시도 버튼 표시
+        if (hardwareControlRetryCount < MAX_RETRY_ATTEMPTS) {
+            document.getElementById('retryBtn').style.display = 'block';
+        } else {
+            document.getElementById('closeProgressBtn').style.display = 'block';
+        }
+    }
+}
+
+// 하드웨어 상태 업데이트
+function updateHardwareStatus(type, status) {
+    let statusElement;
+    
+    switch(type) {
+        case 'connection':
+            statusElement = document.getElementById('connectionStatus');
+            break;
+        case 'command':
+            statusElement = document.getElementById('commandStatus');
+            break;
+        case 'execution':
+            statusElement = document.getElementById('executionStatus');
+            break;
+    }
+    
+    if (statusElement) {
+        const statusItem = statusElement.closest('.status-item');
+        statusItem.classList.remove('completed', 'error', 'processing');
+        statusItem.classList.add(status);
+        
+        switch(status) {
+            case 'completed':
+                statusElement.textContent = '✅';
+                break;
+            case 'error':
+                statusElement.textContent = '❌';
+                break;
+            case 'processing':
+                statusElement.textContent = '⏳';
+                break;
+        }
+    }
+}
+
+// 하드웨어 제어 재시도
+function retryHardwareControl() {
+    hardwareControlRetryCount++;
+    console.log(`하드웨어 제어 재시도 (${hardwareControlRetryCount}/${MAX_RETRY_ATTEMPTS})`);
+    
+    // 재시도 버튼 숨기기
+    document.getElementById('retryBtn').style.display = 'none';
+    
+    // 상태 초기화 후 재실행
+    resetHardwareStatus();
+    executeHardwareControl();
+}
+
+// 하드웨어 이벤트 처리
+function handleHardwareEvent(payload) {
+    console.log('하드웨어 이벤트 수신:', payload);
+    
+    switch(payload.event) {
+        case 'hardware_start':
+            updateHardwareProgress(10, payload.message || '하드웨어 제어 시작');
+            break;
+            
+        case 'hardware_progress':
+            const progress = payload.progress || 50;
+            updateHardwareProgress(progress, payload.message || '하드웨어 제어 진행 중');
+            break;
+            
+        case 'hardware_complete':
+            updateHardwareStatus('execution', 'completed');
+            updateHardwareProgress(100, payload.message || '하드웨어 제어 완료');
+            document.getElementById('closeProgressBtn').style.display = 'block';
+            break;
+            
+        case 'hardware_error':
+            updateHardwareStatus('command', 'error');
+            updateHardwareStatus('execution', 'error');
+            updateHardwareProgress(0, `오류: ${payload.message || '알 수 없는 오류'}`);
+            
+            if (hardwareControlRetryCount < MAX_RETRY_ATTEMPTS) {
+                document.getElementById('retryBtn').style.display = 'block';
+            } else {
+                document.getElementById('closeProgressBtn').style.display = 'block';
+            }
+            break;
+    }
 }
 
 // 상세 패널 열기
@@ -1248,9 +1573,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 초기 상태 설정
     updateProgress(0);
-    updateStepDisplay();
-    // 분석 중에도 상세보기 가능하도록 버튼 노출
-    showResultButton();
+    // updateStepDisplay();
+    
+    // 초기에는 버튼 비활성화
+    disableResultButton();
     
     // 분석 시작
     startAnalysis();
@@ -1269,12 +1595,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 const payload = JSON.parse(e.data);
                 // 연결 이벤트는 건너뜀
                 if (payload && payload.event === 'connected') return;
+                
+                // 하드웨어 제어 이벤트 처리
+                if (payload.event && payload.event.startsWith('hardware_')) {
+                    handleHardwareEvent(payload);
+                    return;
+                }
+                
                 handleStatusData(payload);
                 const status = payload.status || payload.system?.status;
                 const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out || payload.processed_results?.chain4_out);
                 if (status === 'done' && hasFinal) {
                     document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
-                    showResultButton();
+                    showResultButton(); // 분석 완료 시 버튼 활성화
                     eventSource.close();
                 } else if (status === 'error') {
                     document.getElementById('progressText').textContent = '분석 중 오류가 발생했습니다.';

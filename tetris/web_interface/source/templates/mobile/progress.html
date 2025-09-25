@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="/static/css/mobile/progress.css">
 </head>
 <body>
-    <div class="header">
-        <button class="back-btn" onclick="history.back()">✕</button>
-        <h1 class="title">현대자동차 AI TETRIS 서비스</h1>
-        <button class="refresh-btn" onclick="location.reload()">↻</button>
+
+    <div class="topbar">
+        <img onclick="history.back()" src="/static/images/back-arrows.png" alt="AI TETRIS">
+        <h1>AI TETRIS</h1>
     </div>
     
     <div class="main-content">
@@ -27,9 +27,26 @@
         <div class="progress-info">
             <div class="progress-percentage" id="progressPercentage">0%</div>
             <div class="progress-text" id="progressText">분석을 시작하고 있습니다...</div>
+            
+            <!-- Progress Bar 추가 -->
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-labels">
+                    <span class="progress-label">0%</span>
+                    <span class="progress-label">20%</span>
+                    <span class="progress-label">40%</span>
+                    <span class="progress-label">60%</span>
+                    <span class="progress-label">80%</span>
+                    <span class="progress-label">100%</span>
+                </div>
             </div>
+            </div>
+
+            <div class="progress-detail-button" onclick="openDetailPanel()">상세 정보 보기</div>
         
-        <div class="progress-steps">
+        <!-- <div class="progress-steps">
             <div class="step" id="step1">
                 <div class="step-icon pending">1</div>
                 <div class="step-content">
@@ -69,7 +86,7 @@
                     <div class="step-description">결과를 검증하고 있습니다</div>
                 </div>
             </div>
-        </div>
+        </div> -->
         
         <!-- 단계별 분석 결과 표시 영역 (기본 화면에서는 숨김) -->
         <div class="step-results" id="stepResults" style="display:none;">
@@ -96,8 +113,8 @@
     </div>
     
     <div class="footer">
-        <button class="result-check-button" id="resultCheckButton" onclick="openDetailPanel()">상세 정보 보기</button>
-</div>
+        <button class="result-check-button" id="resultCheckButton" onclick="applyAnalysisResult()">분석 결과 적용하기</button>
+    </div>
 
     <!-- 상세 보기 패널 (분석 결과) -->
     <div class="detail-panel" id="detailPanel" aria-hidden="true">
@@ -162,6 +179,65 @@
         </div>
         
         <button class="detail-back-btn" onclick="closeDetailPanel()">이전 화면</button>
+    </div>
+    
+    <!-- 하드웨어 제어 확인 다이얼로그 -->
+    <div class="hardware-confirm-modal" id="hardwareConfirmModal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>분석 결과 적용 확인</h3>
+            </div>
+            <div class="modal-body">
+                <p>차량 시트 배치 분석 결과를 실제 하드웨어에 적용하시겠습니까?</p>
+                <div class="placement-code-preview" id="placementCodePreview">
+                    <strong>배치 코드:</strong> <span id="placementCodeValue">로딩 중...</span>
+                </div>
+                <div class="warning-message">
+                    ⚠️ 이 작업은 실제 하드웨어를 제어합니다.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cancelHardwareControl()">취소</button>
+                <button class="btn-confirm" onclick="confirmHardwareControl()">적용하기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 하드웨어 제어 진행 상황 모달 -->
+    <div class="hardware-progress-modal" id="hardwareProgressModal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>하드웨어 제어 진행 중</h3>
+            </div>
+            <div class="modal-body">
+                <div class="progress-container">
+                    <div class="progress-bar-hw" id="hardwareProgressBar">
+                        <div class="progress-fill-hw" id="hardwareProgressFill"></div>
+                    </div>
+                    <div class="progress-text" id="hardwareProgressText">하드웨어 연결 중...</div>
+                </div>
+                <div class="hardware-status" id="hardwareStatus">
+                    <div class="status-item">
+                        <span class="status-icon" id="connectionStatus">⏳</span>
+                        <span>아두이노 연결</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-icon" id="commandStatus">⏳</span>
+                        <span>명령 전송</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-icon" id="executionStatus">⏳</span>
+                        <span>실행 완료</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeHardwareProgress()" id="closeProgressBtn" style="display: none;">닫기</button>
+                <button class="btn-retry" onclick="retryHardwareControl()" id="retryBtn" style="display: none;">재시도</button>
+            </div>
+        </div>
     </div>
     
     <script src="/static/js/mobile/progress.js"></script>
