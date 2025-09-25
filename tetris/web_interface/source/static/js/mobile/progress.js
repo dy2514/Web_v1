@@ -618,6 +618,7 @@ function openDetailPanel() {
         // target.innerHTML = '';
         // target.appendChild(source);
         // source.style.display = 'block';
+        document.querySelector('.topbar img').style.opacity = 0;
         panel.classList.add('show');
         panel.setAttribute('aria-hidden', 'false');
         detailPanelOpen = true;
@@ -633,6 +634,7 @@ function closeDetailPanel() {
     const panel = document.getElementById('detailPanel');
     const source = document.getElementById('stepResults');
     if (panel) {
+        document.querySelector('.topbar img').style.opacity = 1;
         panel.classList.remove('show');
         panel.setAttribute('aria-hidden', 'true');
     }

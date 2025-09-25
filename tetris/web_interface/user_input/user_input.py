@@ -126,7 +126,7 @@ def get_user_input_web(
     scenario: Optional[str] = None
     
     try:
-        deadline = time.monotonic() + 600  # 최대 10분 대기
+        deadline = time.monotonic() + 1200
         while time.monotonic() < deadline:
             status = get_global_status()
             

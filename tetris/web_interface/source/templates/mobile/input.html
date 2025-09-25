@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="topbar">
-        <img src="/static/images/back-arrows.png" alt="AI TETRIS">
+        <img src="/static/images/back_arrows.png" alt="AI TETRIS">
         <h1>AI TETRIS</h1>
     </div>
 
@@ -29,7 +29,7 @@
                 <circle cx="12" cy="8" r="4" fill="#9ca3af"/>
                 <rect x="5" y="13" width="14" height="8" rx="4" fill="#9ca3af"/>
             </svg>
-            <h3 class="section-title">탑승 인원</h3>
+            <h3 class="section-title">몇 명이 탑승하시나요?</h3>
         </div>
         <p class="section-desc">1열을 제외한 차량 탑승 인원을 알려주세요.</p>
 
@@ -53,10 +53,11 @@
         <div class="photo-box" aria-label="사진 촬영 영역">
             <img id="photo-preview" alt="업로드된 사진 미리보기">
             <input id="photo" type="file" accept="image/*" capture="environment">
-            <label id="btnPhotoIn" for="photo">사진 촬영</label>
+            <label id="btnPhotoIn" for="photo">
+                <img src="/static/images/add_photo_alternate.svg" alt="사진 추가 아이콘" class="photo-icon">
+                <p>사진 등록하기</p>
+            </label>
         </div>
-
-        <label id="btnPhotoOut" for="photo">사진 촬영</label>
 
         <button id="submit" class="cta" disabled>최적 배치 시작</button>
         <p id="note" class="sr-only" aria-live="polite"></p>
@@ -227,13 +228,13 @@
             </div>
 
             <div class="recent-photos" aria-label="최근 사용자 사진">
-                <div class="photo-thumb"><img src="/user_input/luggage_image/0.jpg" alt="최근 사진 1"></div>
-                <div class="photo-thumb"><img src="/user_input/luggage_image/1-1.jpg" alt="최근 사진 2"></div>
-                <div class="photo-thumb"><img src="/user_input/luggage_image/1-2.jpg" alt="최근 사진 3"></div>
+                <div class="photo-thumb"><img src="/static/images/ex_luggage_1.jpg" alt="짐 사진 1"></div>
+                <div class="photo-thumb"><img src="/static/images/ex_luggage_2.jpg" alt="짐 사진 2"></div>
+                <div class="photo-thumb"><img src="/static/images/ex_luggage_3.jpg" alt="짐 사진 3"></div>
             </div>
 
             <div class="sheet-actions">
-                <button type="button" class="sheet-btn primary" id="sheetUpload">사진등록</button>
+                <button type="button" class="sheet-btn primary" id="sheetUpload">카메라 열기</button>
             </div>
         </div>
     </div>

@@ -15,7 +15,6 @@ const submit = document.querySelector('#submit');
 const notice = document.querySelector('#notice');
 const preview = document.querySelector('#photo-preview');
 const btnPhotoIn = document.querySelector('#btnPhotoIn');
-const btnPhotoOut = document.querySelector('#btnPhotoOut');
 const photoBox = document.querySelector('.photo-box');
 const sheet = document.getElementById('photoSheet');
 const sheetOverlay = document.getElementById('sheetOverlay');
@@ -326,8 +325,8 @@ photo.addEventListener('change', async () => {
         if (!d.success) { alert('업로드 실패'); return; }
         currentScenario = d.data.scenario;
         btnPhotoIn.style.display = 'none';
-        btnPhotoOut.style.display = 'flex';
         showNotice('사진이 업로드 되었습니다!');
+        closePhotoSheet();
         submit.disabled = false;
         submit.classList.add('active');
     } catch (e) {
@@ -353,8 +352,20 @@ function closePhotoSheet() {
     sheetOverlay.setAttribute('aria-hidden', 'true');
 }
 
+if (btnPhotoIn) {
+    btnPhotoIn.addEventListener('click', (e) => {
+        e.preventDefault(); // 기본 동작 방지
+        openPhotoSheet(); // 설명 모달 열기
+    });
+}
+
 if (photoBox) {
-    photoBox.addEventListener('click', () => { openPhotoSheet(); });
+    photoBox.addEventListener('click', (e) => {
+        // btnPhotoIn이 아닌 경우에만 모달 열기
+        if (e.target !== btnPhotoIn) {
+            openPhotoSheet();
+        }
+    });
 }
 if (sheetOverlay) {
     sheetOverlay.addEventListener('click', () => { closePhotoSheet(); });

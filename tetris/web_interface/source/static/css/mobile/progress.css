@@ -626,7 +626,7 @@ html, body {
     border: solid #002c5e;
     cursor: not-allowed;
     box-shadow: 0 4px 16px rgba(156, 163, 175, 0.25);
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .result-check-button:disabled:hover {
