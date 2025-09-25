@@ -3,11 +3,95 @@
  * 데스크탑 컨트롤 화면 전용 스타일
  */
 
+ @font-face {
+    font-family: "HyundaiSansTextKRMedium";
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRRegular";
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+html, body {
+    margin: 0;
+    background: #fff;
+    color: var(--black);
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
 /* 메인 컨테이너 */
 .krds-container {
     margin: 0 auto;
     background-color: var(--color-background, #f8f9fa);
     min-height: 100vh;
+}
+
+/* 메인 콘텐츠 영역 */
+.krds-main {
+    padding: 0 1rem;
+}
+
+/* Flex 레이아웃 개선 */
+.krds-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.krds-row:last-child {
+    margin-bottom: 0;
+}
+
+/* 3열 레이아웃 스타일 */
+.krds-grid--12 {
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.krds-col--4 {
+    flex: 1;
+    min-width: 0; /* flex item이 내용에 따라 축소될 수 있도록 */
+}
+
+/* 카드 섹션 스타일 */
+.card-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.card-row {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.card-row--horizontal {
+    flex-direction: row;
+}
+
+.card-row--vertical {
+    flex-direction: column;
+}
+
+/* 카드 높이 통일 */
+.krds-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.krds-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 헤더 스타일 */
@@ -82,22 +166,23 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 0.5rem;
 }
 
 .krds-card__body {
     padding: 1.5rem;
+    margin-bottom: -25px;
 }
 
 /* QR 코드 섹션 */
 .qr-section {
     text-align: center;
     padding: 1rem;
+    gap: 3px;
 }
 
 .qr-code-container {
-    width: 200px;
-    height: 200px;
+    width: 7vw;
+    height: 7vw;
     margin: 0 auto 1rem;
     border: 2px dashed #d1d5db;
     border-radius: 8px;
@@ -120,7 +205,7 @@
 
 /* 상태 테이블 */
 .status-section {
-    padding: 1rem;
+    padding: 1rem 0 1rem 0;
 }
 
 .krds-table {
@@ -132,13 +217,13 @@
 .krds-table th,
 .krds-table td {
     padding: 0.75rem;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #e5e7eb;
 }
 
 .krds-table th {
     background-color: #f8fafc;
-    font-weight: 600;
+    font-size: 1.5rem;
     color: #374151;
 }
 
@@ -213,6 +298,10 @@
     color: #1f2937;
 }
 
+.krds-title.krds-title--md {
+    font-size: 1.5rem;
+}
+
 /* 아두이노 상태 테이블 */
 .arduino-connection-status {
     margin-top: 1rem;
@@ -235,7 +324,7 @@
     background-color: #f8fafc;
     padding: 0.75rem;
     text-align: center;
-    font-weight: 600;
+    font-size: 1.5rem;
     color: #374151;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -245,6 +334,43 @@
 }
 
 .arduino-status-block {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 라즈베리파이 상태 테이블 */
+.raspberry-connection-status {
+    margin-top: 1rem;
+}
+
+.raspberry-status-table {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.raspberry-header-row {
+    display: contents;
+}
+
+.raspberry-cell-header {
+    background-color: #f8fafc;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.raspberry-status-row {
+    display: contents;
+}
+
+.raspberry-status-block {
     padding: 0.75rem;
     text-align: center;
     border-bottom: 1px solid #e5e7eb;
@@ -462,6 +588,23 @@
     margin-top: 1rem;
 }
 
+/* 시스템 제어 버튼 스타일 */
+.system-control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.system-control-buttons .krds-button-group {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.system-control-buttons .krds-btn {
+    width: 100%;
+    justify-content: center;
+}
+
 .krds-btn {
     display: inline-flex;
     align-items: center;
@@ -504,6 +647,10 @@
         padding: 1rem;
     }
     
+    .krds-main {
+        padding: 0 0.5rem;
+    }
+    
     .krds-header__content {
         flex-direction: column;
         gap: 1rem;
@@ -515,12 +662,23 @@
     }
     
     .krds-grid--12 {
-        display: block;
+        flex-direction: column;
+        gap: 0.5rem;
     }
     
+    .krds-row {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .krds-col--4,
     .krds-col--6 {
         width: 100%;
         margin-bottom: 1rem;
+    }
+    
+    .card-row {
+        flex-direction: column;
     }
     
     .krds-step-wrap {
@@ -532,7 +690,8 @@
         display: none;
     }
     
-    .arduino-status-table {
+    .arduino-status-table,
+    .raspberry-status-table {
         grid-template-columns: repeat(2, 1fr);
     }
 }

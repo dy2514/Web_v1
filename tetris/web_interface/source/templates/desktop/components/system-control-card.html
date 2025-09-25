@@ -9,18 +9,24 @@
             <span class="material-icons krds-icon krds-icon--lg" aria-hidden="true">settings</span>
             <h2 class="krds-title krds-title--lg">시스템 제어</h2>
         </div>
-        <p class="krds-text krds-text--secondary">시스템 관리 및 제어</p>
     </div>
     <div class="krds-card__body">
-        <div class="krds-button-group krds-button-group--center">
-            <button class="krds-btn krds-btn--secondary krds-btn--lg" onclick="refreshStatus()" aria-label="시스템 상태 새로고침">
-                <span class="material-icons krds-icon" aria-hidden="true">refresh</span>
-                상태 새로고침
-            </button>
-            <button class="krds-btn krds-btn--danger krds-btn--lg" onclick="resetSystem()" aria-label="시스템 초기화">
-                <span class="material-icons krds-icon" aria-hidden="true">restart_alt</span>
-                시스템 초기화
-            </button>
+        <div class="system-control-buttons">
+            <!-- 첫 번째 행: 상태 새로고침 -->
+            <div class="krds-button-group krds-button-group--center" style="margin-bottom: 1rem;">
+                <button class="krds-btn krds-btn--secondary krds-btn--lg" onclick="refreshStatus()" aria-label="시스템 상태 새로고침">
+                    <span class="material-icons krds-icon" aria-hidden="true">refresh</span>
+                    상태 새로고침
+                </button>
+            </div>
+            
+            <!-- 두 번째 행: 시스템 초기화 -->
+            <div class="krds-button-group krds-button-group--center">
+                <button class="krds-btn krds-btn--danger krds-btn--lg" onclick="resetSystem()" aria-label="시스템 초기화">
+                    <span class="material-icons krds-icon" aria-hidden="true">restart_alt</span>
+                    시스템 초기화
+                </button>
+            </div>
         </div>
     </div>
 </div>

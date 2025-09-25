@@ -52,14 +52,6 @@
     </style>
 </head>
 <body>
-    <!-- 테스트용 기본 콘텐츠 -->
-    <div class="test-content">
-        <h1>🚀 TETRIS Control Dashboard</h1>
-        <p>AI 기반 좌석 배치 최적화 시스템</p>
-        <p><span class="status-indicator"></span>시스템 연결됨</p>
-        <p>이 화면이 보인다면 기본 HTML 렌더링은 정상입니다.</p>
-    </div>
-
     <!-- 메인 컨테이너 -->
     <div class="krds-container">
         <!-- 헤더 섹션 -->
@@ -67,27 +59,30 @@
 
         <!-- 메인 콘텐츠 영역 -->
         <main class="krds-main">
-            <!-- 그리드 컨테이너 -->
-            <div class="krds-grid krds-grid--12" style="display: flex;">
+            <!-- 상단 카드 섹션 (모바일 + 하드웨어 + 시스템 제어) -->
+            <div class="krds-grid krds-grid--12" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 
-                <!-- 모바일 접속 현황 카드 (6열) -->
-                <div class="krds-col krds-col--6" style="flex: 2;">
+                <!-- 모바일 접속 현황 카드 (4열) -->
+                <div class="krds-col krds-col--4" style="flex: 3;">
                     {% include 'desktop/components/mobile-status-card.html' %}
                 </div>
-                <!-- 하드웨어 동작 현황 카드 (6열) -->
-                <div class="krds-col krds-col--6" style="flex: 1;">
+                
+                <!-- 하드웨어 동작 현황 카드 (4열) -->
+                <div class="krds-col krds-col--4" style="flex: 3;">
                     {% include 'desktop/components/hardware-status-card.html' %}
                 </div>
+                
+                <!-- 시스템 제어 버튼들 (4열) -->
+                <div class="krds-col krds-col--4" style="flex: 1;">
+                    {% include 'desktop/components/system-control-card.html' %}
+                </div>
             </div>
-            <div>
-                <!-- AI 처리 단계별 진행 상황 (전체 12열) -->
+            
+            <!-- AI 처리 단계별 진행 상황 (전체 12열) -->
+            <div class="krds-grid krds-grid--12">
                 <div class="krds-col krds-col--12">
                     {% include 'desktop/components/ai-progress-card.html' %}
                 </div>
-            </div>
-            <!-- 시스템 제어 버튼들 (전체 12열) -->
-            <div class="krds-col krds-col--12" style="display: inline-block;width: 50%;">
-                {% include 'desktop/components/system-control-card.html' %}
             </div>
         </main>
     </div>
