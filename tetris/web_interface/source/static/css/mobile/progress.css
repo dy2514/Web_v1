@@ -1,30 +1,65 @@
+@font-face {
+    font-family: "HyundaiSansTextKRMedium";
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRRegular";
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --navy: #002c5f;
+    --black: #000;
+    --white: #fff;
+    --dark: #374151;
+    --light: #E5E7EB;
+    --chipbg: #F3F4F6;
+    --notice-bg: rgba(55,65,81,.9);
+    --indent: 26px;
+    --padX: 16px;
+}
+
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Hyundai Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-    color: #2d3748;
-    line-height: 1.6;
-    min-height: 100vh;
+html, body {
+    margin: 0;
+    background: #fff;
+    color: var(--black);
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
-.header {
-    background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
-    padding: 14px 20px;
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
+    justify-content: center;
+    padding: 20px;
+}
+
+.topbar img {
+    width: 16px;
+    height: 20px;
+    margin-right: auto;
+}
+
+.topbar h1 {
+    margin-right: auto;
+    font-family: 'HyundaiSansTextKRMedium';
+    font-size: 22px;
+    color: var(--black);
+    letter-spacing: .2px;
 }
 
 .back-btn {
@@ -73,8 +108,7 @@ body {
 
 .main-content {
     /* background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); */
-    margin-top: 100px;
-    padding: 32px 20px;
+    padding: 22px 20px;
     text-align: center;
     max-width: 480px;
     margin-left: auto;
@@ -107,6 +141,284 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(226, 232, 240, 0.8);
     backdrop-filter: blur(10px);
+}
+
+.progress-detail-button {
+    color: gray;
+    text-decoration: underline;
+    font-size: 16px;
+}
+
+/* Progress Bar 스타일 */
+.progress-bar-container {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.6s ease-in-out;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.progress-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+    position: relative;
+}
+
+.progress-label:first-child {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.progress-label:last-child {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+/* 하드웨어 제어 모달 스타일 */
+.hardware-confirm-modal,
+.hardware-progress-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a365d;
+    text-align: center;
+}
+
+.modal-body p {
+    margin: 0 0 16px 0;
+    color: #4a5568;
+    line-height: 1.5;
+}
+
+.placement-code-preview {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.placement-code-preview strong {
+    color: #2d3748;
+}
+
+#placementCodeValue {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #3b82f6;
+    letter-spacing: 1px;
+}
+
+.warning-message {
+    background: #fef5e7;
+    border: 1px solid #f6ad55;
+    border-radius: 8px;
+    padding: 12px;
+    color: #744210;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 16px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-cancel,
+.btn-confirm,
+.btn-close,
+.btn-retry {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.btn-cancel:hover {
+    background: #cbd5e0;
+}
+
+.btn-confirm {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background: #2563eb;
+}
+
+.btn-close {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-close:hover {
+    background: #16a34a;
+}
+
+.btn-retry {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-retry:hover {
+    background: #d97706;
+}
+
+/* 하드웨어 진행 상황 스타일 */
+.progress-container {
+    margin: 20px 0;
+}
+
+.progress-bar-hw {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-fill-hw {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.6s ease-in-out;
+}
+
+.hardware-status {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.status-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.status-item.completed .status-icon {
+    color: #22c55e;
+}
+
+.status-item.error .status-icon {
+    color: #ef4444;
+}
+
+.status-item.processing .status-icon {
+    color: #3b82f6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .progress-percentage {
@@ -277,19 +589,19 @@ body {
 }
 
 .result-check-button {
+    font-family: 'HyundaiSansTextKRRegular';
     width: 100%;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+    padding: 12px 24px;
+    background: #002c5e;
     color: white;
     border: none;
-    border-radius: 16px;
+    border-radius: 6px;
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 32px rgba(26, 54, 93, 0.25);
     letter-spacing: -0.3px;
-    display: none;
 }
 
 .result-check-button.show {
@@ -297,7 +609,7 @@ body {
 }
 
 .result-check-button:hover {
-    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    background: #002c5e;
     transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(26, 54, 93, 0.35);
 }
@@ -305,6 +617,21 @@ body {
 .result-check-button:active {
     transform: translateY(-1px);
     box-shadow: 0 6px 24px rgba(26, 54, 93, 0.3);
+}
+
+.result-check-button:disabled {
+    /* background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); */
+    background: white;
+    color: #002c5e;
+    border: solid #002c5e;
+    cursor: not-allowed;
+    box-shadow: 0 4px 16px rgba(156, 163, 175, 0.25);
+    opacity: 0.6;
+}
+
+.result-check-button:disabled:hover {
+    transform: none;
+    box-shadow: 0 4px 16px rgba(156, 163, 175, 0.25);
 }
 
 /* 상세 보기 패널 (오버레이) */

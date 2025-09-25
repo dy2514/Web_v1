@@ -50,6 +50,7 @@ logs/
 *.log
 test_state.json
 tetris_secrets.json
+tetris/tetris_out/out_step_by_step/
 
 # Temporary files
 *.tmp
