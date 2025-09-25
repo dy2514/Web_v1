@@ -9,7 +9,6 @@
             <span class="material-icons krds-icon krds-icon--lg" aria-hidden="true">settings</span>
             <h2 class="krds-title krds-title--lg">하드웨어 동작 현황</h2>
         </div>
-        <p class="krds-text krds-text--secondary">라즈베리파이5 리소스 현황 및 아두이노 통신 현황</p>
     </div>
     <div class="krds-card__body">
         <div class="krds-row" style="display: flex;">
@@ -20,29 +19,35 @@
                         <span class="material-icons krds-icon" aria-hidden="true">memory</span>
                         라즈베리파이5 리소스 현황
                     </h3>
-                    <div class="krds-grid krds-grid--2">
-                        <div class="krds-col krds-col--6">
-                            <div class="krds-stat">
-                                <div class="krds-stat__label">CPU</div>
-                                <div class="krds-stat__value" id="cpuStatusValue">00%</div>
+                    <div class="raspberry-connection-status">
+                        <div class="raspberry-status-table">
+                            <div class="raspberry-header-row">
+                                <div class="raspberry-cell-header">CPU</div>
+                                <div class="raspberry-cell-header">RAM</div>
+                                <div class="raspberry-cell-header">세션</div>
+                                <div class="raspberry-cell-header">네트워크</div>
                             </div>
-                        </div>
-                        <div class="krds-col krds-col--6">
-                            <div class="krds-stat">
-                                <div class="krds-stat__label">RAM</div>
-                                <div class="krds-stat__value" id="memoryStatusValue">00%</div>
-                            </div>
-                        </div>
-                        <div class="krds-col krds-col--6">
-                            <div class="krds-stat">
-                                <div class="krds-stat__label">세션</div>
-                                <div class="krds-stat__value" id="sessionStatusValue">00%</div>
-                            </div>
-                        </div>
-                        <div class="krds-col krds-col--6">
-                            <div class="krds-stat">
-                                <div class="krds-stat__label">네트워크</div>
-                                <div class="krds-stat__value" id="networkStatusValue">00%</div>
+                            <div class="raspberry-status-row">
+                                <div class="raspberry-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="cpuStatus" data-status="disconnected">
+                                        끊김
+                                    </span>
+                                </div>
+                                <div class="raspberry-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="memoryStatus" data-status="disconnected">
+                                        끊김
+                                    </span>
+                                </div>
+                                <div class="raspberry-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="sessionStatus" data-status="disconnected">
+                                        끊김
+                                    </span>
+                                </div>
+                                <div class="raspberry-status-block">
+                                    <span class="krds-badge krds-badge--danger" id="networkStatus" data-status="disconnected">
+                                        끊김
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -54,7 +59,7 @@
                 <div class="arduino-section">
                     <h3 class="krds-title krds-title--md">
                         <span class="material-icons krds-icon" aria-hidden="true">usb</span>
-                        아두이노 통신 현황
+                        아두이노 연결 현황
                     </h3>
                     <div class="arduino-connection-status">
                         <div class="arduino-status-table">
@@ -67,22 +72,22 @@
                             <div class="arduino-status-row">
                                 <div class="arduino-status-block">
                                     <span class="krds-badge krds-badge--danger" id="port1Status" data-status="disconnected">
-                                        연결 끊김
+                                        끊김
                                     </span>
                                 </div>
                                 <div class="arduino-status-block">
                                     <span class="krds-badge krds-badge--danger" id="port2Status" data-status="disconnected">
-                                        연결 끊김
+                                        끊김
                                     </span>
                                 </div>
                                 <div class="arduino-status-block">
                                     <span class="krds-badge krds-badge--danger" id="port3Status" data-status="disconnected">
-                                        연결 끊김
+                                        끊김
                                     </span>
                                 </div>
                                 <div class="arduino-status-block">
                                     <span class="krds-badge krds-badge--danger" id="port4Status" data-status="disconnected">
-                                        연결 끊김
+                                        끊김
                                     </span>
                                 </div>
                             </div>
