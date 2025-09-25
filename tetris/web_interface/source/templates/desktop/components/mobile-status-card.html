@@ -1,0 +1,92 @@
+<!--
+    모바일 접속 현황 카드 컴포넌트
+    - QR 코드 표시
+    - 모바일 접속 상태
+    - 이미지 업로드 상태
+    - 실행 트리거 상태
+-->
+<div class="krds-card">
+    <div class="krds-card__header">
+        <div class="krds-card__title">
+            <span class="material-icons krds-icon krds-icon--lg" aria-hidden="true">smartphone</span>
+            <h2 class="krds-title krds-title--lg">모바일 접속 현황</h2>
+        </div>
+        <p class="krds-text krds-text--secondary">모바일 기기 접속 및 트리거 상태</p>
+    </div>
+    <div class="krds-card__body">
+        <!-- QR 코드 섹션 -->
+        <div class="krds-row">
+            <div class="krds-col krds-col--6">
+                <div class="qr-section">
+                    <div class="qr-code-container" id="qrCodeContainer">
+                        <div class="qr-code-loading" id="qrCodeText">QR 코드 로딩 중...</div>
+                        <img id="qrCodeImage" src="/desktop/qr.png" alt="접속 QR" style="display: none;">
+                    </div>
+                    <div class="krds-text krds-text--center">
+                        모바일에서 스캔하여 연결하세요
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 상태 테이블 섹션 -->
+            <div class="krds-col krds-col--6">
+                <div class="status-section">
+                    <table class="krds-table" role="table" aria-label="모바일 접속 현황">
+                        <caption class="sr-only">모바일 기기 접속 상태, 이미지 업로드 상태, 실행 트리거 상태를 표시하는 테이블</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">상태 유형</th>
+                                <th scope="col">현재 상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="mobileConnectionRow" data-status="disconnected">
+                                <th scope="row">
+                                    <div class="status-type">
+                                        <span class="material-icons status-type-icon" aria-hidden="true">smartphone</span>
+                                        <span class="status-type-text">모바일 접속 상태</span>
+                                    </div>
+                                </th>
+                                <td>
+                                    <span class="krds-badge krds-badge--secondary" id="mobileConnectionStatus" data-status="disconnected">
+                                        <span class="status-indicator" aria-hidden="true"></span>
+                                        <span class="status-text">접속 없음</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr id="imageUploadRow" data-status="waiting">
+                                <th scope="row">
+                                    <div class="status-type">
+                                        <span class="material-icons status-type-icon" aria-hidden="true">cloud_upload</span>
+                                        <span class="status-type-text">이미지 업로드 상태</span>
+                                    </div>
+                                </th>
+                                <td>
+                                    <span class="krds-badge krds-badge--secondary" id="imageUploadStatus" data-status="waiting">
+                                        <span class="status-indicator" aria-hidden="true"></span>
+                                        <span class="status-text">대기중</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr id="executionTriggerRow" data-status="inactive">
+                                <th scope="row">
+                                    <div class="status-type">
+                                        <span class="material-icons status-type-icon" aria-hidden="true">play_circle</span>
+                                        <span class="status-type-text">실행 트리거 작동 여부</span>
+                                    </div>
+                                </th>
+                                <td>
+                                    <span class="krds-badge krds-badge--secondary" id="executionTriggerStatus" data-status="inactive">
+                                        <span class="status-indicator" aria-hidden="true"></span>
+                                        <span class="status-text">비활성</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

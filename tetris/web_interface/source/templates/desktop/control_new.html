@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRIS - 데스크탑 관제 (현대차 브랜딩)</title>
+    
+    <!-- KRDS UI/UX 라이브러리 -->
+    <link href="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.css" type="text/css" rel="stylesheet" />
+    
+    <!-- Google Fonts Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- 디자인 시스템 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop/control.css') }}">
+</head>
+<body>
+    <!-- 메인 컨테이너 -->
+    <div class="krds-container">
+        <!-- 헤더 섹션 -->
+        {% include 'desktop/components/header.html' %}
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="krds-main">
+            <!-- 그리드 컨테이너 -->
+            <div class="krds-grid krds-grid--12">
+                
+                <!-- 모바일 접속 현황 카드 (6열) -->
+                <div class="krds-col krds-col--6">
+                    {% include 'desktop/components/mobile-status-card.html' %}
+                </div>
+
+                <!-- 하드웨어 동작 현황 카드 (6열) -->
+                <div class="krds-col krds-col--6">
+                    {% include 'desktop/components/hardware-status-card.html' %}
+                </div>
+
+                <!-- AI 처리 단계별 진행 상황 (전체 12열) -->
+                <div class="krds-col krds-col--12">
+                    {% include 'desktop/components/ai-progress-card.html' %}
+                </div>
+
+                <!-- 시스템 제어 버튼들 (전체 12열) -->
+                <div class="krds-col krds-col--12">
+                    {% include 'desktop/components/system-control-card.html' %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- KRDS UI/UX JavaScript -->
+    <script defer src="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.js"></script>
+    
+    <!-- 통합 통신 구조 스크립트 -->
+    <script src="{{ url_for('static', filename='js/config/frontend-config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/validation-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/dom-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/performance-optimizer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/error-handler.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/unified-communication-manager.js') }}"></script>
+    
+    <!-- 메인 컨트롤 스크립트 -->
+    <script src="{{ url_for('static', filename='js/desktop/control.js') }}"></script>
+</body>
+</html>
+

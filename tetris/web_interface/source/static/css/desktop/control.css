@@ -1,497 +1,570 @@
-/* 데스크탑 관제 화면 스타일 */
-.control-container {
+/**
+ * TETRIS Control Dashboard - Desktop Styles
+ * 데스크탑 컨트롤 화면 전용 스타일
+ */
+
+/* 메인 컨테이너 */
+.krds-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
-    background: #f8f9fa;
+    background-color: var(--color-background, #f8f9fa);
     min-height: 100vh;
 }
 
-.control-header {
+/* 헤더 스타일 */
+.krds-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.krds-header__content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.control-header h1 {
-    font-size: 2.5rem;
-    color: #333;
+.krds-header__title h1 {
     margin: 0;
+    font-size: 2.5rem;
     font-weight: 700;
 }
 
-.connection-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.krds-header__title p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
     font-size: 1.1rem;
-    font-weight: 500;
 }
 
-.status-indicator {
+.krds-header__status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.krds-status-indicator {
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    background-color: #10b981;
     animation: pulse 2s infinite;
-}
-
-.status-indicator.online {
-    background: #28a745;
-}
-
-.status-indicator.offline {
-    background: #dc3545;
 }
 
 @keyframes pulse {
-    0% { opacity: 1; }
+    0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
-    100% { opacity: 1; }
 }
 
-/* 입력 대기 섹션 */
-.waiting-section {
-    text-align: center;
-    padding: 60px 20px;
+/* 카드 스타일 */
+.krds-card {
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.waiting-content h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 20px;
-    font-weight: 600;
+.krds-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
-.waiting-content p {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 40px;
-    line-height: 1.6;
+.krds-card__header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-.waiting-icon {
-    font-size: 4rem;
-    margin-bottom: 30px;
-    opacity: 0.7;
+.krds-card__title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-.qr-code {
-    display: inline-block;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 15px;
-    border: 2px dashed #dee2e6;
+.krds-card__body {
+    padding: 1.5rem;
 }
 
-.qr-placeholder {
+/* QR 코드 섹션 */
+.qr-section {
+    text-align: center;
+    padding: 1rem;
+}
+
+.qr-code-container {
     width: 200px;
     height: 200px;
+    margin: 0 auto 1rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9fafb;
+}
+
+.qr-code-loading {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.qr-code-container img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
+}
+
+/* 상태 테이블 */
+.status-section {
+    padding: 1rem;
+}
+
+.krds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.krds-table th,
+.krds-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.krds-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #374151;
+}
+
+.status-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-type-icon {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+.status-type-text {
+    font-weight: 500;
+}
+
+/* 배지 스타일 */
+.krds-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.krds-badge--success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.krds-badge--secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.krds-badge--danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* 통계 섹션 */
+.raspberry-section,
+.arduino-section {
+    padding: 1rem;
+}
+
+.krds-stat {
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.krds-stat__label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.krds-stat__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* 아두이노 상태 테이블 */
+.arduino-connection-status {
+    margin-top: 1rem;
+}
+
+.arduino-status-table {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.arduino-header-row {
+    display: contents;
+}
+
+.arduino-cell-header {
+    background-color: #f8fafc;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.arduino-status-row {
+    display: contents;
+}
+
+.arduino-status-block {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 단계 표시기 */
+.step-indicator-container {
+    margin-bottom: 2rem;
+}
+
+.krds-step-wrap {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+}
+
+.krds-step-wrap::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e5e7eb;
+    z-index: 1;
+}
+
+.krds-step-wrap li {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    text-align: center;
+}
+
+.krds-step-wrap li span {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background: white;
-    border-radius: 10px;
-    color: #666;
-    font-size: 0.9rem;
+    gap: 0.5rem;
 }
 
-.qr-placeholder p {
-    margin: 5px 0;
-}
-
-/* 실시간 모니터링 섹션 */
-.monitoring-section {
-    display: grid;
-    gap: 30px;
-}
-
-.image-section {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.image-section h3 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 600;
-}
-
-.image-preview {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.image-preview img {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.image-info {
-    display: flex;
-    justify-content: space-around;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    color: #666;
-}
-
-.image-info p {
-    margin: 0;
-    font-weight: 500;
-}
-
-.image-info span {
-    color: #333;
-    font-weight: 600;
-}
-
-.overall-progress-section {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.overall-progress-section h3 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 600;
-}
-
-.overall-progress {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.progress-bar {
-    flex: 1;
-    background: #e9ecef;
-    border-radius: 15px;
-    height: 12px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    background: linear-gradient(90deg, #28a745, #20c997);
-    height: 100%;
-    width: 0%;
-    transition: width 0.5s ease;
-    border-radius: 15px;
-}
-
-.progress-text {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #333;
-    min-width: 60px;
-    text-align: center;
-}
-
-/* 단계별 진행상황 그리드 */
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.step-card {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    opacity: 0.6;
-    transform: scale(0.95);
-}
-
-.step-card.active {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.step-card.running {
-    border-left: 4px solid #007bff;
-    animation: pulse 2s infinite;
-}
-
-.step-card.completed {
-    border-left: 4px solid #28a745;
-}
-
-.step-card.error {
-    border-left: 4px solid #dc3545;
-}
-
-.step-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.step-icon {
-    font-size: 1.5rem;
-    margin-right: 12px;
+.step {
     width: 40px;
     height: 40px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8f9fa;
-    border-radius: 50%;
-}
-
-.step-header h4 {
-    flex: 1;
-    font-size: 1.1rem;
-    margin: 0;
-    color: #333;
+    color: #6b7280;
     font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.step-status {
-    background: #e9ecef;
-    color: #6c757d;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.85rem;
+.krds-step-wrap li.active .step {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.step-number {
+    font-size: 0.75rem;
+    color: #6b7280;
     font-weight: 500;
 }
 
-.step-card.running .step-status {
-    background: #cce7ff;
-    color: #007bff;
+.step-tit {
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 600;
 }
 
-.step-card.completed .step-status {
-    background: #d4edda;
-    color: #28a745;
+.step-status-text {
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 500;
 }
 
-.step-card.error .step-status {
-    background: #f8d7da;
-    color: #dc3545;
-}
-
-.step-progress {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.step-progress .progress-bar {
-    flex: 1;
-    background: #e9ecef;
-    border-radius: 10px;
-    height: 8px;
+/* 아코디언 스타일 */
+.krds-accordion {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     overflow: hidden;
 }
 
-.step-progress .progress-fill {
-    background: linear-gradient(90deg, #007bff, #0056b3);
-    height: 100%;
-    width: 0%;
-    transition: width 0.5s ease;
-    border-radius: 10px;
+.accordion-item {
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.progress-percent {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #333;
-    min-width: 40px;
-    text-align: right;
+.accordion-item:last-child {
+    border-bottom: none;
 }
 
-.step-result {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-    border-left: 3px solid #28a745;
-}
-
-.result-content {
-    color: #666;
-    line-height: 1.6;
-}
-
-.result-item {
-    margin-bottom: 15px;
-}
-
-.result-item:last-child {
-    margin-bottom: 0;
-}
-
-.result-item h5 {
-    font-size: 1rem;
-    margin-bottom: 8px;
-    color: #333;
-    font-weight: 600;
-}
-
-.result-item pre {
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    overflow-x: auto;
-    margin: 0;
-}
-
-.code-display {
-    background: #2d3748;
-    color: #e2e8f0;
-    padding: 15px;
-    border-radius: 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 2px;
-}
-
-/* 하드웨어 제어 패널 */
-.hardware-control {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.hardware-control h3 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 600;
-}
-
-.control-buttons {
+.btn-accordion {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    transition: background-color 0.2s ease;
 }
 
-.btn {
-    padding: 12px 24px;
+.btn-accordion:hover {
+    background-color: #f8fafc;
+}
+
+.accordion-step-number {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.accordion-step-title {
+    flex: 1;
+    font-weight: 600;
+    color: #374151;
+}
+
+.accordion-step-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.accordion-step-status.waiting {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.accordion-step-status.processing {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.accordion-step-status.completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.accordion-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-collapse.show {
+    max-height: 500px;
+}
+
+.accordion-body {
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.step-detail-content {
+    margin-bottom: 1rem;
+}
+
+.step-progress-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.krds-progress {
+    flex: 1;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.krds-progress__bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    transition: width 0.3s ease;
+}
+
+.step-detail-info ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.step-detail-info li {
+    margin-bottom: 0.5rem;
+    color: #6b7280;
+}
+
+/* 버튼 그룹 */
+.krds-button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.krds-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
     text-decoration: none;
-    text-align: center;
-    display: inline-block;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.krds-btn--secondary {
+    background-color: #f3f4f6;
+    color: #374151;
 }
 
-.btn-primary {
-    background: #007bff;
+.krds-btn--secondary:hover {
+    background-color: #e5e7eb;
+}
+
+.krds-btn--danger {
+    background-color: #ef4444;
     color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
-    background: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+.krds-btn--danger:hover {
+    background-color: #dc2626;
 }
 
-.btn-danger {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-danger:hover:not(:disabled) {
-    background: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: #5a6268;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
-
-.hardware-status {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    color: #666;
-}
-
-.hardware-status p {
-    margin: 0;
-    font-weight: 500;
-}
-
-.hardware-status span {
-    color: #333;
-    font-weight: 600;
+.krds-btn--lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
 }
 
 /* 반응형 디자인 */
-@media (max-width: 1200px) {
-    .steps-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-}
-
 @media (max-width: 768px) {
-    .control-container {
-        padding: 15px;
+    .krds-container {
+        padding: 1rem;
     }
     
-    .control-header {
+    .krds-header__content {
         flex-direction: column;
-        gap: 15px;
+        gap: 1rem;
         text-align: center;
     }
     
-    .control-header h1 {
+    .krds-header__title h1 {
         font-size: 2rem;
     }
     
-    .steps-grid {
-        grid-template-columns: 1fr;
+    .krds-grid--12 {
+        display: block;
     }
     
-    .control-buttons {
-        flex-direction: column;
-    }
-    
-    .btn {
+    .krds-col--6 {
         width: 100%;
+        margin-bottom: 1rem;
     }
+    
+    .krds-step-wrap {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .krds-step-wrap::before {
+        display: none;
+    }
+    
+    .arduino-status-table {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 접근성 개선 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 포커스 스타일 */
+.krds-btn:focus,
+.btn-accordion:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.krds-card {
+    animation: fadeIn 0.5s ease;
 }
