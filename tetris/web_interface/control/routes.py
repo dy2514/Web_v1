@@ -428,8 +428,10 @@ def trigger_hardware():
         if not session_id:
             return jsonify({'success': False, 'error': 'Session ID required'}), 400
         
+        # 세션이 등록되지 않은 경우 자동 등록
         if session_id not in session_connections:
-            return jsonify({'success': False, 'error': 'Invalid session ID'}), 400
+            logger.info(f"세션 자동 등록: {session_id}")
+            register_session(session_id, 'desktop')
         
         # 저장된 분석 결과에서 placement_code 자동 추출
         if not placement_code:
@@ -440,11 +442,13 @@ def trigger_hardware():
                 placement_code = analysis_result['chain4_out']
                 logger.info(f"분석 결과에서 placement_code 자동 추출: {placement_code}")
             else:
-                logger.warning("분석 결과에서 chain4_out을 찾을 수 없습니다.")
-                return jsonify({
-                    'success': False, 
-                    'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 이미지 분석을 완료해주세요.'
-                }), 400
+                # 분석이 완료되지 않은 경우 기본 배치 코드 사용 (테스트용)
+                placement_code = "0000000000000000"  # 16자리 기본값
+                logger.warning(f"분석 결과에서 chain4_out을 찾을 수 없습니다. 기본값 사용: {placement_code}")
+                # return jsonify({
+                #     'success': False, 
+                #     'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 이미지 분석을 완료해주세요.'
+                # }), 400
         
         # 배치 코드 검증
         if placement_code:
@@ -471,7 +475,12 @@ def trigger_hardware():
         
         # 실제 아두이노 제어 실행
         try:
-            from tetris.rpi_controller.rpi_controller import send_automated_command, connect_to_arduinos, arduino_connections
+            import sys
+            import os
+            # rpi_controller 모듈 경로 추가
+            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'rpi_controller'))
+            from rpi_controller import send_automated_command, connect_to_arduinos, arduino_connections
+            
             
             # 아두이노 연결 확인 및 연결
             if not arduino_connections:
@@ -487,7 +496,7 @@ def trigger_hardware():
                 })
             elif command:
                 # 기존 명령어 처리
-                from tetris.rpi_controller.rpi_controller import broadcast_command
+                from rpi_controller.rpi_controller import broadcast_command
                 broadcast_command(command)
                 update_progress_stream(session_id, {
                     'event': 'hardware_progress',
