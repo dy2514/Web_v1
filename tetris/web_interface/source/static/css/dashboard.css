@@ -6,7 +6,7 @@
 /* ========================================
    모던 밝은 테마 대시보드 컨테이너
    ======================================== */
-   @font-face {
+ @font-face {
     font-family: "HyundaiSansTextKRMedium";
     src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
     font-weight: 400;
