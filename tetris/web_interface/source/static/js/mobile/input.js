@@ -662,4 +662,9 @@ async function startStepAnalysis() {
     }
 }
 
+// 홈으로 이동
+function goToHome() {
+    window.location.href = '/mobile/home';
+}
+
 
