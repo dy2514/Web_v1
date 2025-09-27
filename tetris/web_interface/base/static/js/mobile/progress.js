@@ -800,80 +800,42 @@ function displayStepResult(stepNumber, resultData) {
     console.log(`🎯 displayStepResult 호출됨: 단계 ${stepNumber}, 데이터:`, resultData);
     
     
-    const accordionItem = document.getElementById(`accordionItem0${stepNumber}`);
-    
+    const accordionItemButton = document.querySelector(`#accordionItem0${stepNumber} button`);
+    const accordionItemBody = document.querySelector(`#accordionItem0${stepNumber} .accordion-body`);
+    const accordionItemSpan = document.querySelector(`#accordionItem0${stepNumber} button span`);
+
+
     // 이전 데이터 클리어
-    accordionItem.innerHTML = '';
+    accordionItemBody.innerHTML = '';
     
     // 결과 데이터 포맷팅
     const formattedResult = formatStepResult(stepNumber, resultData);
     console.log(`🎯 포맷된 결과:`, formattedResult);
 
     // 새로운 아코디언 요소로 변경
-    const stepTitleList = ['이미지 분석', '짐 인식 및 분류', '차량 공간 계산', '최적 배치 생성'];
-    const newAccordionHtml = `
-      <div id="accordionItem0${stepNumber}" class="accordion-item">
-        <h5 class="accordion-header"><button type="button" id="accordionHeaderSample0${stepNumber}" class="btn-accordion" aria-controls="accordionCollapseSample0${stepNumber}">
-            <span>${stepTitleList[stepNumber - 1]}</span>
-        </button></h5>
-        <div id="accordionCollapseSample01" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample0${stepNumber}">
-        <div class="accordion-body">
-            ${formattedResult}
-        </div>
-        </div>
-    </div>
-    `;
+    // const stepTitleList = ['이미지 분석', '짐 인식 및 분류', '차량 공간 계산', '최적 배치 생성'];
+    // const newAccordionHtml = `
+    //   <div id="accordionItem0${stepNumber}" class="accordion-item">
+    //     <h5 class="accordion-header"><button type="button" id="accordionHeaderSample0${stepNumber}" class="btn-accordion" aria-controls="accordionCollapseSample0${stepNumber}">
+    //         <span>${stepTitleList[stepNumber - 1]}</span>
+    //     </button></h5>
+    //     <div id="accordionCollapseSample01" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample0${stepNumber}">
+    //     <div class="accordion-body">
+    //         ${formattedResult}
+    //     </div>
+    //     </div>
+    // </div>
+    // `;
 
-    accordionItem.innerHTML = newAccordionHtml;
+    accordionItemBody.innerHTML = formattedResult;
+    accordionItemButton.disabled = false;
+    accordionItemSpan.style.color = '#000000';
 
-    // krds 아코디언 초기화
-    krds_accordion.init({
-        allowMultiple: true,  // 여러 아코디언 동시 열기 허용
-        closeOthers: false    // 다른 아코디언 열 때 기존 것 닫지 않음
-    });
-    krds_accordion.setupAccordions();
-    // 아코디언 요소 너비 설정
-    document.querySelectorAll('.accordion-item').forEach(item => {
-        item.parentElement.style.width = '100%';
-    });
-    document.querySelectorAll('.krds-accordion .accordion-item .btn-accordion.active:focus').forEach(item => {
-        item.borderRadius = '5px';
-    });
-    
-    console.log(`단계 ${stepNumber} 결과 표시 완료`);
-}
 
-// 가공된 특정 단계의 결과를 화면에 표시
-function displayProcessedStepResult(stepNumber, processedData) {
-    const resultElement = document.getElementById(`step${stepNumber}Result`);
-    const contentElement = document.getElementById(`step${stepNumber}ResultContent`);
     
-    if (!resultElement || !contentElement) {
-        console.error(`단계 ${stepNumber} 결과 요소를 찾을 수 없습니다.`);
-        return;
-    }
-    
-    // 이전 데이터 클리어
-    contentElement.innerHTML = '';
-    resultElement.style.display = 'none';
-    
-    // 가공된 결과 데이터 포맷팅
-    const formattedResult = formatProcessedStepResult(stepNumber, processedData);
-    
-    // 내용 업데이트
-    contentElement.innerHTML = formattedResult;
-    
-    // 결과 영역 표시
-    resultElement.style.display = 'block';
-    
-    // 애니메이션으로 표시
-    setTimeout(() => {
-        resultElement.classList.add('show', 'completed');
-        initResultToggle(stepNumber);
-    }, 100);
     
     // 단계별 완료 텍스트 표시
-    showStepCompletionText(stepNumber, processedData);
+    showStepCompletionText(stepNumber, resultData);
     
     console.log(`가공된 단계 ${stepNumber} 결과 표시 완료`);
 }

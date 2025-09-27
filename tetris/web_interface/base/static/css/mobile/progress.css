@@ -700,20 +700,6 @@ html, body {
 }
 
 /* 상세 패널 - 진행 타임라인 */
-.timeline {
-    margin: 6px 4px 16px 8px;
-    position: relative;
-    padding-left: 20px;
-}
-.timeline:before {
-    content: "";
-    position: absolute;
-    left: 9px;
-    top: 6px;
-    bottom: 6px;
-    width: 2px;
-    background: #e2e8f0;
-}
 .timeline-item {
     display: flex;
     align-items: center;
@@ -736,6 +722,10 @@ html, body {
 
 .btn-accordion {
     background-color: #ffffff !important;
+}
+
+.btn-accordion span {
+    color: #b7bcc6;
 }
 
 .krds-accordion .accordion-item .btn-accordion.active, .krds-accordion .accordion-item.active .accordion-body {
