@@ -29,8 +29,8 @@ config = get_config()
 
 # Flask 앱 초기화
 app = Flask(__name__, 
-            template_folder=str(Path(__file__).parent / 'source' / 'templates'),
-            static_folder=str(Path(__file__).parent / 'source' / 'static'))
+            template_folder=str(Path(__file__).parent / 'base' / 'templates'),
+            static_folder=str(Path(__file__).parent / 'base' / 'static'))
 app.config['SECRET_KEY'] = config['web']['SECRET_KEY']
 
 # Blueprint 등록 - 단순화된 import
@@ -61,7 +61,7 @@ def index():
 @app.route('/static/<path:filename>')
 def static_files(filename):
     """정적 파일 서빙"""
-    return send_from_directory(str(Path(__file__).parent / 'source' / 'static'), filename)
+    return send_from_directory(str(Path(__file__).parent / 'base' / 'static'), filename)
 
 @app.route('/api/system/performance')
 def system_performance():

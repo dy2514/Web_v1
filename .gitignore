@@ -21,20 +21,6 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual Environment
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
 # OS
 .DS_Store
 .DS_Store?
@@ -48,9 +34,9 @@ Thumbs.db
 uploads/
 logs/
 *.log
-test_state.json
+
 tetris_secrets.json
-tetris/tetris_out/out_step_by_step/
+tetris/tetris_out/log_data/
 
 # Temporary files
 *.tmp

@@ -144,14 +144,6 @@ function showResult() {
     document.getElementById('efficiencyScore').textContent = efficiencyScore + '점';
 }
 
-function downloadResult() {
-    const link = document.createElement('a');
-    link.href = '/user_input/analysis_result.jpg';
-    link.download = 'tetris_result_' + new Date().getTime() + '.jpg';
-    link.click();
-    showNotice('결과가 다운로드되었습니다!');
-}
-
 function shareResult() {
     if (navigator.share) {
         navigator.share({

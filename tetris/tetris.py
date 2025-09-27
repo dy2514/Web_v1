@@ -8,7 +8,7 @@ from time import perf_counter
 
 HERE = Path(__file__).resolve().parent
 MC_DIR = HERE / "main_chain"
-UI_DIR = HERE / "web_interface" / "user_input"
+UI_DIR = HERE / "user_input"
 
 for p in (MC_DIR, UI_DIR):
     if not p.exists():
@@ -81,7 +81,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
 
     # 2-1) 출력 파일 경로 준비
     OUT_ROOT = HERE / "tetris_out"
-    OUT_DIR = OUT_ROOT / ("out_rt" if mode == "web" else "out_scenario")
+    OUT_DIR = OUT_DIR = OUT_ROOT / "log_data"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{scenario}.txt"
 
@@ -201,7 +201,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
         
         # 1단계 결과를 analysis_result에 저장 (새로운 분석 시작)
-        from source.state_manager import state_manager
+        from base.state_manager import state_manager
         # 새로운 analysis_result 시작 (이전 데이터 완전 제거)
         new_analysis_result = {}
         new_analysis_result['chain1_out'] = chain1_out
@@ -317,7 +317,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
     
     # 결과 저장
     OUT_ROOT = HERE / "tetris_out"
-    OUT_DIR = OUT_ROOT / "out_step_by_step"
+    OUT_DIR = OUT_ROOT / "log_data"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{scenario}.txt"
     

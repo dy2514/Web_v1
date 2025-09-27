@@ -105,16 +105,16 @@ def get_user_input_web(
     
     # 통합 웹 서버의 상태 관리 모듈 import
     try:
-        from ..source.utils import get_global_status, update_status
+        from ..base.utils import get_global_status, update_status
     except ImportError:
         try:
-            from source.utils import get_global_status, update_status
+            from base.utils import get_global_status, update_status
         except ImportError:
             # 직접 경로 추가
             web_interface_path = Path(__file__).parent.parent
             if str(web_interface_path) not in sys.path:
                 sys.path.insert(0, str(web_interface_path))
-            from source.utils import get_global_status, update_status
+            from base.utils import get_global_status, update_status
 
     print(f"통합 웹 서버에서 사용자 입력을 기다리는 중...")
     print(f"모바일 접속: http://localhost:{port}/mobile/input")

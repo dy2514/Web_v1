@@ -1,4 +1,4 @@
-# config_manager.py - 설정 관리 클래스
+# config_manager.py - 통합 설정 관리 클래스
 
 import os
 import json
@@ -10,34 +10,46 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 class ConfigManager:
-    """설정 관리 클래스"""
+    """통합 설정 관리 클래스 - config.py + 환경변수 기반 설정"""
     
     def __init__(self, config_path: Optional[str] = None):
         self.config_path = Path(config_path) if config_path else Path(__file__).parent.parent.parent / 'config.py'
         self.config_cache: Dict[str, Any] = {}
         self.last_loaded = None
+        self.use_environment_variables = True  # 환경변수 사용 여부
     
     def load_config(self, env: Optional[str] = None) -> Dict[str, Any]:
-        """설정 로드"""
+        """설정 로드 - config.py 우선, 환경변수 폴백"""
         try:
             # 환경변수에서 환경 설정 읽기
             if env is None:
                 env = os.getenv('TETRIS_ENV', 'production')
             
-            # config.py에서 get_config 함수 호출
-            import sys
-            config_dir = self.config_path.parent
-            if str(config_dir) not in sys.path:
-                sys.path.insert(0, str(config_dir))
+            # 1차: config.py에서 설정 로드 시도
+            try:
+                import sys
+                config_dir = self.config_path.parent
+                if str(config_dir) not in sys.path:
+                    sys.path.insert(0, str(config_dir))
+                
+                from config import get_config
+                config = get_config(env)
+                logger.info(f"Configuration loaded from config.py for environment: {env}")
+                
+            except Exception as config_error:
+                logger.warning(f"Failed to load from config.py: {config_error}")
+                # 2차: 환경변수 기반 설정 로드
+                config = self._load_from_environment_variables(env)
+                logger.info(f"Configuration loaded from environment variables for environment: {env}")
             
-            from config import get_config
-            config = get_config(env)
+            # 환경변수 오버라이드 (환경변수가 있으면 우선 적용)
+            if self.use_environment_variables:
+                config = self._apply_environment_overrides(config)
             
             # 캐시 업데이트
             self.config_cache = config.copy()
             self.last_loaded = datetime.now()
             
-            logger.info(f"Configuration loaded for environment: {env}")
             return config
             
         except Exception as e:
@@ -208,6 +220,80 @@ class ConfigManager:
         logger.info("Reloading configuration...")
         return self.load_config(env)
     
+    def _load_from_environment_variables(self, env: str = 'production') -> Dict[str, Any]:
+        """환경변수 기반 설정 로드"""
+        config = {
+            'web': {
+                'HOST': os.getenv('TETRIS_HOST', '0.0.0.0'),
+                'PORT': int(os.getenv('TETRIS_PORT', '5002')),
+                'DEBUG': os.getenv('TETRIS_DEBUG', 'false').lower() == 'true',
+                'SECRET_KEY': os.getenv('TETRIS_SECRET_KEY', 'dev-secret-key-change-in-production'),
+                'THREADED': True,
+                'USE_RELOADER': False
+            },
+            'websocket': {
+                'HOST': os.getenv('TETRIS_WS_HOST', 'localhost'),
+                'PORT': int(os.getenv('TETRIS_WS_PORT', '8765'))
+            },
+            'upload': {
+                'MAX_FILE_SIZE': int(os.getenv('TETRIS_MAX_FILE_SIZE', '10485760')),  # 10MB
+                'ALLOWED_EXTENSIONS': {'jpg', 'jpeg', 'png', 'gif', 'webp'},
+                'UPLOAD_FOLDER': os.getenv('TETRIS_UPLOAD_FOLDER', 'uploads')
+            },
+            'ai': {
+                'API_KEY': os.getenv('TETRIS_AI_API_KEY', ''),
+                'MODEL': os.getenv('TETRIS_AI_MODEL', 'gemini-pro'),
+                'TIMEOUT': int(os.getenv('TETRIS_AI_TIMEOUT', '120'))
+            },
+            'hardware': {
+                'ARDUINO_PORT': os.getenv('TETRIS_ARDUINO_PORT', '/dev/ttyUSB0'),
+                'BAUD_RATE': int(os.getenv('TETRIS_BAUD_RATE', '9600')),
+                'CONNECTION_TIMEOUT': int(os.getenv('TETRIS_CONNECTION_TIMEOUT', '5'))
+            },
+            'logging': {
+                'LEVEL': os.getenv('TETRIS_LOG_LEVEL', 'INFO'),
+                'FILE': os.getenv('TETRIS_LOG_FILE', 'logs/tetris.log'),
+                'MAX_SIZE': int(os.getenv('TETRIS_LOG_MAX_SIZE', '10485760')),  # 10MB
+                'BACKUP_COUNT': int(os.getenv('TETRIS_LOG_BACKUP_COUNT', '5'))
+            },
+            'performance': {
+                'MONITORING_ENABLED': os.getenv('TETRIS_MONITORING', 'true').lower() == 'true',
+                'MONITORING_INTERVAL': int(os.getenv('TETRIS_MONITORING_INTERVAL', '30')),
+                'MEMORY_LIMIT': int(os.getenv('TETRIS_MEMORY_LIMIT', '1073741824'))  # 1GB
+            },
+            'environment': env
+        }
+        
+        # 환경별 설정 적용
+        if env == 'development':
+            config['web']['DEBUG'] = True
+            config['web']['USE_RELOADER'] = True
+            config['logging']['LEVEL'] = 'DEBUG'
+        elif env == 'production':
+            config['web']['DEBUG'] = False
+            config['web']['USE_RELOADER'] = False
+            config['logging']['LEVEL'] = 'WARNING'
+        
+        return config
+    
+    def _apply_environment_overrides(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        """환경변수로 설정 오버라이드"""
+        # 웹 설정 오버라이드
+        if os.getenv('TETRIS_HOST'):
+            config['web']['HOST'] = os.getenv('TETRIS_HOST')
+        if os.getenv('TETRIS_PORT'):
+            config['web']['PORT'] = int(os.getenv('TETRIS_PORT'))
+        if os.getenv('TETRIS_DEBUG'):
+            config['web']['DEBUG'] = os.getenv('TETRIS_DEBUG').lower() == 'true'
+        if os.getenv('TETRIS_SECRET_KEY'):
+            config['web']['SECRET_KEY'] = os.getenv('TETRIS_SECRET_KEY')
+        
+        # 업로드 설정 오버라이드
+        if os.getenv('TETRIS_MAX_FILE_SIZE'):
+            config['upload']['MAX_FILE_SIZE'] = int(os.getenv('TETRIS_MAX_FILE_SIZE'))
+        
+        return config
+
     def _get_default_config(self) -> Dict[str, Any]:
         """기본 설정 반환"""
         return {
@@ -233,6 +319,41 @@ def get_config_manager() -> ConfigManager:
     if _config_manager is None:
         _config_manager = ConfigManager()
     return _config_manager
+
+# 편의 함수들
+def get_config(env: str = 'production') -> Dict[str, Any]:
+    """전체 설정 반환"""
+    return get_config_manager().load_config(env)
+
+def get_web_config(env: str = 'production') -> Dict[str, Any]:
+    """웹 설정만 반환"""
+    config = get_config(env)
+    return config.get('web', {})
+
+def get_upload_config(env: str = 'production') -> Dict[str, Any]:
+    """업로드 설정만 반환"""
+    config = get_config(env)
+    return config.get('upload', {})
+
+def get_ai_config(env: str = 'production') -> Dict[str, Any]:
+    """AI 설정만 반환"""
+    config = get_config(env)
+    return config.get('ai', {})
+
+def get_hardware_config(env: str = 'production') -> Dict[str, Any]:
+    """하드웨어 설정만 반환"""
+    config = get_config(env)
+    return config.get('hardware', {})
+
+def get_logging_config(env: str = 'production') -> Dict[str, Any]:
+    """로깅 설정만 반환"""
+    config = get_config(env)
+    return config.get('logging', {})
+
+def get_performance_config(env: str = 'production') -> Dict[str, Any]:
+    """성능 설정만 반환"""
+    config = get_config(env)
+    return config.get('performance', {})
 
 def get_config_value(key_path: str, default: Any = None) -> Any:
     """설정 값 조회 편의 함수"""

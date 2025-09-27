@@ -4,6 +4,7 @@ TETRIS 시스템 최종 런처
 단계별 검증 후 안정적 실행
 """
 import sys
+import os
 import time
 import subprocess
 import threading
@@ -48,12 +49,14 @@ def check_prerequisites():
     return True
 
 def test_config_loading():
-    """설정 로딩 테스트"""
+    """설정 로딩 테스트 - config_manager.py 사용"""
     print("\n⚙️ 2단계: 설정 시스템 확인")
     
     try:
-        sys.path.insert(0, "tetris")
-        from config import get_config
+        # config_manager.py 사용
+        sys.path.insert(0, "tetris/web_interface/base")
+        from config_manager import get_config
+        
         config = get_config()
         
         port = config["web"]["PORT"]
@@ -61,11 +64,25 @@ def test_config_loading():
         
         print(f"✅ 웹 서버 설정: {host}:{port}")
         print(f"✅ 비밀키: {'설정됨' if config['web']['SECRET_KEY'] != 'YOUR_SECRET_KEY_HERE' else '미설정'}")
+        print(f"✅ 설정 소스: {'환경변수' if 'TETRIS_HOST' in os.environ else 'config.py'}")
         
         return True, port, host
     except Exception as e:
         print(f"❌ 설정 로딩 실패: {e}")
-        return False, None, None
+        # 폴백: 기존 config.py 시도
+        try:
+            sys.path.insert(0, "tetris")
+            from config import get_config
+            config = get_config()
+            
+            port = config["web"]["PORT"]
+            host = config["web"]["HOST"]
+            
+            print(f"✅ 폴백 설정 로드 성공: {host}:{port}")
+            return True, port, host
+        except Exception as fallback_error:
+            print(f"❌ 폴백 설정 로딩도 실패: {fallback_error}")
+            return False, None, None
 
 def launch_tetris_web(port):
     """TETRIS 웹 시스템 실행"""

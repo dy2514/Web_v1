@@ -14,9 +14,9 @@ web_interface_dir = current_dir.parent
 sys.path.insert(0, str(web_interface_dir))
 
 # Simplified imports
-from source.api_utils import APIResponse, log_api_request, log_api_response, validate_file_upload
-from source.file_handler import save_uploaded_file
-from source.utils import update_status
+from base.api_utils import APIResponse, log_api_request, log_api_response, validate_file_upload
+from base.file_handler import save_uploaded_file
+from base.utils import update_status
 
 from .input_handler import create_input_handler
 from .user_utils import format_upload_response, get_mobile_status_info, log_user_action
@@ -95,11 +95,12 @@ def upload_file():
             logger.error(f"[에러] 파일 업로드 실패: {error_msg}")
             return APIResponse.error(error_msg, "NO_FILE", 400)
         
-        # 중앙 설정을 사용하여 업로드 제한 일치
+        # 중앙 설정을 사용하여 업로드 제한 일치 (config_manager 사용)
         try:
-            from  web_interface.source.simple_config import get_config
+            from web_interface.base.config_manager import get_config
+            logger.info("설정 로드: config_manager 사용")
         except Exception as import_error:
-            logger.error(f"[에러] 상대 import 실패, 절대 import 시도: {import_error}")
+            logger.warning(f"config_manager 상대 import 실패, 절대 import 시도: {import_error}")
             import sys
             import os
             # Web_v1 디렉토리를 Python 경로에 추가
@@ -107,9 +108,10 @@ def upload_file():
             if web_v1_path not in sys.path:
                 sys.path.insert(0, web_v1_path)
             try:
-                from web_interface.source.simple_config import get_config
+                from web_interface.base.config_manager import get_config
+                logger.info("설정 로드: 절대 경로 config_manager 사용")
             except Exception as abs_import_error:
-                logger.error(f"[에러] 절대 import도 실패: {abs_import_error}")
+                logger.error(f"[에러] config_manager 절대 import도 실패: {abs_import_error}")
                 # 기본 설정 사용
                 def get_config():
                     return {
