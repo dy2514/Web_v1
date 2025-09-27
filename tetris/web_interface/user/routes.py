@@ -26,6 +26,28 @@ logger = logging.getLogger(__name__)
 # Blueprint 참조를 위해 동적 import
 from . import user_bp
 
+@user_bp.route('/')
+@user_bp.route('/home')
+def mobile_home():
+    """모바일 홈 페이지"""
+    session_id = str(uuid.uuid4())
+    session['session_id'] = session_id
+    update_status(status='mobile_connected', message='모바일 홈 화면 접속')
+    
+    # 세션 등록 (control 모듈의 함수 사용)
+    try:
+        from ..control.routes import register_session
+        register_session(session_id, 'mobile')
+    except ImportError:
+        # 직접 경로 추가
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        from control.routes import register_session
+        register_session(session_id, 'mobile')
+    
+    return render_template('mobile/home.html')
+
 @user_bp.route('/input')
 def mobile_input():
     """모바일 입력 수집 페이지"""

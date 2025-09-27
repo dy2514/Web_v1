@@ -1,0 +1,596 @@
+/* AI TETRIS 홈화면 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'HyundaiHarmonyM', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    color: #333;
+    overflow-x: hidden;
+}
+
+/* 상단 바 */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.topbar img:hover {
+    opacity: 1;
+}
+
+.topbar h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #002c5f;
+    flex: 1;
+    text-align: center;
+    margin: 0 20px;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.notification-btn, .settings-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-btn:hover, .settings-btn:hover {
+    background: rgba(0, 44, 95, 0.1);
+    color: #002c5f;
+}
+
+.notification-btn svg, .settings-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* 메인 컨테이너 */
+.home-container {
+    padding: 0 0 80px 0;
+    min-height: calc(100vh - 60px);
+}
+
+/* 차량 이미지 섹션 */
+.vehicle-section {
+    text-align: center;
+    padding: 20px 0 30px 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+}
+
+.vehicle-image {
+    position: relative;
+    display: inline-block;
+}
+
+.vehicle-img {
+    width: 280px;
+    height: auto;
+    max-width: 100%;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.15));
+    transition: transform 0.3s ease;
+}
+
+.vehicle-img:hover {
+    transform: scale(1.02);
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+    padding: 0 20px;
+}
+
+.welcome-section {
+    text-align: left;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.welcome-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.brand-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.brand-img {
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+/* 시작하기 버튼 컨테이너 */
+.start-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 20px 20px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.start-button {
+    background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 44, 95, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 44, 95, 0.4);
+}
+
+.start-button:active {
+    transform: translateY(0);
+}
+
+.button-text {
+    font-size: 16px;
+}
+
+.button-arrow {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.start-button:hover .button-arrow {
+    transform: translateX(4px);
+}
+
+/* 제어 패널 */
+.control-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 20px 20px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    background: rgba(0, 44, 95, 0.02);
+    border: 1px solid rgba(0, 44, 95, 0.1);
+}
+
+.control-item:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 44, 95, 0.05);
+    border-color: rgba(0, 44, 95, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 44, 95, 0.15);
+}
+
+.control-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.control-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.control-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* 하단 네비게이션 */
+.bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    min-width: 60px;
+}
+
+.nav-item:hover {
+    background: rgba(0, 44, 95, 0.05);
+}
+
+.nav-item.active {
+    color: #002c5f;
+}
+
+.nav-item.active .nav-icon {
+    color: #002c5f;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.nav-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.nav-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.nav-item.active .nav-label {
+    color: #002c5f;
+}
+
+/* 알림 모달 */
+.notification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-modal.show {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    z-index: 1001;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notification-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.notification-content p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .topbar {
+        padding: 10px 16px;
+    }
+    
+    .topbar h1 {
+        font-size: 18px;
+        margin: 0 16px;
+    }
+    
+    .main-content {
+        padding: 0 16px;
+    }
+    
+    .vehicle-img {
+        width: 240px;
+    }
+    
+    .welcome-title {
+        font-size: 16px;
+    }
+    
+    .start-button {
+        padding: 14px 28px;
+        font-size: 15px;
+    }
+    
+    .control-grid {
+        gap: 12px;
+    }
+    
+    .control-item {
+        padding: 12px 6px;
+    }
+    
+    .control-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .control-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .control-text {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    .vehicle-img {
+        width: 200px;
+    }
+    
+    .welcome-title {
+        font-size: 16px;
+    }
+    
+    .control-grid {
+        gap: 8px;
+    }
+    
+    .control-item {
+        padding: 10px 4px;
+    }
+    
+    .control-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .control-icon svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .control-text {
+        font-size: 10px;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vehicle-section,
+.welcome-section,
+.start-container,
+.control-panel {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.control-panel {
+    animation-delay: 0.2s;
+}
+
+/* 접근성 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: #fff;
+    }
+    
+    .topbar {
+        background: rgba(26, 26, 26, 0.95);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .topbar h1 {
+        color: #fff;
+    }
+    
+    .vehicle-section {
+        background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 0.4) 100%);
+    }
+    
+    .shortcut-item {
+        background: #2d2d2d;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .shortcut-text {
+        color: #fff;
+    }
+    
+    .bottom-navigation {
+        background: #1a1a1a;
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-content {
+        background: #2d2d2d;
+    }
+    
+    .modal-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-header h3 {
+        color: #fff;
+    }
+    
+    .notification-content h4 {
+        color: #fff;
+    }
+    
+    .notification-content p {
+        color: #ccc;
+    }
+}

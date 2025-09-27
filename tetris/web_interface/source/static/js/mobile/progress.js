@@ -1640,3 +1640,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('SSE 연결 실패:', e);
     }
 });
+
+// 홈으로 이동
+function goToHome() {
+    window.location.href = '/mobile/home';
+}

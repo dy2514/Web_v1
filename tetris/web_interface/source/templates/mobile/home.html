@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#002c5f">
+    <title>AI TETRIS - 홈</title>
+    <link rel="stylesheet" href="/static/css/mobile/home.css">
+</head>
+<body>
+    <div class="topbar">
+        <img src="/static/images/back_arrows.png" alt="AI TETRIS" onclick="goBack()">
+        <h1>AI TETRIS</h1>
+        <div class="topbar-actions">
+            <button class="notification-btn" onclick="showNotifications()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+            </button>
+            <button class="settings-btn" onclick="showSettings()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <main class="home-container">
+        <!-- 메인 콘텐츠 -->
+        <section class="main-content">
+            <div class="welcome-section">
+                <h2 class="welcome-title">현대와 함께 편리한 모빌리티 생활을 시작해보세요</h2>
+                <div class="brand-logo">
+                    <img src="/static/images/pv5.png" alt="AI TETRIS 로고" class="brand-img">
+                </div>
+            </div>
+
+            <!-- 시작하기 버튼 박스 -->
+            <div class="start-container">
+                <button class="start-button" onclick="startTetris()">
+                    <span class="button-text">시작하기</span>
+                    <span class="button-arrow">>></span>
+                </button>
+            </div>
+
+            <!-- 제어 패널 -->
+            <section class="control-panel">
+                <div class="control-grid">
+                    <div class="control-item" onclick="navigateToInput()">
+                        <div class="control-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <span class="control-text">AI 분석</span>
+                    </div>
+                    <div class="control-item" onclick="showHistory()">
+                        <div class="control-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13,3c-4.97,0-9,4.03-9,9H1l3.89,3.89.07.14L9,12H6c0-3.87,3.13-7,7-7s7,3.13,7,7-3.13,7-7,7c-1.93,0-3.68-.79-4.94-2.06l-1.42,1.42C8.27,19.99,10.51,21,13,21c4.97,0,9-4.03,9-9S17.97,3,13,3z"/>
+                            </svg>
+                        </div>
+                        <span class="control-text">분석 기록</span>
+                    </div>
+                    <div class="control-item" onclick="showSettings()">
+                        <div class="control-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                            </svg>
+                        </div>
+                        <span class="control-text">설정</span>
+                    </div>
+                    <div class="control-item" onclick="showHelp()">
+                        <div class="control-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M13,19h-2v-2h2V19z M15.07,11.25l-0.9,0.92C13.45,12.9,13,13.5,13,15h-2v-0.5c0-1,0.45-1.7,1.17-2.33L12.9,12.1c-0.35-0.35-0.9-0.35-1.25,0s-0.35,0.9,0,1.25l1.25,1.25c0.9,0.9,1.1,2.15,0.6,3.2L12,18.5c-0.5,0.5-1.3,0.5-1.8,0s-0.5-1.3,0-1.8l0.6-0.6c0.25-0.25,0.25-0.65,0-0.9s-0.65-0.25-0.9,0l-0.6,0.6c-1.1,1.1-1.1,2.9,0,4s2.9,1.1,4,0l1.25-1.25c1.4-1.4,1.4-3.65,0-5.05L15.07,11.25z"/>
+                            </svg>
+                        </div>
+                        <span class="control-text">도움말</span>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-navigation">
+        <div class="nav-item active" onclick="navigateToHome()">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </div>
+            <span class="nav-label">홈</span>
+        </div>
+        <div class="nav-item" onclick="navigateToInput()">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            <span class="nav-label">분석</span>
+        </div>
+        <div class="nav-item" onclick="navigateToProgress()">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                </svg>
+            </div>
+            <span class="nav-label">진행</span>
+        </div>
+        <div class="nav-item" onclick="navigateToHistory()">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13,3c-4.97,0-9,4.03-9,9H1l3.89,3.89.07.14L9,12H6c0-3.87,3.13-7,7-7s7,3.13,7,7-3.13,7-7,7c-1.93,0-3.68-.79-4.94-2.06l-1.42,1.42C8.27,19.99,10.51,21,13,21c4.97,0,9-4.03,9-9S17.97,3,13,3z"/>
+                </svg>
+            </div>
+            <span class="nav-label">기록</span>
+        </div>
+        <div class="nav-item" onclick="navigateToProfile()">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                </svg>
+            </div>
+            <span class="nav-label">마이</span>
+        </div>
+    </nav>
+
+    <!-- 알림 모달 -->
+    <div class="notification-modal" id="notificationModal">
+        <div class="modal-overlay" onclick="closeNotificationModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>알림</h3>
+                <button class="close-btn" onclick="closeNotificationModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-item">
+                    <div class="notification-icon">🔔</div>
+                    <div class="notification-content">
+                        <h4>AI TETRIS 서비스 시작</h4>
+                        <p>최적의 차량 배치를 위한 AI 분석 서비스를 시작합니다.</p>
+                        <span class="notification-time">방금 전</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/mobile/home.js"></script>
+</body>
+</html>
