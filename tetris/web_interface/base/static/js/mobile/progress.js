@@ -150,7 +150,7 @@ function updateStepDisplay() {
 }
 
 // SSE 상태 수신 핸들러
-function handleStatusData(statusData) {
+async function handleStatusData(statusData) {
     try {
         if (statusData) {
             console.log('SSE 상태 데이터:', statusData);
@@ -225,37 +225,37 @@ function handleStatusData(statusData) {
 
                 // 원본 결과 표시 (가공된 결과가 없을 때)
                 if (ar.chain1_out && !shownSteps[1]) {
-                    displayStepResult(1, ar.chain1_out);
+                    await displayStepResult(1, ar.chain1_out);
                     shownSteps[1] = true;
                 }
                 if (ar.chain2_out && !shownSteps[2]) {
-                    displayStepResult(2, ar.chain2_out);
+                    await displayStepResult(2, ar.chain2_out);
                     shownSteps[2] = true;
                 }
                 if (ar.chain3_out && !shownSteps[3]) {
-                    displayStepResult(3, ar.chain3_out);
+                    await displayStepResult(3, ar.chain3_out);
                     shownSteps[3] = true;
                 }
                 if (ar.chain4_out && !shownSteps[4]) {
-                    displayStepResult(4, ar.chain4_out);
+                    await displayStepResult(4, ar.chain4_out);
                     shownSteps[4] = true;
                 }
 
                 // 루트에 실린 경우도 대응
                 if (statusData.chain1_out && !shownSteps[1]) {
-                    displayStepResult(1, statusData.chain1_out);
+                    await displayStepResult(1, statusData.chain1_out);
                     shownSteps[1] = true;
                 }
                 if (statusData.chain2_out && !shownSteps[2]) {
-                    displayStepResult(2, statusData.chain2_out);
+                    await displayStepResult(2, statusData.chain2_out);
                     shownSteps[2] = true;
                 }
                 if (statusData.chain3_out && !shownSteps[3]) {
-                    displayStepResult(3, statusData.chain3_out);
+                    await displayStepResult(3, statusData.chain3_out);
                     shownSteps[3] = true;
                 }
                 if (statusData.chain4_out && !shownSteps[4]) {
-                    displayStepResult(4, statusData.chain4_out);
+                    await displayStepResult(4, statusData.chain4_out);
                     shownSteps[4] = true;
                 }
             } catch (e) {
@@ -735,31 +735,31 @@ function syncDetailProgressCard() {
 }
 
 // 단계별 분석 결과 업데이트
-function updateStepResults(resultData) {
+async function updateStepResults(resultData) {
     console.log('updateStepResults 호출됨:', resultData);
     
     // 1단계: 사용자 입력 분석 결과
     if (resultData.chain1_out) {
         console.log('1단계 결과 발견:', resultData.chain1_out);
-        displayStepResult(1, resultData.chain1_out);
-    }
+        await displayStepResult(1, resultData.chain1_out);
+    }   
     
     // 2단계: 최적 배치 생성 결과
     if (resultData.chain2_out) {
         console.log('2단계 결과 발견:', resultData.chain2_out);
-        displayStepResult(2, resultData.chain2_out);
+        await displayStepResult(2, resultData.chain2_out);
     }
     
     // 3단계: 시트 동작 계획 결과
     if (resultData.chain3_out) {
         console.log('3단계 결과 발견:', resultData.chain3_out);
-        displayStepResult(3, resultData.chain3_out);
+        await displayStepResult(3, resultData.chain3_out);
     }
     
     // 4단계: 최적 배치 생성 결과
     if (resultData.chain4_out) {
         console.log('4단계 결과 발견:', resultData.chain4_out);
-        displayStepResult(4, resultData.chain4_out);
+        await displayStepResult(4, resultData.chain4_out);
     }
 }
 
@@ -851,7 +851,7 @@ function safeJsonParse(data) {
 }
 
 // 특정 단계의 결과를 화면에 표시
-function displayStepResult(stepNumber, resultData) {
+async function displayStepResult(stepNumber, resultData) {
     console.log(`🎯 displayStepResult 호출됨: 단계 ${stepNumber}, 데이터:`, resultData);
     
     
@@ -864,31 +864,13 @@ function displayStepResult(stepNumber, resultData) {
     accordionItemBody.innerHTML = '';
     
     // 결과 데이터 포맷팅
-    const formattedResult = formatStepResult(stepNumber, resultData);
+    const formattedResult = await formatStepResult(stepNumber, resultData);
     console.log(`🎯 포맷된 결과:`, formattedResult);
-
-    // 새로운 아코디언 요소로 변경
-    // const stepTitleList = ['사용자 입력 분석', '최적 배치 생성', '시트 동작 계획', '최적 배치 생성'];
-    // const newAccordionHtml = `
-    //   <div id="accordionItem0${stepNumber}" class="accordion-item">
-    //     <h5 class="accordion-header"><button type="button" id="accordionHeaderSample0${stepNumber}" class="btn-accordion" aria-controls="accordionCollapseSample0${stepNumber}">
-    //         <span>${stepTitleList[stepNumber - 1]}</span>
-    //     </button></h5>
-    //     <div id="accordionCollapseSample01" class="accordion-collapse collapse" aria-labelledby="accordionHeaderSample0${stepNumber}">
-    //     <div class="accordion-body">
-    //         ${formattedResult}
-    //     </div>
-    //     </div>
-    // </div>
-    // `;
 
     accordionItemBody.innerHTML = formattedResult;
     accordionItemButton.disabled = false;
     accordionItemSpan.style.color = '#000000';
 
-
-    
-    
     // 단계별 완료 텍스트 표시
     showStepCompletionText(stepNumber, resultData);
     
@@ -959,7 +941,7 @@ function createStepCompletionText(stepNumber, processedData) {
             title = '1단계: 사용자 입력 분석 완료';
             content = `
                 <p><span class="highlight">${processedData.people_count || 0}명</span></p>
-                <p><strong>🧳 총 짐 개수:</strong> <span class="highlight">${processedData.total_luggage || 0}개</span></p>
+                <p>🧳 총 짐 개수: <span class="highlight">${processedData.total_luggage || 0}개</span></p>
                 <p>이미지에서 <span class="highlight">${processedData.people_count || 0}명의 인원</span>과 <span class="highlight">${processedData.total_luggage || 0}개의 짐</span>을 성공적으로 인식했습니다.</p>
             `;
             break;
@@ -967,7 +949,7 @@ function createStepCompletionText(stepNumber, processedData) {
         case 2: // 최적 배치 생성
             title = '2단계: 최적 배치 생성 완료';
             content = `
-                <p><strong>🪑 좌석 배치 지시사항 생성 완료</strong></p>
+                <p>🪑 좌석 배치 지시사항 생성 완료</p>
                 <p>각 짐의 특성에 맞는 <span class="highlight">좌석 배치 지시사항</span>을 성공적으로 생성했습니다.</p>
             `;
             break;
@@ -975,7 +957,7 @@ function createStepCompletionText(stepNumber, processedData) {
         case 3: // 시트 동작 계획
             title = '3단계: 시트 동작 계획 완료';
             content = `
-                <p><strong>🚗 차량 환경 분석 완료</strong></p>
+                <p>🚗 차량 환경 분석 완료</p>
                 <p>차량의 <span class="highlight">공간 구조</span>와 <span class="highlight">작업 순서</span>를 성공적으로 계산했습니다.</p>
             `;
             break;
@@ -983,7 +965,7 @@ function createStepCompletionText(stepNumber, processedData) {
         case 4: // 최적 배치 생성
             title = '4단계: 최적 배치 생성 완료';
             content = `
-                <p><strong>🎯 최적 배치 코드 생성 완료</strong></p>
+                <p>🎯 최적 배치 코드 생성 완료</p>
                 <p><span class="highlight">${processedData.code_length || 0}자리 배치 코드</span>를 성공적으로 생성했습니다.</p>
                 <p>코드: <span class="highlight">${processedData.placement_code || ''}</span></p>
             `;
@@ -1003,7 +985,7 @@ function createStepCompletionText(stepNumber, processedData) {
 }
 
 // 단계별 결과 데이터 포맷팅
-function formatStepResult(stepNumber, resultData) {
+async function formatStepResult(stepNumber, resultData) {
     console.log(`🔧 formatStepResult 호출됨: 단계 ${stepNumber}, 데이터 타입: ${typeof resultData}`);
     try {
         let formattedResult = '';
@@ -1016,36 +998,43 @@ function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
                 console.log(`🔧 1단계 파싱 완료:`, chain1Data);
+
+                // state.json에서 직접 image_data_url 가져오기
+                let imageDataUrl = '';
+                try {
+                    const response = await fetch('/desktop/api/status');
+                    const statusData = await response.json();
+                    if (statusData.success && statusData.data) {
+                        imageDataUrl = statusData.data.upload?.image_data_url || 
+                                    statusData.data.image_data_url;
+                    }
+                } catch (error) {
+                    console.warn('이미지 데이터 URL을 가져올 수 없습니다:', error);
+                }
+
                 formattedResult = `
-                    <strong>👥 인원 수:</strong> ${chain1Data.people || 0}명
-                    <br><strong>🧳 총 짐 개수:</strong> ${chain1Data.total_luggage_count || 0}개
-                    <br><strong>📋 짐 상세 정보</strong>
+                    <div style="text-align: center;"><img src="${imageDataUrl}" alt="짐 상세 정보" style="width: 80%; height: auto; border-radius: 5px; margin-bottom: 10px;"></div>
+                    <p>👥 인원 수: ${chain1Data.people || 0}명</p>
+                    <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
+                    <p>📋 짐 상세 정보</p>
                 `;
                 let luggageTableRows = '';
                 
+                // object별 갯수 세기
+                const objectCounts = {};
                 for (let luggage in chain1Data.luggage_details) {
-                    luggageTableRows += `
-                        <tr>
-                            <td>${chain1Data.luggage_details[luggage].object}</td>
-                            <td>${chain1Data.luggage_details[luggage].color}</td>
-                            <td>${chain1Data.luggage_details[luggage].material}</td>
-                            <td>${chain1Data.luggage_details[luggage].shape}</td>
-                        </tr>
+                    const object = chain1Data.luggage_details[luggage].object;
+                    objectCounts[object] = (objectCounts[object] || 0) + 1;
+                }
+                
+                // object별 갯수와 함께 표시
+                for (let object in objectCounts) {
+                    luggageTableRows += `<li>${object} (${objectCounts[object]}개)</li>
                     `;
                 }
 
                 formattedResult += `
-                    <br><table border="1">
-                        <thead>
-                            <tr>
-                                <th>물건</th>
-                                <th>색상</th>
-                                <th>재료</th>
-                                <th>모양</th>
-                            </tr>
-                        </thead>
-                        <tbody>${luggageTableRows}</tbody>
-                    </table>
+                    <ul style="list-style-type: disc; margin-left: 30px;">${luggageTableRows}</ul>
                 `;
                 break;
                 
@@ -1055,7 +1044,7 @@ function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
                 formattedResult = `
-                    <strong>🪑 좌석 배치 지시사항</strong>
+                    <p>🪑 좌석 배치 지시사항</p>
                 `;
                 let seatsTableRows = '';
                 for (let seat in chain2Data.instruction.seats) {
@@ -1067,7 +1056,7 @@ function formatStepResult(stepNumber, resultData) {
                     seatsTableRows += `<tr>${tableSeatData}</tr>`;
                 }
                 formattedResult += `
-                    <br><table border="1">
+                    <table border="1">
                         <thead>
                             <tr>
                                 <th>위치</th>
@@ -1102,10 +1091,10 @@ function formatStepResult(stepNumber, resultData) {
                 for (let seq in chain3Data.task_sequence) {
                     let taskSequenceDataArray = chain3Data.task_sequence[seq];
                     let tabletaskSequenceData = '';
-                    taskSequenceDataArray.forEach(data => {
-                        tabletaskSequenceData += `<td>${data}</td>`;
+                    taskSequenceDataArray.forEach((data, index) => {
+                        tabletaskSequenceData += `${data}${index !== taskSequenceDataArray.length - 1 ? ' → ' : ''}`;
                     });
-                    taskSequenceTableRows += `<tr>${tabletaskSequenceData}</tr>`;
+                    taskSequenceTableRows += `<li>${tabletaskSequenceData}</li>`;
                 }
 
                 let environmentAfterTableRows = '';
@@ -1120,8 +1109,8 @@ function formatStepResult(stepNumber, resultData) {
 
 
                 formattedResult = `
-                    <strong>🚗 환경 설정 (이전):</strong>
-                    <br><table border="1">
+                    <p>🚗 환경 설정 (이전)</p>
+                    <table border="1">
                         <thead>
                             <tr>
                                 <th>rail_axis</th>
@@ -1132,12 +1121,12 @@ function formatStepResult(stepNumber, resultData) {
                         </thead>
                         <tbody>${environmentBeforeTableRows}</tbody>
                     </table>
-                    <br><strong>📋 작업 순서:</strong>
-                    <br><table border="1">
-                        <tbody>${taskSequenceTableRows}</tbody>
+                    <p>📋 작업 순서</p>
+                    <table border="1">
+                        <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
                     </table>
-                    <br><strong>🚗 환경 설정 (이후):</strong>
-                    <br><table border="1">
+                    <p>🚗 환경 설정 (이후)</p>
+                    <table border="1">
                         <thead>
                             <tr>
                                 <th>rail_axis</th>
@@ -1154,8 +1143,8 @@ function formatStepResult(stepNumber, resultData) {
                 
             case 4: // 최적 배치 생성
                 formattedResult = `
-                    <strong>🎯 최적 배치 코드:</strong> ${resultData}
-                    <br><em>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</em>
+                    <p>🎯 최적 배치 코드:</p> ${resultData}
+                    <p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                 `;
                 break;
                 
@@ -1163,366 +1152,11 @@ function formatStepResult(stepNumber, resultData) {
                 formattedResult = `<pre>${resultData}</pre>`;
         }
         
-        return formattedResult;
+        return `<div style="font-family: 'HyundaiSansTextKRR'; margin: 0 10px; background-color: #ececec8c; padding: 10px; border-radius: 5px;">${formattedResult}</div>`;
         
     } catch (error) {
         console.error(`단계 ${stepNumber} 결과 포맷팅 오류:`, error);
         return `<p>데이터 파싱 오류: ${error.message}</p><pre>${resultData}</pre>`;
-    }
-}
-
-// 가공된 단계별 결과 데이터 포맷팅
-function formatProcessedStepResult(stepNumber, processedData) {
-    try {
-        let formattedResult = '';
-        
-        switch(stepNumber) {
-            case 1: // 사용자 입력 분석
-                try {
-                    // processedData가 문자열인 경우 JSON 파싱 시도
-                    let chain1Data = processedData;
-                    if (typeof processedData === 'string') {
-                        chain1Data = safeJsonParse(processedData) || {};
-                    }
-                    
-                    const peopleCount = chain1Data.people || chain1Data.people_count || 0;
-                    const totalLuggage = chain1Data.total_luggage_count || chain1Data.total_luggage || 0;
-                    const luggageDetails = chain1Data.luggage_details || {};
-                    
-                    // 짐 상세 정보를 표 형태로 변환
-                    let luggageTableRows = '';
-                    if (typeof luggageDetails === 'object' && luggageDetails !== null) {
-                        console.log("luggageDetails" + luggageDetails);
-                        Object.entries(luggageDetails).forEach(([key, value]) => {
-                            luggageTableRows += `
-                                <tr>
-                                    <td>${key}</td>
-                                    <td>${typeof value === 'object' ? JSON.stringify(value) : value}</td>
-                                </tr>
-                            `;
-                        });
-                    }
-                    
-                    formattedResult = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>항목</th>
-                                    <th>값</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>👥 인원 수</strong></td>
-                                    <td>${peopleCount}명</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>🧳 총 짐 개수</strong></td>
-                                    <td>${totalLuggage}개</td>
-                                </tr>
-                                ${luggageTableRows ? `
-                                <tr>
-                                    <td colspan="2"><strong>📋 짐 상세 정보</strong></td>
-                                </tr>
-                                ${luggageTableRows}
-                                ` : ''}
-                            </tbody>
-                        </table>
-                    `;
-                } catch (error) {
-                    console.error('1단계 결과 포맷팅 오류:', error);
-                    formattedResult = `포맷팅 오류 발생`;
-                }
-                break;
-                
-            case 2: // 최적 배치 생성
-                try {
-                    // 가공된 좌석 배치 데이터가 있는 경우
-                    if (processedData.seat_assignments && Array.isArray(processedData.seat_assignments)) {
-                        const seatAssignments = processedData.seat_assignments;
-                        const seatsCount = processedData.seats_count || seatAssignments.length;
-                        
-                        // 좌석 배치 표 생성
-                        let tableRows = '';
-                        seatAssignments.forEach(seat => {
-                            tableRows += `
-                                <tr>
-                                    <td>${seat.seat_id}</td>
-                                    <td>${seat.type}</td>
-                                    <td>${seat.size}</td>
-                                    <td>${seat.category}</td>
-                                </tr>
-                            `;
-                        });
-                        
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>좌석 번호</th>
-                                        <th>타입</th>
-                                        <th>크기</th>
-                                        <th>카테고리</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${tableRows}
-                                </tbody>
-                            </table>
-                        `;
-                    } else {
-                        // 가공된 데이터가 없는 경우 원본 표시
-                        let instructionData = processedData && processedData.instruction ? processedData.instruction : {};
-                        if (typeof processedData === 'string') {
-                            const parsed = safeJsonParse(processedData) || {};
-                            instructionData = parsed.instruction || parsed;
-                        }
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>항목</th>
-                                        <th>값</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>🪑 좌석 배치 지시사항</strong></td>
-                                        <td><pre>${JSON.stringify(instructionData, null, 2)}</pre></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('2단계 결과 포맷팅 오류:', error);
-                    formattedResult = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>항목</th>
-                                    <th>값</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>🪑 좌석 배치 지시사항</strong></td>
-                                    <td><pre>${processedData}</pre></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
-                }
-                break;
-                
-            case 3: // 시트 동작 계획
-                try {
-                    // 가공된 작업 순서 데이터가 있는 경우
-                    if (processedData.task_sequence_list && Array.isArray(processedData.task_sequence_list)) {
-                        const taskSequenceList = processedData.task_sequence_list;
-                        
-                        // 작업 순서 표 생성
-                        let taskRows = '';
-                        taskSequenceList.forEach(task => {
-                            taskRows += `
-                                <tr>
-                                    <td>${task.step_id}</td>
-                                    <td>${task.action}</td>
-                                    <td>${task.target}</td>
-                                    <td>${task.description}</td>
-                                </tr>
-                            `;
-                        });
-                        
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>단계</th>
-                                        <th>작업</th>
-                                        <th>대상</th>
-                                        <th>설명</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${taskRows}
-                                </tbody>
-                            </table>
-                            <br>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>환경 설정</th>
-                                        <th>값</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>🌍 환경 설정 (이전)</strong></td>
-                                        <td><pre>${JSON.stringify(processedData.environment_before || {}, null, 2)}</pre></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>🌍 환경 설정 (이후)</strong></td>
-                                        <td><pre>${JSON.stringify(processedData.environment_after || {}, null, 2)}</pre></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-                    } else {
-                        // 가공된 데이터가 없는 경우 원본 표시
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>항목</th>
-                                        <th>값</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>🌍 환경 설정 (이전)</strong></td>
-                                        <td><pre>${JSON.stringify(processedData.environment_before || {}, null, 2)}</pre></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>📋 작업 순서</strong></td>
-                                        <td><pre>${JSON.stringify(processedData.task_sequence || {}, null, 2)}</pre></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>🌍 환경 설정 (이후)</strong></td>
-                                        <td><pre>${JSON.stringify(processedData.environment_after || {}, null, 2)}</pre></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('3단계 결과 포맷팅 오류:', error);
-                    formattedResult = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>항목</th>
-                                    <th>값</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>🚗 시트 동작 계획 결과</strong></td>
-                                    <td><pre>${processedData}</pre></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
-                }
-                break;
-                
-            case 4: // 최적 배치 생성
-                try {
-                    // 가공된 배치 분석 데이터가 있는 경우
-                    if (processedData.placement_analysis) {
-                        const analysis = processedData.placement_analysis;
-                        const complexityText = {
-                            'basic': '기본',
-                            'medium': '중간',
-                            'high': '고급'
-                        }[analysis.complexity_level] || '기본';
-                        
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>항목</th>
-                                        <th>값</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>📏 코드 길이</strong></td>
-                                        <td>${processedData.code_length || 0}자</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>📋 지시사항 수</strong></td>
-                                        <td>${analysis.total_instructions}개</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>⚡ 복잡도</strong></td>
-                                        <td>${complexityText}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>📝 배치 코드</strong></td>
-                                        <td><pre>${processedData.placement_code || ''}</pre></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-                    } else {
-                        // 가공된 데이터가 없는 경우 원본 표시
-                        formattedResult = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>항목</th>
-                                        <th>값</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>🎯 최적 배치 코드</strong></td>
-                                        <td><pre>${processedData.placement_code || ''}</pre></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>📏 코드 길이</strong></td>
-                                        <td>${processedData.code_length || 0}자</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('4단계 결과 포맷팅 오류:', error);
-                    formattedResult = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>항목</th>
-                                    <th>값</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>🎯 최적 배치 생성 결과</strong></td>
-                                    <td><pre>${processedData}</pre></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
-                }
-                break;
-                
-            default:
-                formattedResult = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>항목</th>
-                                <th>값</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>📊 분석 결과</strong></td>
-                                <td><pre>${JSON.stringify(processedData, null, 2)}</pre></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                `;
-        }
-        
-        return formattedResult;
-        
-    } catch (error) {
-        console.error(`가공된 단계 ${stepNumber} 결과 포맷팅 오류:`, error);
-        return `<p>데이터 포맷팅 오류: ${error.message}</p><pre>${JSON.stringify(processedData, null, 2)}</pre>`;
     }
 }
 
@@ -1642,7 +1276,7 @@ function updateCurrentStepIconToError() {
 }
 
 // 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     currentScenario = getScenarioFromURL();
     console.log('시나리오:', currentScenario);
     
@@ -1685,17 +1319,17 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeStepIcons();
     
     // SSE 시작
-    startSSE();
+    await startSSE();
 });
 
 // SSE 시작 함수 (재사용을 위해 분리)
-function startSSE() {
+async function startSSE() {
     try {
         if (eventSource) {
             eventSource.close();
         }
         eventSource = new EventSource('/desktop/api/status_stream');
-        eventSource.onmessage = (e) => {
+        eventSource.onmessage = async (e) => {
             try {
                 const payload = JSON.parse(e.data);
                 // 연결 이벤트는 건너뜀
@@ -1707,7 +1341,7 @@ function startSSE() {
                     return;
                 }
                 
-                handleStatusData(payload);
+                await handleStatusData(payload);
                 const status = payload.status || payload.system?.status;
                 const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out || payload.processed_results?.chain4_out);
                 if (status === 'done' && hasFinal) {

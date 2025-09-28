@@ -4,15 +4,15 @@
  */
 
  @font-face {
-    font-family: "HyundaiSansTextKRMedium";
-    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-family: "HyundaiSansTextKRM";
+    src: url("/static/css/fonts/HyundaiSansTextKRM.9956f07.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: "HyundaiSansTextKRRegular";
-    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-family: "HyundaiSansTextKRR";
+    src: url("/static/css/fonts/HyundaiSansTextKRR.e5673b8.woff2") format("woff2");
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -22,7 +22,7 @@ html, body {
     margin: 0;
     background: #fff;
     color: var(--black);
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 

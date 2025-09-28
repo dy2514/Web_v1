@@ -1,13 +1,27 @@
 @font-face {
-    font-family: "HyundaiSansTextKRMedium";
-    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-family: "HyundaiSansHeadKRM";
+    src: url("/static/css/fonts/HyundaiSansHeadKRMedium.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: "HyundaiSansTextKRRegular";
-    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-family: "HyundaiSansHeadKRR";
+    src: url("/static/css/fonts/HyundaiSansHeadKRRegular.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRM";
+    src: url("/static/css/fonts/HyundaiSansTextKRM.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRR";
+    src: url("/static/css/fonts/HyundaiSansTextKRR.woff2") format("woff2");
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -33,7 +47,7 @@ html, body {
     margin: 0;
     background: #fff;
     color: var(--black);
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -56,7 +70,7 @@ html, body {
 
 .topbar h1 {
     margin-right: auto;
-    font-family: 'HyundaiSansTextKRMedium';
+    font-family: 'HyundaiSansTextKRM';
     font-size: 22px;
     color: var(--black);
     letter-spacing: .2px;
@@ -589,7 +603,7 @@ html, body {
 }
 
 .result-check-button {
-    font-family: 'HyundaiSansTextKRRegular';
+    font-family: 'HyundaiSansTextKRR';
     width: 100%;
     padding: 12px 24px;
     background: #002c5e;
@@ -706,7 +720,6 @@ html, body {
     gap: 10px;
     margin: 10px 0;
     color: #94a3b8;
-    font-weight: 700;
 }
 
 /* 상태 아이콘 스타일 - SVG 아이콘 사용 */
@@ -1065,7 +1078,7 @@ html, body {
 }
 
 .accordion-item {
-    font-size: 12px;
+    font-size: 16px;
     color: #000;
 }
 

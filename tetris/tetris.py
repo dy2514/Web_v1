@@ -212,6 +212,9 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         state_manager.set('step_times', {})
         state_manager.set('total_elapsed', 0)
         state_manager.set('system.status', 'running')
+        state_manager.set('upload.scenario', scenario)
+        state_manager.set('upload.image_data_url', image_data_url)
+        state_manager.set('upload.people_count', people_count)
         
         # 알림 초기화
         state_manager.set('notifications', [])

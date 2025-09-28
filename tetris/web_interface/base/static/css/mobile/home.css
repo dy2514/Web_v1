@@ -1,13 +1,13 @@
 @font-face {
-    font-family: "HyundaiSansTextKRMedium";
-    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-family: "HyundaiSansTextKRM";
+    src: url("/static/css/fonts/HyundaiSansTextKRM.9956f07.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: "HyundaiSansTextKRRegular";
-    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-family: "HyundaiSansTextKRR";
+    src: url("/static/css/fonts/HyundaiSansTextKRR.e5673b8.woff2") format("woff2");
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -21,7 +21,7 @@
 }
 
 body {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     color: #333;
@@ -49,7 +49,7 @@ body {
 
 .topbar h1 {
     margin-right: auto;
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 25px;
     color: #000;
     letter-spacing: .2px;
@@ -126,7 +126,7 @@ body {
 }
 
 .welcome-title {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 18px;
     color: #333;
     line-height: 1.5;
@@ -181,7 +181,7 @@ body {
 }
 
 .start-title {
-    font-family: "HyundaiSansTextKRRegular", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 18px;
     color: #333;
     margin: 0;
@@ -205,7 +205,7 @@ body {
 }
 
 .logo-text {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     color: white;
     font-size: 8px;
     font-weight: 700;
@@ -239,7 +239,7 @@ body {
 }
 
 .button-text {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 16px;
     font-weight: 600;
 }
@@ -297,7 +297,7 @@ body {
 }
 
 .control-text {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     font-weight: 500;
     color: #333;
@@ -356,7 +356,7 @@ body {
 }
 
 .nav-label {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     font-weight: 500;
     color: #666;
@@ -415,7 +415,7 @@ body {
 }
 
 .modal-header h3 {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 18px;
     font-weight: 600;
     color: #333;
@@ -466,7 +466,7 @@ body {
 }
 
 .notification-content h4 {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: #333;
@@ -474,7 +474,7 @@ body {
 }
 
 .notification-content p {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 13px;
     color: #666;
     line-height: 1.4;
@@ -482,7 +482,7 @@ body {
 }
 
 .notification-time {
-    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     color: #999;
 }

@@ -701,6 +701,8 @@ def start_step_analysis():
                 'processing.progress': 0,
                 'processing.current_scenario': scenario,
                 'upload.scenario': scenario,
+                'upload.image_data_url': image_data_url,  # 이미지 데이터 URL 저장
+                'upload.people_count': people_count,      # 인원 수 저장
                 'processing.sent_steps': {}
             }
         )
