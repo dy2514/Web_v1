@@ -35,6 +35,10 @@ logger = logging.getLogger(__name__)
 session_progress = {}  # 세션별 진행 상태
 session_connections = set()  # 활성 세션 목록
 session_metadata = {}  # 세션 메타데이터
+analysis_threads = {}  # 분석 스레드 관리
+analysis_stop_flags = {}  # 분석 중지 플래그
+analysis_abort_controllers = {}  # 분석 AbortController 관리
+
 
 # Blueprint 참조를 위해 동적 import
 from . import control_bp
@@ -83,6 +87,56 @@ def get_active_sessions():
         'metadata': session_metadata,
         'total': len(session_connections)
     }
+
+def stop_all_analysis():
+    """모든 분석 중지"""
+    logger.info("[중지] 모든 분석 중지 요청")
+    
+    # 모든 AbortController 중지
+    for session_id, abort_controller in list(analysis_abort_controllers.items()):
+        if abort_controller:
+            abort_controller.abort()
+            logger.info(f"AbortController 중지: {session_id}")
+    
+    # 모든 분석 중지 플래그 설정
+    for session_id in analysis_stop_flags:
+        analysis_stop_flags[session_id] = True
+        logger.info(f"분석 중지 플래그 설정: {session_id}")
+    
+    # 모든 분석 스레드 정리
+    for session_id, thread in list(analysis_threads.items()):
+        if thread and thread.is_alive():
+            logger.info(f"분석 스레드 중지 시도: {session_id}")
+            # 스레드는 강제 종료하지 않고 플래그로 중지 신호만 보냄
+            # thread.join(timeout=5)  # 5초 대기 후 강제 종료
+        del analysis_threads[session_id]
+    
+    # 중지 플래그 및 AbortController 초기화
+    analysis_stop_flags.clear()
+    analysis_abort_controllers.clear()
+    
+    # 상태 강제 초기화 (중지 후 즉시 상태 리셋)
+    from base.state_manager import state_manager
+    state_manager.set('processing.status', 'idle')
+    state_manager.set('processing.progress', 0)
+    state_manager.set('processing.current_scenario', None)
+    state_manager.set('processing.started_at', None)
+    state_manager.set('processing.completed_at', None)
+    state_manager.set('current_step', 0)
+    state_manager.set('system.status', 'idle')
+    state_manager.set('analysis_result', {})
+    state_manager.set('processed_results', {})
+    state_manager.set('step_times', {})
+    state_manager.set('total_elapsed', 0)
+    
+    # 업로드 관련 데이터 초기화
+    state_manager.set('upload.uploaded_file', None)
+    state_manager.set('upload.image_path', None)
+    state_manager.set('upload.image_data_url', None)
+    state_manager.set('upload.people_count', 0)
+    state_manager.set('upload.scenario', None)
+    
+    logger.info("[완료] 모든 분석 중지 및 상태 초기화 완료")
 
 @control_bp.route('/control')
 def desktop_control():
@@ -188,6 +242,8 @@ def status_stream():
             if notifications:
                 latest_notification = notifications[-1]
                 data['message'] = latest_notification.get('message', '')
+            
+            
             return data
 
         while True:
@@ -283,6 +339,8 @@ def progress_stream():
                     # 기본 상태 전송
                     global_status = get_global_status().copy()
                     global_status['session_id'] = session_id
+                    
+                    
                     yield f"data: {json.dumps(global_status)}\n\n"
                 
                 time.sleep(0.5)  # 0.5초마다 업데이트
@@ -353,14 +411,66 @@ def start_processing():
 
 @control_bp.route('/api/reset', methods=['POST'])
 def reset_system():
-    """시스템 초기화"""
-    from ..base.state_manager import reset_global_status
-    reset_global_status()
-    
-    return jsonify({
-        'success': True,
-        'message': '시스템이 초기화되었습니다.'
-    })
+    """시스템 초기화 및 분석 중지"""
+    try:
+        # 요청 소스 확인
+        user_agent = request.headers.get('User-Agent', '')
+        referer = request.headers.get('Referer', '')
+        
+        if 'progress' in referer:
+            logger.info("[이탈] Progress 페이지 이탈로 인한 분석 중지 요청")
+        elif 'home' in referer:
+            logger.info("[이탈] 홈 화면 진입으로 인한 분석 중지 요청")
+        elif referer:
+            logger.info(f"[이탈] 다른 페이지로 이동: {referer}")
+        else:
+            logger.info("[초기화] 시스템 초기화 및 분석 중지 요청")
+        
+        # 1. 모든 분석 중지
+        stop_all_analysis()
+        
+        # 2. 상태 초기화
+        from base.state_manager import reset_global_status, state_manager
+        reset_global_status()
+        
+        # 3. 모든 분석 관련 필드 강제 초기화
+        state_manager.set('current_step', 0)
+        state_manager.set('step_times', {})
+        state_manager.set('total_elapsed', 0)
+        state_manager.set('processing.current_scenario', None)
+        state_manager.set('processing.progress', 0)
+        state_manager.set('processing.status', 'idle')
+        state_manager.set('processing.started_at', None)
+        state_manager.set('processing.completed_at', None)
+        state_manager.set('analysis_result', {})
+        state_manager.set('processed_results', {})
+        state_manager.set('system.status', 'idle')
+        
+        # 4. 업로드 관련 데이터 초기화
+        state_manager.set('upload.uploaded_file', None)
+        state_manager.set('upload.image_path', None)
+        state_manager.set('upload.image_data_url', None)
+        state_manager.set('upload.people_count', 0)
+        state_manager.set('upload.scenario', None)
+        
+        # 5. 알림 초기화
+        state_manager.set('notifications', [])
+        
+        logger.info("[완료] 모든 분석 관련 상태 강제 초기화 완료")
+        
+        logger.info("[완료] 시스템 초기화 및 분석 중지 완료")
+        
+        return jsonify({
+            'success': True,
+            'message': '시스템이 초기화되었습니다.'
+        })
+        
+    except Exception as e:
+        logger.error(f"[오류] 시스템 초기화 실패: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 # 새로운 HTTP API 엔드포인트들
 @control_bp.route('/api/join_session', methods=['POST'])
@@ -610,16 +720,64 @@ def start_step_analysis():
                 current_step=current_step
             )
             logger.info(f"단계별 진행률: step={current_step}, {progress}% - {status}: {message}")
+            
+            # current_step 변경 로깅
+            if current_step is not None:
+                logger.info(f"상태 변경: current_step = {current_step}")
+        
+        # 분석 세션 ID 생성
+        analysis_session_id = f"analysis_{scenario}_{int(time.time())}"
+        analysis_stop_flags[analysis_session_id] = False
+        
+        # AbortController 생성
+        class AbortController:
+            def __init__(self):
+                self.aborted = False
+            
+            def abort(self):
+                self.aborted = True
+                logger.info(f"[중지] AbortController.abort() 호출됨: {analysis_session_id}")
+        
+        abort_controller = AbortController()
+        analysis_abort_controllers[analysis_session_id] = abort_controller
         
         # 백그라운드에서 단계별 분석 실행
         def run_analysis():
             try:
+                # 중지 플래그 확인 함수
+                def check_stop_flag():
+                    return analysis_stop_flags.get(analysis_session_id, False)
+                
+                logger.info(f"[시작] 분석 시작: {analysis_session_id}")
+                
                 result = run_step_by_step_analysis(
                     people_count=people_count,
                     image_data_url=image_data_url,
                     scenario=scenario,
-                    progress_callback=progress_callback
+                    progress_callback=progress_callback,
+                    stop_callback=check_stop_flag,  # 중지 콜백 추가
+                    abort_controller=abort_controller  # AbortController 추가
                 )
+                
+                # 중지 플래그 확인
+                if check_stop_flag():
+                    logger.info(f"[중지] 분석 중지됨: {analysis_session_id}")
+                    update_status(
+                        status='cancelled',
+                        message='분석이 중지되었습니다.',
+                        uploaded_file=False
+                    )
+                    return
+                
+                # 결과가 중지된 경우인지 확인
+                if result.get('status') == 'cancelled':
+                    logger.info(f"[중지] 분석 중지됨 (결과): {analysis_session_id}")
+                    update_status(
+                        status='cancelled',
+                        message=result.get('message', '분석이 중지되었습니다.'),
+                        uploaded_file=False
+                    )
+                    return
                 
                 # 분석 완료 후 상태 업데이트
                 update_status(
@@ -634,10 +792,15 @@ def start_step_analysis():
                     step_times=result.get('step_times')
                 )
                 
-                logger.info(f"단계별 분석 완료: {result['out_path']}")
+                logger.info(f"[완료] 단계별 분석 완료: {result['out_path']}")
                 
             except Exception as e:
-                logger.error(f"단계별 분석 실패: {e}")
+                # 중지 플래그 확인
+                if analysis_stop_flags.get(analysis_session_id, False):
+                    logger.info(f"[중지] 분석 중지됨 (예외 발생): {analysis_session_id}")
+                    return
+                
+                logger.error(f"[오류] 단계별 분석 실패: {e}")
                 import traceback
                 error_details = traceback.format_exc()
                 logger.error(f"상세 오류 정보: {error_details}")
@@ -650,9 +813,18 @@ def start_step_analysis():
                     uploaded_file=False,
                     error_details=str(e)
                 )
+            finally:
+                # 스레드 및 AbortController 정리
+                if analysis_session_id in analysis_threads:
+                    del analysis_threads[analysis_session_id]
+                if analysis_session_id in analysis_abort_controllers:
+                    del analysis_abort_controllers[analysis_session_id]
+                if analysis_session_id in analysis_stop_flags:
+                    del analysis_stop_flags[analysis_session_id]
         
         # 별도 스레드에서 실행
         analysis_thread = threading.Thread(target=run_analysis, daemon=True)
+        analysis_threads[analysis_session_id] = analysis_thread
         analysis_thread.start()
         
         return jsonify({

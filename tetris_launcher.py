@@ -10,6 +10,7 @@ import time
 import subprocess
 import threading
 import webbrowser
+from datetime import datetime
 from pathlib import Path
 
 print("🚀 TETRIS 시스템 최종 런처")
@@ -169,13 +170,72 @@ def verify_web_access(port):
         print("⚠️ requests 모듈이 없어 접속 테스트를 건너뜁니다.")
         return True
 
+def reset_state_on_startup():
+    """프로그램 시작 시 state.json 파일 초기화"""
+    print("\n🔄 0단계: 상태 파일 초기화")
+    
+    try:
+        # state.json 파일 경로 설정
+        state_file = Path("state.json")
+        
+        # 초기 상태 생성
+        initial_state = {
+            'system': {
+                'status': 'idle',
+                'last_updated': datetime.now().isoformat(),
+                'version': '1.0.0'
+            },
+            'sessions': {},
+            'processing': {
+                'current_scenario': None,
+                'progress': 0,
+                'status': 'idle',
+                'started_at': None,
+                'completed_at': None
+            },
+            'upload': {
+                'uploaded_file': None,
+                'image_path': None,
+                'image_data_url': None,
+                'people_count': 0,
+                'scenario': None
+            },
+            'hardware': {
+                'arduino_connected': False,
+                'motor_status': 'idle',
+                'last_command': None
+            },
+            'notifications': []
+        }
+        
+        # 새로운 초기 state.json 파일 생성
+        with open(state_file, 'w', encoding='utf-8') as f:
+            import json
+            json.dump(initial_state, f, ensure_ascii=False, indent=2)
+        
+        print("✅ state.json 파일 초기화 완료")
+        return True
+        
+    except Exception as e:
+        print(f"❌ 상태 파일 초기화 실패: {e}")
+        return False
+
 def main():
     """메인 실행 함수"""
 
     ap = argparse.ArgumentParser(description="AI TETRIS launcher")
     ap.add_argument("--mode", choices=["web", "scenario"], default="web")
     ap.add_argument("--port", type=int, default=5002)
+    ap.add_argument("--no-reset", action="store_true", help="상태 파일 초기화 건너뛰기")
     args = ap.parse_args()
+    
+    # 0단계: 상태 파일 초기화 (기본적으로 활성화)
+    if not args.no_reset:
+        if not reset_state_on_startup():
+            print("\n❌ 상태 파일 초기화에 실패했습니다.")
+            return
+    else:
+        print("\n⚠️ 상태 파일 초기화를 건너뜁니다.")
     
     # 1단계: 필수 조건 확인
     if not check_prerequisites():

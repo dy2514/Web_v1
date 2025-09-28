@@ -167,193 +167,275 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     }
 
 
-def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: str, progress_callback=None) -> dict:
+def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: str, progress_callback=None, stop_callback=None, abort_controller=None) -> dict:
     """단계별 AI 분석 실행"""
     print("[DEBUG] 단계별 AI 분석 시작...")
     print(f"[DEBUG] 파라미터: people_count={people_count}, scenario={scenario}")
     print(f"[DEBUG] progress_callback: {progress_callback}")
+    print(f"[DEBUG] stop_callback: {stop_callback}")
+    print(f"[DEBUG] abort_controller: {abort_controller}")
     
-    # 1단계: 이미지 분석 (Chain1)
-    if progress_callback:
-        print("[DEBUG] progress_callback 호출 중...")
-        progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...", current_step=1)
-        print("[DEBUG] progress_callback 호출 완료")
-    else:
-        print("[DEBUG] progress_callback이 None입니다!")
+    # 중지 플래그 확인 함수
+    def check_stop():
+        if stop_callback and stop_callback():
+            print("[중지] 분석 중지 요청됨")
+            return True
+        if abort_controller and abort_controller.aborted:
+            print("[중지] AbortController로 중지됨")
+            return True
+        return False
     
-    print("1단계: 이미지 분석 시작")
-    t_step1_start = perf_counter()
+    # 강제 중단을 위한 예외 클래스
+    class AnalysisCancelledException(Exception):
+        def __init__(self, message="분석이 중지되었습니다."):
+            self.message = message
+            super().__init__(self.message)
+    
     try:
-        # Chain1 실행
-        user_msgs = MC.make_chain1_user_input(
-            people_count=people_count, image_data_url=image_data_url
-        )
-        chain1_result = MC.chain_1.invoke({"user_input": user_msgs})
-        chain1_out = chain1_result["chain1_out_raw"]
+        # 시작 전 중지 확인
+        if check_stop():
+            raise AnalysisCancelledException("분석이 중지되었습니다.")
         
-        # people_count 주입
-        from main_chain import _inject_people_into_json
-        chain1_out = _inject_people_into_json(chain1_out, people_count)
-        
-        print("1단계: 이미지 분석 완료")
-        t_step1_end = perf_counter()
-        step1_elapsed = t_step1_end - t_step1_start
-        print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
-        
-        # 1단계 결과를 analysis_result에 저장 (새로운 분석 시작)
+        # 분석 시작 시 이전 상태 완전 초기화
+        print("[초기화] 새로운 분석 시작 - 이전 상태 완전 초기화")
         from base.state_manager import state_manager
-        # 새로운 analysis_result 시작 (이전 데이터 완전 제거)
-        new_analysis_result = {}
-        new_analysis_result['chain1_out'] = chain1_out
-        state_manager.set('analysis_result', new_analysis_result)
-        print(f"[DEBUG] 1단계 결과를 새로운 analysis_result에 저장: {len(chain1_out)}자")
         
-    except Exception as e:
-        print(f"1단계 실행 실패: {e}")
-        raise
-    
-    # 2단계: 짐 인식 및 분류 (Chain2)
-    if progress_callback:
-        progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...", current_step=2)
-    
-    print("2단계: 짐 인식 및 분류 시작")
-    t_step2_start = perf_counter()
-    try:
-        # Chain2 준비 - user_input에서 이미지 추출
-        prep_result = MC.prep_chain2_from_user_input.invoke({
-            "user_input": user_msgs
-        })
-        chain2_image = prep_result["chain2_image"]
+        # 모든 분석 관련 상태 강제 초기화
+        state_manager.set('current_step', 0)
+        state_manager.set('processing.progress', 0)
+        state_manager.set('processing.status', 'running')
+        state_manager.set('processing.current_scenario', None)
+        state_manager.set('processing.started_at', None)
+        state_manager.set('processing.completed_at', None)
+        state_manager.set('analysis_result', {})
+        state_manager.set('processed_results', {})
+        state_manager.set('step_times', {})
+        state_manager.set('total_elapsed', 0)
+        state_manager.set('system.status', 'running')
         
-        # Chain2 실행 - chain1_out과 chain2_image 사용
-        chain2_result = MC.chain_2.invoke({
-            "chain1_out": chain1_out,
-            "chain2_image": chain2_image
-        })
-        chain2_out = chain2_result["chain2_out"]
+        # 알림 초기화
+        state_manager.set('notifications', [])
         
-        print("2단계: 짐 인식 및 분류 완료")
-        t_step2_end = perf_counter()
-        step2_elapsed = t_step2_end - t_step2_start
-        print(f"2단계 실행 시간: {step2_elapsed:.3f}초")
+        print("[초기화] 상태 초기화 완료 - 1단계부터 시작")
         
-        # 2단계 결과를 analysis_result에 저장 (기존 데이터 유지)
-        current_analysis_result = state_manager.get('analysis_result', {})
-        current_analysis_result['chain2_out'] = chain2_out
-        state_manager.set('analysis_result', current_analysis_result)
-        print(f"[DEBUG] 2단계 결과를 analysis_result에 저장: {len(chain2_out)}자")
+        # 1단계: 이미지 분석 (Chain1)
+        if progress_callback:
+            print("[DEBUG] progress_callback 호출 중...")
+            progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...", current_step=1)
+            print("[DEBUG] progress_callback 호출 완료")
+        else:
+            print("[DEBUG] progress_callback이 None입니다!")
         
-    except Exception as e:
-        print(f"2단계 실행 실패: {e}")
-        raise
-    
-    # 3단계: 차량 공간 계산 (Chain3)
-    if progress_callback:
-        progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...", current_step=3)
-    
-    print("3단계: 차량 공간 계산 시작")
-    t_step3_start = perf_counter()
-    try:
-        # Chain3 준비 - 입력 변수 없음
-        prep_result = MC.prep_chain3_image.invoke({})
-        chain3_image = prep_result["chain3_image"]
+        # 1단계 시작 전 중지 확인
+        if check_stop():
+            raise AnalysisCancelledException("분석이 중지되었습니다.")
         
-        # Chain3 실행 - chain2_out과 chain3_image 사용
-        chain3_result = MC.chain_3.invoke({
-            "chain2_out": chain2_out,
-            "chain3_image": chain3_image
-        })
-        chain3_out = chain3_result["chain3_out"]
+        print("1단계: 이미지 분석 시작")
+        t_step1_start = perf_counter()
+        try:
+            # Chain1 실행 전 중지 확인
+            if check_stop():
+                raise AnalysisCancelledException("분석이 중지되었습니다.")
+                
+            user_msgs = MC.make_chain1_user_input(
+                people_count=people_count, image_data_url=image_data_url
+            )
+            
+            # Chain1 실행 전 다시 한번 중지 확인
+            if check_stop():
+                raise AnalysisCancelledException("분석이 중지되었습니다.")
+                
+            chain1_result = MC.chain_1.invoke({"user_input": user_msgs})
+            chain1_out = chain1_result["chain1_out_raw"]
+            
+            # people_count 주입
+            from main_chain import _inject_people_into_json
+            chain1_out = _inject_people_into_json(chain1_out, people_count)
+            
+            print("1단계: 이미지 분석 완료")
+            t_step1_end = perf_counter()
+            step1_elapsed = t_step1_end - t_step1_start
+            print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
+            
+            # 1단계 결과를 analysis_result에 저장 (새로운 분석 시작)
+            from base.state_manager import state_manager
+            # 새로운 analysis_result 시작 (이전 데이터 완전 제거)
+            new_analysis_result = {}
+            new_analysis_result['chain1_out'] = chain1_out
+            state_manager.set('analysis_result', new_analysis_result)
+            print(f"[DEBUG] 1단계 결과를 새로운 analysis_result에 저장: {len(chain1_out)}자")
+            
+        except Exception as e:
+            print(f"1단계 실행 실패: {e}")
+            raise
         
-        print("3단계: 차량 공간 계산 완료")
-        t_step3_end = perf_counter()
-        step3_elapsed = t_step3_end - t_step3_start
-        print(f"3단계 실행 시간: {step3_elapsed:.3f}초")
+        # 1단계 완료 후 중지 확인
+        if check_stop():
+            raise AnalysisCancelledException("분석이 중지되었습니다.")
         
-        # 3단계 결과를 analysis_result에 저장 (기존 데이터 유지)
-        current_analysis_result = state_manager.get('analysis_result', {})
-        current_analysis_result['chain3_out'] = chain3_out
-        state_manager.set('analysis_result', current_analysis_result)
-        print(f"[DEBUG] 3단계 결과를 analysis_result에 저장: {len(chain3_out)}자")
+        # 2단계: 짐 인식 및 분류 (Chain2)
+        print("2단계 시작 전 - current_step=2 설정")
+        if progress_callback:
+            progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...", current_step=2)
         
-    except Exception as e:
-        print(f"3단계 실행 실패: {e}")
-        raise
-    
-    # 4단계: 최적 배치 생성 (Chain4)
-    if progress_callback:
-        progress_callback(80, "최적 배치 생성", "최적의 배치를 생성하고 있습니다...", current_step=4)
-    
-    print("4단계: 최적 배치 생성 시작")
-    t_step4_start = perf_counter()
-    try:
-        # Chain4 실행
-        chain4_result = MC.chain_4.invoke({"chain3_out": chain3_out})
-        chain4_out = chain4_result["chain4_out"]
+        print("2단계: 짐 인식 및 분류 시작")
+        t_step2_start = perf_counter()
+        try:
+            # Chain2 준비 - user_input에서 이미지 추출
+            prep_result = MC.prep_chain2_from_user_input.invoke({
+                "user_input": user_msgs
+            })
+            chain2_image = prep_result["chain2_image"]
+            
+            # Chain2 실행 - chain1_out과 chain2_image 사용
+            chain2_result = MC.chain_2.invoke({
+                "chain1_out": chain1_out,
+                "chain2_image": chain2_image
+            })
+            chain2_out = chain2_result["chain2_out"]
+            
+            print("2단계: 짐 인식 및 분류 완료")
+            t_step2_end = perf_counter()
+            step2_elapsed = t_step2_end - t_step2_start
+            print(f"2단계 실행 시간: {step2_elapsed:.3f}초")
+            
+            # 2단계 완료 후 중지 확인
+            if check_stop():
+                raise AnalysisCancelledException("분석이 중지되었습니다.")
+            
+            # 2단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+            current_analysis_result = state_manager.get('analysis_result', {})
+            current_analysis_result['chain2_out'] = chain2_out
+            state_manager.set('analysis_result', current_analysis_result)
+            print(f"[DEBUG] 2단계 결과를 analysis_result에 저장: {len(chain2_out)}자")
+            
+        except Exception as e:
+            print(f"2단계 실행 실패: {e}")
+            raise
         
-        print("4단계: 최적 배치 생성 완료")
-        t_step4_end = perf_counter()
-        step4_elapsed = t_step4_end - t_step4_start
-        print(f"4단계 실행 시간: {step4_elapsed:.3f}초")
+        # 3단계: 차량 공간 계산 (Chain3)
+        print("3단계 시작 전 - current_step=3 설정")
+        if progress_callback:
+            progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...", current_step=3)
         
-        # 4단계 결과를 analysis_result에 저장 (기존 데이터 유지)
-        current_analysis_result = state_manager.get('analysis_result', {})
-        current_analysis_result['chain4_out'] = chain4_out
-        state_manager.set('analysis_result', current_analysis_result)
-        print(f"[DEBUG] 4단계 결과를 analysis_result에 저장: {len(chain4_out)}자")
+        print("3단계: 차량 공간 계산 시작")
+        t_step3_start = perf_counter()
+        try:
+            # Chain3 준비 - 입력 변수 없음
+            prep_result = MC.prep_chain3_image.invoke({})
+            chain3_image = prep_result["chain3_image"]
+            
+            # Chain3 실행 - chain2_out과 chain3_image 사용
+            chain3_result = MC.chain_3.invoke({
+                "chain2_out": chain2_out,
+                "chain3_image": chain3_image
+            })
+            chain3_out = chain3_result["chain3_out"]
+            
+            print("3단계: 차량 공간 계산 완료")
+            t_step3_end = perf_counter()
+            step3_elapsed = t_step3_end - t_step3_start
+            print(f"3단계 실행 시간: {step3_elapsed:.3f}초")
+            
+            # 3단계 완료 후 중지 확인
+            if check_stop():
+                raise AnalysisCancelledException("분석이 중지되었습니다.")
+            
+            # 3단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+            current_analysis_result = state_manager.get('analysis_result', {})
+            current_analysis_result['chain3_out'] = chain3_out
+            state_manager.set('analysis_result', current_analysis_result)
+            print(f"[DEBUG] 3단계 결과를 analysis_result에 저장: {len(chain3_out)}자")
+            
+        except Exception as e:
+            print(f"3단계 실행 실패: {e}")
+            raise
         
-    except Exception as e:
-        print(f"4단계 실행 실패: {e}")
-        raise
+        # 4단계: 최적 배치 생성 (Chain4)
+        if progress_callback:
+            progress_callback(80, "최적 배치 생성", "최적의 배치를 생성하고 있습니다...", current_step=4)
+        
+        print("4단계: 최적 배치 생성 시작")
+        t_step4_start = perf_counter()
+        try:
+            # Chain4 실행
+            chain4_result = MC.chain_4.invoke({"chain3_out": chain3_out})
+            chain4_out = chain4_result["chain4_out"]
+            
+            print("4단계: 최적 배치 생성 완료")
+            t_step4_end = perf_counter()
+            step4_elapsed = t_step4_end - t_step4_start
+            print(f"4단계 실행 시간: {step4_elapsed:.3f}초")
+            
+            # 4단계 완료 후 중지 확인
+            if check_stop():
+                raise AnalysisCancelledException("분석이 중지되었습니다.")
+            
+            # 4단계 결과를 analysis_result에 저장 (기존 데이터 유지)
+            current_analysis_result = state_manager.get('analysis_result', {})
+            current_analysis_result['chain4_out'] = chain4_out
+            state_manager.set('analysis_result', current_analysis_result)
+            print(f"[DEBUG] 4단계 결과를 analysis_result에 저장: {len(chain4_out)}자")
+            
+        except Exception as e:
+            print(f"4단계 실행 실패: {e}")
+            raise
+        
+        # 5단계: 결과 검증 및 완료
+        if progress_callback:
+            progress_callback(100, "결과 검증 및 완료", "분석이 완료되었습니다!", current_step=5)
+        
+        print("5단계: 결과 검증 및 완료")
+        
+        # 전체 실행 시간 계산
+        total_elapsed = step1_elapsed + step2_elapsed + step3_elapsed + step4_elapsed
+        
+        # 결과 저장
+        OUT_ROOT = HERE / "tetris_out"
+        OUT_DIR = OUT_ROOT / "log_data"
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        out_path = OUT_DIR / f"{scenario}.txt"
+        
+        lines = []
+        lines.append("====================[ 단계별 AI 분석 결과 ]====================")
+        lines.append(f"총 실행 시간: {total_elapsed:.3f}초")
+        lines.append("")
+        lines.append("====================[ chain1_out ]====================")
+        lines.append(chain1_out)
+        lines.append("")
+        lines.append("====================[ chain2_out ]====================")
+        lines.append(chain2_out)
+        lines.append("")
+        lines.append("====================[ chain3_out ]====================")
+        lines.append(chain3_out)
+        lines.append("")
+        lines.append("====================[ chain4_out ]====================")
+        lines.append(chain4_out)
+        
+        out_path.write_text("\n".join(lines), encoding="utf-8")
+        
+        # analysis_result만 반환 (result 제거)
+        final_analysis_result = state_manager.get('analysis_result', {})
+        print(f"[DEBUG] 최종 analysis_result 반환: {list(final_analysis_result.keys())}")
     
-    # 5단계: 결과 검증 및 완료
-    if progress_callback:
-        progress_callback(100, "결과 검증 및 완료", "분석이 완료되었습니다!", current_step=5)
-    
-    print("5단계: 결과 검증 및 완료")
-    
-    # 전체 실행 시간 계산
-    total_elapsed = step1_elapsed + step2_elapsed + step3_elapsed + step4_elapsed
-    
-    # 결과 저장
-    OUT_ROOT = HERE / "tetris_out"
-    OUT_DIR = OUT_ROOT / "log_data"
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = OUT_DIR / f"{scenario}.txt"
-    
-    lines = []
-    lines.append("====================[ 단계별 AI 분석 결과 ]====================")
-    lines.append(f"총 실행 시간: {total_elapsed:.3f}초")
-    lines.append("")
-    lines.append("====================[ chain1_out ]====================")
-    lines.append(chain1_out)
-    lines.append("")
-    lines.append("====================[ chain2_out ]====================")
-    lines.append(chain2_out)
-    lines.append("")
-    lines.append("====================[ chain3_out ]====================")
-    lines.append(chain3_out)
-    lines.append("")
-    lines.append("====================[ chain4_out ]====================")
-    lines.append(chain4_out)
-    
-    out_path.write_text("\n".join(lines), encoding="utf-8")
-    
-    # analysis_result만 반환 (result 제거)
-    final_analysis_result = state_manager.get('analysis_result', {})
-    print(f"[DEBUG] 최종 analysis_result 반환: {list(final_analysis_result.keys())}")
-    
-    return {
-        "analysis_result": final_analysis_result,
-        "out_path": str(out_path),  # WindowsPath를 문자열로 변환
-        "total_elapsed": total_elapsed,
-        "step_times": {
-            "step1": step1_elapsed,
-            "step2": step2_elapsed,
-            "step3": step3_elapsed,
-            "step4": step4_elapsed
+        return {
+            "analysis_result": final_analysis_result,
+            "out_path": str(out_path),  # WindowsPath를 문자열로 변환
+            "total_elapsed": total_elapsed,
+            "step_times": {
+                "step1": step1_elapsed,
+                "step2": step2_elapsed,
+                "step3": step3_elapsed,
+                "step4": step4_elapsed
+            }
         }
-    }
+        
+    except AnalysisCancelledException as e:
+        print(f"[중지] {e.message}")
+        return {"status": "cancelled", "message": e.message}
+    except Exception as e:
+        print(f"[오류] 분석 중 예상치 못한 오류: {e}")
+        raise
 
 
 def main():

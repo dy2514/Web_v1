@@ -111,7 +111,7 @@ def get_user_input_web(
             raise TimeoutError("웹 입력 수집 대기 시간이 초과되었습니다.")
             
     except KeyboardInterrupt:
-        print("\n🛑 사용자가 프로그램을 중단했습니다.")
+        print("\n[중단] 사용자가 프로그램을 중단했습니다.")
         raise SystemExit(0)
     
     if not collected_data_url:

@@ -709,6 +709,77 @@ html, body {
     font-weight: 700;
 }
 
+/* 상태 아이콘 스타일 - SVG 아이콘 사용 */
+.status-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 참고 정보, 안내 아이콘 (초기 상태) - 파란색 */
+
+/* 진행 중 아이콘 - 로딩 스피너 */
+
+/* 로딩 스피너 애니메이션 */
+.status-icon.warning svg {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 점 애니메이션 스타일 */
+.dots-animation {
+    display: inline-block;
+    position: relative;
+}
+
+.dots-animation::after {
+    content: '';
+    animation: dots 1.5s infinite;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    white-space: nowrap;
+}
+
+@keyframes dots {
+    0%, 20% {
+        content: '';
+    }
+    40% {
+        content: '.';
+    }
+    60% {
+        content: '..';
+    }
+    80%, 100% {
+        content: '...';
+    }
+}
+
+/* 작업 완료, 성공 아이콘 - 초록색 */
+
+/* 오류, 위험 아이콘 - 빨간색 */
+
+/* 아코디언 버튼에 아이콘 추가 */
+.btn-accordion {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
+.btn-accordion .status-icon {
+    margin-right: 12px;
+}
+
 /* .timeline-item.active { color: #0f766e; }
 .timeline-item.active .timeline-dot {
     background: #14b8a6;

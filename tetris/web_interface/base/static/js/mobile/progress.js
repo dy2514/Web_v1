@@ -29,13 +29,19 @@ function goBack() {
 // 현재 단계에 맞는 문구 반환
 function getCurrentStepMessage(step) {
     const messages = {
-        1: "이미지 분석 중입니다...",
-        2: "짐 인식 및 분류 중입니다...",
-        3: "차량 공간 계산 중입니다...",
-        4: "최적 배치 생성 중입니다...",
-        5: "결과 검증 및 완료 중입니다..."
+        1: "이미지 분석 중입니다",
+        2: "짐 인식 및 분류 중입니다",
+        3: "차량 공간 계산 중입니다",
+        4: "최적 배치 생성 중입니다",
+        5: "결과 검증 및 완료 중입니다"
     };
-    return messages[step] || "분석을 시작하고 있습니다...";
+    return messages[step] || "분석을 시작하고 있습니다";
+}
+
+// 점 애니메이션이 적용된 메시지 생성
+function getAnimatedMessage(step) {
+    const baseMessage = getCurrentStepMessage(step);
+    return `<span class="dots-animation">${baseMessage}</span>`;
 }
 
 // Progress Bar 업데이트 함수
@@ -91,12 +97,16 @@ function updateProgress(percentage, serverStep = null) {
     if (serverStep !== currentStep) {
         currentStep = serverStep;
         // updateStepDisplay();
-        document.getElementById('progressText').textContent = getCurrentStepMessage(currentStep);
+        
+        // 클라이언트 측 단계별 메시지 사용
+        document.getElementById('progressText').innerHTML = getAnimatedMessage(currentStep);
+        console.log('📝 updateProgress에서 클라이언트 메시지 사용:', getCurrentStepMessage(currentStep));
+        
         console.log('단계 변경:', currentStep + '단계로 업데이트');
         if (detailPanelOpen) refreshDetailTimeline();
         if (detailPanelOpen) {
-            const dt = document.getElementById('detailProgressText');
-            if (dt) dt.textContent = getCurrentStepMessage(currentStep);
+            // 상세 패널에서도 메인 화면과 동일한 메시지 표시
+            syncDetailProgressCard();
         }
     }
 }
@@ -173,13 +183,6 @@ function handleStatusData(statusData) {
                     progress: progress,
                     serverStep: serverStep
                 });
-            }
-            
-            // 서버 메시지가 있으면 표시 (진행률과 독립적으로)
-            const serverMessage = statusData.message;
-            if (serverMessage) {
-                document.getElementById('progressText').textContent = serverMessage;
-                console.log('📝 서버 메시지 업데이트:', serverMessage);
             }
             
             // 현재 단계 확인
@@ -264,17 +267,21 @@ function handleStatusData(statusData) {
             if (currentStep >= 5 && hasStep4Output) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
                 updateProgress(100, 5);
-                document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                 showResultButton(); // 분석 완료 시 버튼 활성화
+                // 모든 단계 아이콘을 성공 상태로 업데이트
+                updateAllStepIconsToSuccess();
             } else if (currentStep >= 5 && !hasStep4Output) {
                 doneWaitCount = (doneWaitCount || 0) + 1;
                 console.log(`⏳ 5단계 신호 수신, 그러나 step4 출력 미도착 → 완료 처리 보류 (시도 ${doneWaitCount})`);
                 // 안전장치: 일정 횟수(예: 5회) 이상 대기 시 완료로 간주
                 if (doneWaitCount >= 5) {
                     console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
-                    document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                    document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     updateProgress(100, 5);
                     showResultButton(); // 분석 완료 시 버튼 활성화
+                    // 모든 단계 아이콘을 성공 상태로 업데이트
+                    updateAllStepIconsToSuccess();
                 }
             }
             
@@ -284,15 +291,19 @@ function handleStatusData(statusData) {
                 const hasFinal = !!(statusData.chain4_out || statusData.analysis_result?.chain4_out || statusData.processed_results?.chain4_out);
                 if (hasFinal) {
                     console.log('분석 완료! (최종 출력 확인)');
-                    document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                    document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     showResultButton(); // 분석 완료 시 버튼 활성화
+                    // 모든 단계 아이콘을 성공 상태로 업데이트
+                    updateAllStepIconsToSuccess();
                 } else {
                     doneWaitCount = (doneWaitCount || 0) + 1;
                     console.log(`분석 완료 신호 수신, 그러나 최종 출력 미도착 → 폴링 유지 (시도 ${doneWaitCount})`);
                 }
             } else if (status === 'error') {
                 console.log('분석 오류 발생');
-                document.getElementById('progressText').textContent = '분석 중 오류가 발생했습니다.';
+                document.getElementById('progressText').innerHTML = '분석 중 오류가 발생했습니다.';
+                // 현재 진행 중인 단계 아이콘을 오류 상태로 업데이트
+                updateCurrentStepIconToError();
             }
         }
     } catch (error) {
@@ -664,7 +675,50 @@ function refreshDetailTimeline() {
         } else if (currentStep === n) {
             el.classList.add('active');
         }
+        
+        // 아이콘 상태 업데이트
+        updateStepIcon(n);
     });
+}
+
+// 단계별 아이콘 상태 업데이트
+function updateStepIcon(stepNumber) {
+    const iconElement = document.getElementById(`step${stepNumber}-icon`);
+    if (!iconElement) return;
+    
+    // 기존 클래스 제거
+    iconElement.classList.remove('info', 'warning', 'success', 'error');
+    
+    if (currentStep > stepNumber) {
+        // 완료된 단계 - 성공 아이콘 (초록색 체크)
+        iconElement.classList.add('success');
+        iconElement.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="20" height="20" rx="10" transform="matrix(1 0 0 -1 0 20)" fill="#228738"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7528 6.33951C14.1176 6.58879 14.2113 7.08659 13.962 7.45138L9.86198 13.4514C9.72769 13.6479 9.51286 13.7744 9.27586 13.7966C9.03886 13.8187 8.80432 13.7341 8.63596 13.5659L6.13439 11.0659C5.82188 10.7536 5.82172 10.247 6.13404 9.93452C6.44636 9.622 6.95289 9.62184 7.26541 9.93417L9.08495 11.7526L12.6409 6.54868C12.8902 6.18388 13.388 6.09024 13.7528 6.33951Z" fill="white"/>
+            </svg>
+        `;
+    } else if (currentStep === stepNumber) {
+        // 현재 진행 중인 단계 - 로딩 스피너
+        iconElement.classList.add('warning');
+        iconElement.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="8.5" stroke="#D9D9D9" stroke-width="2" fill="none"/>
+                <circle cx="10" cy="10" r="8.5" stroke="#3B82F6" stroke-width="2" fill="none" 
+                        stroke-dasharray="28.57" stroke-dashoffset="9.42" stroke-linecap="round"/>
+            </svg>
+        `;
+    } else {
+        // 대기 중인 단계 - 참고 정보 아이콘 (파란색 i)
+        iconElement.classList.add('info');
+        iconElement.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="20" height="20" rx="10" transform="matrix(1 0 0 -1 0 20)" fill="#0B78CB"/>
+                <path d="M9.89922 7.44102C10.562 7.44102 11.0992 6.90376 11.0992 6.24102C11.0992 5.57827 10.562 5.04102 9.89922 5.04102C9.23648 5.04102 8.69922 5.57827 8.69922 6.24102C8.69922 6.90376 9.23648 7.44102 9.89922 7.44102Z" fill="white"/>
+                <path d="M8.39922 8.43115C8.28876 8.43115 8.19922 8.5207 8.19922 8.63115V9.43115C8.19922 9.54161 8.28876 9.63115 8.39922 9.63115H9.10078C9.21124 9.63115 9.30078 9.7207 9.30078 9.83115V13.5938H8.2C8.08954 13.5938 8 13.6833 8 13.7938V14.5937C8 14.7042 8.08954 14.7937 8.2 14.7937H11.8C11.9105 14.7937 12 14.7042 12 14.5937V13.7937C12 13.6833 11.9105 13.5938 11.8 13.5938H11.1008V8.63115C11.1008 8.5207 11.0112 8.43115 10.9008 8.43115H8.39922Z" fill="white"/>
+            </svg>
+        `;
+    }
 }
 
 // 상세 진행 카드(퍼센트/텍스트) 동기화
@@ -675,7 +729,8 @@ function syncDetailProgressCard() {
     const t = document.getElementById('progressText');
     if (dp && dt && p && t) {
         dp.textContent = p.textContent;
-        dt.textContent = t.textContent;
+        // 메인 화면과 동일한 메시지로 설정
+        dt.innerHTML = t.innerHTML;
     }
 }
 
@@ -1523,8 +1578,10 @@ async function startAnalysis() {
             // currentScenario 업데이트
             currentScenario = newScenario;
             console.log('현재 시나리오 업데이트:', currentScenario);
-            // 진행률 텍스트 업데이트
-            document.getElementById('progressText').textContent = 'AI가 분석을 시작했습니다...';
+            
+            // 1단계 메시지 사용
+            document.getElementById('progressText').innerHTML = getAnimatedMessage(1);
+            console.log('📝 분석 시작, 1단계 메시지 사용:', getCurrentStepMessage(1));
         } else {
             console.error('분석 시작 실패:', result.message);
             // 오류 메시지 표시
@@ -1532,7 +1589,7 @@ async function startAnalysis() {
         }
     } catch (error) {
         console.error('분석 시작 오류:', error);
-        document.getElementById('progressText').textContent = '분석 시작 중 오류가 발생했습니다: ' + error.message;
+        document.getElementById('progressText').innerHTML = '분석 시작 중 오류가 발생했습니다: ' + error.message;
     }
 }
 
@@ -1543,10 +1600,73 @@ function initializeAccordions() {
     });
 }
 
+// 초기 아이콘 상태 설정
+function initializeStepIcons() {
+    for (let i = 1; i <= 4; i++) {
+        updateStepIcon(i);
+    }
+}
+
+// 모든 단계 아이콘을 성공 상태로 업데이트
+function updateAllStepIconsToSuccess() {
+    for (let i = 1; i <= 4; i++) {
+        const iconElement = document.getElementById(`step${i}-icon`);
+        if (iconElement) {
+            iconElement.classList.remove('info', 'warning', 'error');
+            iconElement.classList.add('success');
+            iconElement.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="20" height="20" rx="10" transform="matrix(1 0 0 -1 0 20)" fill="#228738"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7528 6.33951C14.1176 6.58879 14.2113 7.08659 13.962 7.45138L9.86198 13.4514C9.72769 13.6479 9.51286 13.7744 9.27586 13.7966C9.03886 13.8187 8.80432 13.7341 8.63596 13.5659L6.13439 11.0659C5.82188 10.7536 5.82172 10.247 6.13404 9.93452C6.44636 9.622 6.95289 9.62184 7.26541 9.93417L9.08495 11.7526L12.6409 6.54868C12.8902 6.18388 13.388 6.09024 13.7528 6.33951Z" fill="white"/>
+                </svg>
+            `;
+        }
+    }
+}
+
+// 현재 진행 중인 단계 아이콘을 오류 상태로 업데이트
+function updateCurrentStepIconToError() {
+    if (currentStep >= 1 && currentStep <= 4) {
+        const iconElement = document.getElementById(`step${currentStep}-icon`);
+        if (iconElement) {
+            iconElement.classList.remove('info', 'warning', 'success');
+            iconElement.classList.add('error');
+            iconElement.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="20" height="20" rx="10" transform="matrix(1 0 0 -1 0 20)" fill="#DC2626"/>
+                    <path d="M13.5 6.5L6.5 13.5M6.5 6.5L13.5 13.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            `;
+        }
+    }
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     currentScenario = getScenarioFromURL();
     console.log('시나리오:', currentScenario);
+    
+    // 페이지 진입 시 이전 분석 상태 확인 및 초기화
+    console.log('[진입] Progress 페이지 진입 - 이전 상태 확인');
+    
+    // 진행 중인 분석이 있다면 중지 요청 (동기적으로 처리)
+    fetch('/desktop/api/reset', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then(response => {
+        if (response.ok) {
+            console.log('[진입] 이전 분석 중지 완료');
+        }
+    }).catch(error => {
+        console.warn('[진입] 이전 분석 중지 실패:', error);
+    });
+    
+    // 클라이언트 측 상태 강제 초기화
+    currentStep = 0;
+    progressValue = 0;
+    doneWaitCount = 0;
     
     // 초기 상태 설정
     updateProgress(0);
@@ -1561,7 +1681,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // 아코디언 초기화
     initializeAccordions();
     
+    // 초기 아이콘 상태 설정
+    initializeStepIcons();
+    
     // SSE 시작
+    startSSE();
+});
+
+// SSE 시작 함수 (재사용을 위해 분리)
+function startSSE() {
     try {
         if (eventSource) {
             eventSource.close();
@@ -1583,11 +1711,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const status = payload.status || payload.system?.status;
                 const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out || payload.processed_results?.chain4_out);
                 if (status === 'done' && hasFinal) {
-                    document.getElementById('progressText').textContent = '분석이 완료되었습니다!';
+                    document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     eventSource.close();
                 } else if (status === 'error') {
-                    document.getElementById('progressText').textContent = '분석 중 오류가 발생했습니다.';
+                    document.getElementById('progressText').innerHTML = '분석 중 오류가 발생했습니다.';
+                    eventSource.close();
+                } else if (status === 'cancelled') {
+                    document.getElementById('progressText').innerHTML = '분석이 중지되었습니다.';
                     eventSource.close();
                 }
             } catch (err) {
@@ -1601,9 +1732,71 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {
         console.error('SSE 연결 실패:', e);
     }
-});
+}
 
 // 홈으로 이동
 function goToHome() {
+    // 홈 화면으로 이동
     window.location.href = '/mobile/home';
 }
+
+// 분석 중지 함수 (재사용)
+function stopAnalysisOnExit() {
+    console.log('[이탈] Progress 페이지 이탈 감지 - 분석 중지 요청');
+    
+    // SSE 연결 즉시 종료
+    if (eventSource) {
+        console.log('[이탈] SSE 연결 종료');
+        eventSource.close();
+        eventSource = null;
+    }
+
+    
+    // 분석 중지 요청 (동기적으로 처리)
+    fetch('/desktop/api/reset', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        keepalive: true
+    }).then(response => {
+        if (response.ok) {
+            console.log('[이탈] 분석 중지 완료');
+        }
+    }).catch(error => {
+        console.warn('[이탈] 분석 중지 요청 실패:', error);
+    });
+
+    // 클라이언트 상태 초기화
+    currentStep = 0;
+    progressValue = 0;
+    doneWaitCount = 0;
+}
+
+// 페이지 이탈 시 분석 중지 (여러 이벤트로 확실하게)
+window.addEventListener('beforeunload', function(e) {
+    // 사용자에게 확인 메시지 표시
+    const message = '분석이 진행 중입니다. 페이지를 떠나시겠습니까?';
+    e.returnValue = message;
+    return message;
+});
+
+// 페이지가 실제로 언로드될 때 분석 중지 (사용자가 "나가기"를 선택했을 때)
+window.addEventListener('unload', function(e) {
+    console.log('[이탈] 페이지 언로드 감지 - 분석 중지');
+    stopAnalysisOnExit();
+});
+
+// 페이지 숨김 시 분석 중지 (모바일에서 뒤로가기 등)
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('[이탈] 페이지 숨김 감지 - 분석 중지');
+        stopAnalysisOnExit();
+    }
+});
+
+// 페이지 완전 종료 시 분석 중지
+window.addEventListener('pagehide', function() {
+    console.log('[이탈] 페이지 종료 감지 - 분석 중지');
+    stopAnalysisOnExit();
+});

@@ -28,14 +28,63 @@ from . import user_bp
 @user_bp.route('/')
 @user_bp.route('/home')
 def mobile_home():
-    """모바일 홈 페이지"""
+    """모바일 홈 페이지 - 분석 중지"""
+    try:
+        # 진행 중인 분석이 있다면 중지
+        from control.routes import stop_all_analysis
+        from base.state_manager import state_manager
+        
+        # 분석 상태 확인 (더 포괄적으로 체크)
+        current_status = state_manager.get('processing.status', 'idle')
+        system_status = state_manager.get('system.status', 'idle')
+        progress = state_manager.get('processing.progress', 0)
+        
+        # 분석이 진행 중인지 확인 (더 넓은 조건)
+        is_analysis_running = (
+            current_status in ['running', 'processing'] or
+            system_status in ['running', 'processing', '이미지 분석', '짐 인식 및 분류', '차량 공간 계산', '최적 배치 생성'] or
+            (progress > 0 and progress < 100)
+        )
+        
+        # 항상 분석 중지 (상태와 관계없이)
+        logger.info(f"[이탈] 홈 페이지 진입으로 인한 분석 중지 (상태: {current_status}, 시스템: {system_status}, 진행률: {progress}%)")
+        stop_all_analysis()
+        
+        # 모든 분석 관련 상태 강제 초기화
+        state_manager.set('processing.status', 'idle')
+        state_manager.set('processing.progress', 0)
+        state_manager.set('processing.current_scenario', None)
+        state_manager.set('processing.started_at', None)
+        state_manager.set('processing.completed_at', None)
+        state_manager.set('current_step', 0)
+        state_manager.set('analysis_result', {})
+        state_manager.set('processed_results', {})
+        state_manager.set('step_times', {})
+        state_manager.set('total_elapsed', 0)
+        state_manager.set('system.status', 'idle')
+        
+        # 업로드 관련 데이터 초기화
+        state_manager.set('upload.uploaded_file', None)
+        state_manager.set('upload.image_path', None)
+        state_manager.set('upload.image_data_url', None)
+        state_manager.set('upload.people_count', 0)
+        state_manager.set('upload.scenario', None)
+        
+        # 알림 초기화
+        state_manager.set('notifications', [])
+        
+        logger.info("[완료] 홈 페이지 진입으로 인한 분석 중지 및 상태 초기화 완료")
+            
+    except Exception as e:
+        logger.warning(f"홈 페이지 진입 시 분석 중지 실패: {e}")
+    
     session_id = str(uuid.uuid4())
     session['session_id'] = session_id
     update_status(status='mobile_connected', message='모바일 홈 화면 접속')
     
     # 세션 등록 (control 모듈의 함수 사용)
     try:
-        from ..control.routes import register_session
+        from control.routes import register_session
         register_session(session_id, 'mobile')
     except ImportError:
         # 직접 경로 추가
@@ -56,7 +105,7 @@ def mobile_input():
     
     # 세션 등록 (control 모듈의 함수 사용)
     try:
-        from ..control.routes import register_session
+        from control.routes import register_session
         register_session(session_id, 'mobile')
     except ImportError:
         # 직접 경로 추가
@@ -204,5 +253,38 @@ def upload_file():
 
 @user_bp.route('/progress')
 def progress():
-    """진행률 페이지"""
+    """진행률 페이지 - 분석 내용 초기화"""
+    try:
+        from base.state_manager import state_manager
+        from control.routes import stop_all_analysis
+        
+        # 진행 중인 분석이 있다면 중지
+        current_status = state_manager.get('processing.status', 'idle')
+        if current_status in ['running', 'processing']:
+            logger.info("[진입] Progress 페이지 진입으로 인한 이전 분석 중지")
+            stop_all_analysis()
+        
+        # 모든 분석 관련 상태 강제 초기화
+        state_manager.set('processing.current_scenario', None)
+        state_manager.set('processing.progress', 0)
+        state_manager.set('processing.status', 'idle')
+        state_manager.set('processing.started_at', None)
+        state_manager.set('processing.completed_at', None)
+        state_manager.set('current_step', 0)
+        state_manager.set('analysis_result', {})
+        state_manager.set('processed_results', {})
+        state_manager.set('step_times', {})
+        state_manager.set('total_elapsed', 0)
+        state_manager.set('system.status', 'idle')
+        
+        # 알림 초기화
+        state_manager.set('notifications', [])
+        
+        state_manager.add_notification('새로운 분석을 시작합니다', 'info')
+        
+        logger.info("Progress 페이지 진입 - 분석 내용 초기화 완료")
+        
+    except Exception as e:
+        logger.warning(f"Progress 페이지 진입 시 상태 초기화 실패: {e}")
+    
     return render_template('mobile/progress.html')
