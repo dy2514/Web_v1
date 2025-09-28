@@ -16,9 +16,8 @@ sys.path.insert(0, str(web_interface_dir))
 # Simplified imports
 from base.api_utils import APIResponse, log_api_request, log_api_response, validate_file_upload
 from base.file_handler import save_uploaded_file
-from base.utils import update_status
+from base.state_manager import update_status
 
-from .input_handler import create_input_handler
 from .user_utils import format_upload_response, get_mobile_status_info, log_user_action
 
 logger = logging.getLogger(__name__)

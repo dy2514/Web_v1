@@ -5,6 +5,7 @@ TETRIS 시스템 최종 런처
 """
 import sys
 import os
+import argparse
 import time
 import subprocess
 import threading
@@ -84,12 +85,12 @@ def test_config_loading():
             print(f"❌ 폴백 설정 로딩도 실패: {fallback_error}")
             return False, None, None
 
-def launch_tetris_web(port):
+def launch_tetris_web(mode, port):
     """TETRIS 웹 시스템 실행"""
     print(f"\n🌐 3단계: TETRIS 웹 시스템 실행 (포트: {port})")
     
     # tetris.py 실행
-    cmd = [sys.executable, "tetris/tetris.py", "--mode", "web", "--port", str(port), "--no-browser"]
+    cmd = [sys.executable, "tetris/tetris.py", "--mode", mode, "--port", str(port), "--no-browser"]
     
     print("🚀 TETRIS 시스템 시작 중...")
     process = subprocess.Popen(
@@ -170,6 +171,11 @@ def verify_web_access(port):
 
 def main():
     """메인 실행 함수"""
+
+    ap = argparse.ArgumentParser(description="AI TETRIS launcher")
+    ap.add_argument("--mode", choices=["web", "scenario"], default="web")
+    ap.add_argument("--port", type=int, default=5002)
+    args = ap.parse_args()
     
     # 1단계: 필수 조건 확인
     if not check_prerequisites():
@@ -183,7 +189,7 @@ def main():
         return
     
     # 3단계: TETRIS 시스템 실행
-    process, server_ready = launch_tetris_web(port)
+    process, server_ready = launch_tetris_web(args.mode, args.port if port is None else port)
     
     if not server_ready:
         print("\n❌ 서버 시작에 실패했습니다.")

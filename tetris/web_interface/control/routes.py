@@ -18,7 +18,7 @@ web_interface_dir = current_dir.parent
 sys.path.insert(0, str(web_interface_dir))
 
 # Simplified imports
-from base.utils import get_global_status, update_status
+from base.state_manager import get_global_status, update_status
 
 from .control_utils import (
     create_processing_steps,
@@ -354,7 +354,7 @@ def start_processing():
 @control_bp.route('/api/reset', methods=['POST'])
 def reset_system():
     """시스템 초기화"""
-    from ..base.utils import reset_global_status
+    from ..base.state_manager import reset_global_status
     reset_global_status()
     
     return jsonify({

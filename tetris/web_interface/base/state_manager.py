@@ -13,8 +13,15 @@ logger = logging.getLogger(__name__)
 class StateManager:
     """통합 상태 관리자"""
     
-    def __init__(self, state_file: str = 'state.json'):
-        self.state_file = Path(state_file)
+    def __init__(self, state_file: str = None):
+        # 절대 경로 사용 - 프로젝트 루트의 state.json 파일 사용
+        if state_file is None:
+            # 프로젝트 루트 디렉토리 찾기 (Web_v1 디렉토리)
+            current_dir = Path(__file__).parent  # web_interface/base
+            project_root = current_dir.parent.parent.parent  # Web_v1 디렉토리
+            state_file = project_root / 'state.json'
+        
+        self.state_file = Path(state_file).resolve()  # 절대 경로로 변환
         self.state: Dict[str, Any] = {}
         self.lock = threading.RLock()
         self.listeners = []
@@ -266,8 +273,11 @@ def get_global_status() -> Dict[str, Any]:
     """전역 상태 조회 (기존 호환성)"""
     return state_manager.get_system_status()
 
-def update_status(status: str = None, message: str = None, **kwargs):
+def update_status(progress=None, status: str = None, message: str = None, **kwargs):
     """상태 업데이트 (기존 호환성)"""
+    if progress is not None:
+        state_manager.set('processing.progress', progress)
+    
     if status:
         state_manager.set('system.status', status)
     
@@ -278,3 +288,7 @@ def update_status(status: str = None, message: str = None, **kwargs):
         for key, value in kwargs.items():
             logger.info(f"update_status: {key} = {value}")
             state_manager.set(key, value)
+
+def reset_global_status():
+    """전역 상태 초기화 (기존 호환성)"""
+    state_manager.reset()

@@ -14,39 +14,6 @@ def file_to_data_url(p: Path) -> str:
     b64 = base64.b64encode(p.read_bytes()).decode("utf-8")
     return f"data:{mime};base64,{b64}"
 
-def _file_bytes_to_data_url(raw: bytes, mime: Optional[str]) -> str:
-    """원본 바이트 → data URL. 웹 모드"""
-    if not mime:
-        mime = "application/octet-stream"
-    b64 = base64.b64encode(raw).decode("utf-8")
-    return f"data:{mime};base64,{b64}"
-
-def _ext_from_filename(filename: str) -> str:
-    """원본 파일명에서 확장자 추출"""
-    if not filename:
-        return ""
-    dot = filename.rfind(".")
-    return filename[dot:].lower() if dot != -1 else ""
-
-def _guess_ext_by_content(raw: bytes, fallback_ext: str) -> str:
-    """실제 파일 포맷 판별 후 확장자 확정. (Pillow 미설치/미인식 시 안전 폴백)"""
-    try:
-        from PIL import Image  
-        with Image.open(BytesIO(raw)) as im:
-            fmt = (im.format or "").lower()
-    except Exception:
-        fmt = None
-
-    table = {
-        "jpeg": ".jpeg", "jpg": ".jpg", "png": ".png", "webp": ".webp",
-        "heic": ".heic", "heif": ".heic", "bmp": ".bmp", "gif": ".gif", "tiff": ".tiff",
-    }
-    if fallback_ext:
-        return fallback_ext if fallback_ext.startswith(".") else "." + fallback_ext
-    if fmt in table:
-        return table[fmt]
-    return ".bin"
-
 # ================================ 시나리오 모드 ================================
 def input_scenario_image() -> str:
     while True:
@@ -105,16 +72,16 @@ def get_user_input_web(
     
     # 통합 웹 서버의 상태 관리 모듈 import
     try:
-        from ..base.utils import get_global_status, update_status
+        from ..base.state_manager import get_global_status, update_status
     except ImportError:
         try:
-            from base.utils import get_global_status, update_status
+            from base.state_manager import get_global_status, update_status
         except ImportError:
             # 직접 경로 추가
             web_interface_path = Path(__file__).parent.parent
             if str(web_interface_path) not in sys.path:
                 sys.path.insert(0, str(web_interface_path))
-            from base.utils import get_global_status, update_status
+            from base.state_manager import get_global_status, update_status
 
     print(f"통합 웹 서버에서 사용자 입력을 기다리는 중...")
     print(f"모바일 접속: http://localhost:{port}/mobile/input")
