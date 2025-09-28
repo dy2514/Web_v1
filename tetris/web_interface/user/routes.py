@@ -42,7 +42,7 @@ def mobile_home():
         # 분석이 진행 중인지 확인 (더 넓은 조건)
         is_analysis_running = (
             current_status in ['running', 'processing'] or
-            system_status in ['running', 'processing', '이미지 분석', '짐 인식 및 분류', '차량 공간 계산', '최적 배치 생성'] or
+            system_status in ['running', 'processing', '사용자 입력 분석', '최적 배치 생성', '시트 동작 계획', '최적 배치 생성'] or
             (progress > 0 and progress < 100)
         )
         

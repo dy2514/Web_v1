@@ -377,7 +377,7 @@ def start_processing():
         # 처리 시뮬레이션 (SSE로 진행 상태 전송)
         def simulate_processing():
             steps = [
-                (10, 'analyzing', '이미지 분석 중...'),
+                (10, 'analyzing', '사용자 입력 분석 중...'),
                 (30, 'processing', 'AI 처리 중...'),
                 (60, 'generating', '결과 생성 중...'),
                 (90, 'finalizing', '최종 처리 중...'),
@@ -557,7 +557,7 @@ def trigger_hardware():
                 logger.warning(f"분석 결과에서 chain4_out을 찾을 수 없습니다. 기본값 사용: {placement_code}")
                 # return jsonify({
                 #     'success': False, 
-                #     'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 이미지 분석을 완료해주세요.'
+                #     'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 사용자 입력 분석을 완료해주세요.'
                 # }), 400
         
         # 배치 코드 검증

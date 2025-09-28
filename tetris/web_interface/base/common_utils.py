@@ -202,7 +202,7 @@ def generate_qr_data(local_ip: str = None, port: int = None) -> str:
 def create_processing_steps() -> list:
     """처리 단계 목록 생성"""
     return [
-        {'progress': 10, 'status': 'analyzing', 'message': '이미지 분석 중...'},
+        {'progress': 10, 'status': 'analyzing', 'message': '사용자 입력 분석 중...'},
         {'progress': 30, 'status': 'processing', 'message': 'AI 처리 중...'},
         {'progress': 60, 'status': 'generating', 'message': '결과 생성 중...'},
         {'progress': 90, 'status': 'finalizing', 'message': '최종 처리 중...'},

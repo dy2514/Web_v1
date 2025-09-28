@@ -218,10 +218,10 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         
         print("[초기화] 상태 초기화 완료 - 1단계부터 시작")
         
-        # 1단계: 이미지 분석 (Chain1)
+        # 1단계: 사용자 입력 분석 (Chain1)
         if progress_callback:
             print("[DEBUG] progress_callback 호출 중...")
-            progress_callback(20, "이미지 분석 중", "이미지를 분석하고 있습니다...", current_step=1)
+            progress_callback(20, "사용자 입력 분석 중", "이미지를 분석하고 있습니다...", current_step=1)
             print("[DEBUG] progress_callback 호출 완료")
         else:
             print("[DEBUG] progress_callback이 None입니다!")
@@ -230,7 +230,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         if check_stop():
             raise AnalysisCancelledException("분석이 중지되었습니다.")
         
-        print("1단계: 이미지 분석 시작")
+        print("1단계: 사용자 입력 분석 시작")
         t_step1_start = perf_counter()
         try:
             # Chain1 실행 전 중지 확인
@@ -252,7 +252,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
             from main_chain import _inject_people_into_json
             chain1_out = _inject_people_into_json(chain1_out, people_count)
             
-            print("1단계: 이미지 분석 완료")
+            print("1단계: 사용자 입력 분석 완료")
             t_step1_end = perf_counter()
             step1_elapsed = t_step1_end - t_step1_start
             print(f"1단계 실행 시간: {step1_elapsed:.3f}초")
@@ -273,12 +273,12 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         if check_stop():
             raise AnalysisCancelledException("분석이 중지되었습니다.")
         
-        # 2단계: 짐 인식 및 분류 (Chain2)
+        # 2단계: 최적 배치 생성 (Chain2)
         print("2단계 시작 전 - current_step=2 설정")
         if progress_callback:
-            progress_callback(40, "짐 인식 및 분류", "짐을 인식하고 분류하고 있습니다...", current_step=2)
+            progress_callback(40, "최적 배치 생성", "짐을 인식하고 분류하고 있습니다...", current_step=2)
         
-        print("2단계: 짐 인식 및 분류 시작")
+        print("2단계: 최적 배치 생성 시작")
         t_step2_start = perf_counter()
         try:
             # Chain2 준비 - user_input에서 이미지 추출
@@ -294,7 +294,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
             })
             chain2_out = chain2_result["chain2_out"]
             
-            print("2단계: 짐 인식 및 분류 완료")
+            print("2단계: 최적 배치 생성 완료")
             t_step2_end = perf_counter()
             step2_elapsed = t_step2_end - t_step2_start
             print(f"2단계 실행 시간: {step2_elapsed:.3f}초")
@@ -313,12 +313,12 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
             print(f"2단계 실행 실패: {e}")
             raise
         
-        # 3단계: 차량 공간 계산 (Chain3)
+        # 3단계: 시트 동작 계획 (Chain3)
         print("3단계 시작 전 - current_step=3 설정")
         if progress_callback:
-            progress_callback(60, "차량 공간 계산", "차량 공간을 계산하고 있습니다...", current_step=3)
+            progress_callback(60, "시트 동작 계획", "차량 공간을 계산하고 있습니다...", current_step=3)
         
-        print("3단계: 차량 공간 계산 시작")
+        print("3단계: 시트 동작 계획 시작")
         t_step3_start = perf_counter()
         try:
             # Chain3 준비 - 입력 변수 없음
@@ -332,7 +332,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
             })
             chain3_out = chain3_result["chain3_out"]
             
-            print("3단계: 차량 공간 계산 완료")
+            print("3단계: 시트 동작 계획 완료")
             t_step3_end = perf_counter()
             step3_elapsed = t_step3_end - t_step3_start
             print(f"3단계 실행 시간: {step3_elapsed:.3f}초")

@@ -12,9 +12,9 @@ let eventSource = null;
 // 현재 단계에 맞는 문구 반환
 function getCurrentStepMessage(step) {
     const messages = {
-        1: "이미지 분석 중입니다...",
-        2: "짐 인식 및 분류 중입니다...",
-        3: "차량 공간 계산 중입니다...",
+        1: "사용자 입력 분석 중입니다...",
+        2: "최적 배치 생성 중입니다...",
+        3: "시트 동작 계획 중입니다...",
         4: "최적 배치 생성 중입니다...",
         5: "결과 검증 및 완료 중입니다..."
     };
@@ -213,7 +213,7 @@ function formatStepResult(stepNumber, resultData) {
         let formattedResult = '';
         
         switch(stepNumber) {
-            case 1: // 이미지 분석
+            case 1: // 사용자 입력 분석
                 const chain1Data = safeJsonParse(resultData) || {};
                 formattedResult = `
                     <div class="step-result-content">
@@ -228,7 +228,7 @@ function formatStepResult(stepNumber, resultData) {
                 `;
                 break;
                 
-            case 2: // 짐 인식 및 분류
+            case 2: // 최적 배치 생성
                 const chain2Data = safeJsonParse(resultData) || {};
                 formattedResult = `
                     <div class="step-result-content">
@@ -240,11 +240,11 @@ function formatStepResult(stepNumber, resultData) {
                 `;
                 break;
                 
-            case 3: // 차량 공간 계산
+            case 3: // 시트 동작 계획
                 const chain3Data = safeJsonParse(resultData) || {};
                 formattedResult = `
                     <div class="step-result-content">
-                        <h4>🚗 차량 공간 계산 결과</h4>
+                        <h4>🚗 시트 동작 계획 결과</h4>
                         <div class="result-details">
                             <h5>환경 설정 (이전):</h5>
                             <pre>${JSON.stringify(chain3Data.environment_before || {}, null, 2)}</pre>

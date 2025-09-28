@@ -29,9 +29,9 @@ function goBack() {
 // 현재 단계에 맞는 문구 반환
 function getCurrentStepMessage(step) {
     const messages = {
-        1: "이미지 분석 중입니다",
-        2: "짐 인식 및 분류 중입니다",
-        3: "차량 공간 계산 중입니다",
+        1: "사용자 입력 분석 중입니다",
+        2: "최적 배치 생성 중입니다",
+        3: "시트 동작 계획 중입니다",
         4: "최적 배치 생성 중입니다",
         5: "결과 검증 및 완료 중입니다"
     };
@@ -738,19 +738,19 @@ function syncDetailProgressCard() {
 function updateStepResults(resultData) {
     console.log('updateStepResults 호출됨:', resultData);
     
-    // 1단계: 이미지 분석 결과
+    // 1단계: 사용자 입력 분석 결과
     if (resultData.chain1_out) {
         console.log('1단계 결과 발견:', resultData.chain1_out);
         displayStepResult(1, resultData.chain1_out);
     }
     
-    // 2단계: 짐 인식 및 분류 결과
+    // 2단계: 최적 배치 생성 결과
     if (resultData.chain2_out) {
         console.log('2단계 결과 발견:', resultData.chain2_out);
         displayStepResult(2, resultData.chain2_out);
     }
     
-    // 3단계: 차량 공간 계산 결과
+    // 3단계: 시트 동작 계획 결과
     if (resultData.chain3_out) {
         console.log('3단계 결과 발견:', resultData.chain3_out);
         displayStepResult(3, resultData.chain3_out);
@@ -767,19 +767,19 @@ function updateStepResults(resultData) {
 function updateProcessedStepResults(processedResults) {
     console.log('updateProcessedStepResults 호출됨:', processedResults);
     
-    // 1단계: 이미지 분석 결과
+    // 1단계: 사용자 입력 분석 결과
     if (processedResults.chain1_out) {
         console.log('가공된 1단계 결과 발견:', processedResults.chain1_out);
         displayProcessedStepResult(1, processedResults.chain1_out);
     }
     
-    // 2단계: 짐 인식 및 분류 결과
+    // 2단계: 최적 배치 생성 결과
     if (processedResults.chain2_out) {
         console.log('가공된 2단계 결과 발견:', processedResults.chain2_out);
         displayProcessedStepResult(2, processedResults.chain2_out);
     }
     
-    // 3단계: 차량 공간 계산 결과
+    // 3단계: 시트 동작 계획 결과
     if (processedResults.chain3_out) {
         console.log('가공된 3단계 결과 발견:', processedResults.chain3_out);
         displayProcessedStepResult(3, processedResults.chain3_out);
@@ -868,7 +868,7 @@ function displayStepResult(stepNumber, resultData) {
     console.log(`🎯 포맷된 결과:`, formattedResult);
 
     // 새로운 아코디언 요소로 변경
-    // const stepTitleList = ['이미지 분석', '짐 인식 및 분류', '차량 공간 계산', '최적 배치 생성'];
+    // const stepTitleList = ['사용자 입력 분석', '최적 배치 생성', '시트 동작 계획', '최적 배치 생성'];
     // const newAccordionHtml = `
     //   <div id="accordionItem0${stepNumber}" class="accordion-item">
     //     <h5 class="accordion-header"><button type="button" id="accordionHeaderSample0${stepNumber}" class="btn-accordion" aria-controls="accordionCollapseSample0${stepNumber}">
@@ -955,8 +955,8 @@ function createStepCompletionText(stepNumber, processedData) {
     let content = '';
     
     switch(stepNumber) {
-        case 1: // 이미지 분석
-            title = '1단계: 이미지 분석 완료';
+        case 1: // 사용자 입력 분석
+            title = '1단계: 사용자 입력 분석 완료';
             content = `
                 <p><span class="highlight">${processedData.people_count || 0}명</span></p>
                 <p><strong>🧳 총 짐 개수:</strong> <span class="highlight">${processedData.total_luggage || 0}개</span></p>
@@ -964,16 +964,16 @@ function createStepCompletionText(stepNumber, processedData) {
             `;
             break;
             
-        case 2: // 짐 인식 및 분류
-            title = '2단계: 짐 인식 및 분류 완료';
+        case 2: // 최적 배치 생성
+            title = '2단계: 최적 배치 생성 완료';
             content = `
                 <p><strong>🪑 좌석 배치 지시사항 생성 완료</strong></p>
                 <p>각 짐의 특성에 맞는 <span class="highlight">좌석 배치 지시사항</span>을 성공적으로 생성했습니다.</p>
             `;
             break;
             
-        case 3: // 차량 공간 계산
-            title = '3단계: 차량 공간 계산 완료';
+        case 3: // 시트 동작 계획
+            title = '3단계: 시트 동작 계획 완료';
             content = `
                 <p><strong>🚗 차량 환경 분석 완료</strong></p>
                 <p>차량의 <span class="highlight">공간 구조</span>와 <span class="highlight">작업 순서</span>를 성공적으로 계산했습니다.</p>
@@ -1009,7 +1009,7 @@ function formatStepResult(stepNumber, resultData) {
         let formattedResult = '';
         
         switch(stepNumber) {
-            case 1: // 이미지 분석
+            case 1: // 사용자 입력 분석
                 console.log(`🔧 1단계 데이터 파싱 시도:`, resultData);
                 const chain1Data = (function(){
                     const parsed = safeJsonParse(resultData);
@@ -1049,7 +1049,7 @@ function formatStepResult(stepNumber, resultData) {
                 `;
                 break;
                 
-            case 2: // 짐 인식 및 분류
+            case 2: // 최적 배치 생성
                 const chain2Data = (function(){
                     const parsed = safeJsonParse(resultData);
                     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -1081,7 +1081,7 @@ function formatStepResult(stepNumber, resultData) {
                 `;
                 break;
                 
-            case 3: // 차량 공간 계산
+            case 3: // 시트 동작 계획
                 const cleanData = (typeof resultData === 'string') ? resultData.replace(/```json\s*|```/g, '') : resultData;
                 const chain3Data = (function(){
                     const parsed = safeJsonParse(cleanData);
@@ -1177,7 +1177,7 @@ function formatProcessedStepResult(stepNumber, processedData) {
         let formattedResult = '';
         
         switch(stepNumber) {
-            case 1: // 이미지 분석
+            case 1: // 사용자 입력 분석
                 try {
                     // processedData가 문자열인 경우 JSON 파싱 시도
                     let chain1Data = processedData;
@@ -1235,7 +1235,7 @@ function formatProcessedStepResult(stepNumber, processedData) {
                 }
                 break;
                 
-            case 2: // 짐 인식 및 분류
+            case 2: // 최적 배치 생성
                 try {
                     // 가공된 좌석 배치 데이터가 있는 경우
                     if (processedData.seat_assignments && Array.isArray(processedData.seat_assignments)) {
@@ -1315,7 +1315,7 @@ function formatProcessedStepResult(stepNumber, processedData) {
                 }
                 break;
                 
-            case 3: // 차량 공간 계산
+            case 3: // 시트 동작 계획
                 try {
                     // 가공된 작업 순서 데이터가 있는 경우
                     if (processedData.task_sequence_list && Array.isArray(processedData.task_sequence_list)) {
@@ -1407,7 +1407,7 @@ function formatProcessedStepResult(stepNumber, processedData) {
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>🚗 차량 공간 계산 결과</strong></td>
+                                    <td><strong>🚗 시트 동작 계획 결과</strong></td>
                                     <td><pre>${processedData}</pre></td>
                                 </tr>
                             </tbody>

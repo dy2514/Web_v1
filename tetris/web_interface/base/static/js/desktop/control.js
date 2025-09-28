@@ -166,7 +166,7 @@ class ControlController {
         
         // 4단계 AI 체인 시뮬레이션
         const steps = [
-            { name: '이미지 분석', duration: 30000 },
+            { name: '사용자 입력 분석', duration: 30000 },
             { name: '데이터 처리', duration: 45000 },
             { name: '최적화 생성', duration: 30000 },
             { name: '하드웨어 구동', duration: 15000 }
