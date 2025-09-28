@@ -155,7 +155,7 @@ class ControlController {
         
         // 시뮬레이션 데이터
         imagePreview.innerHTML = `
-            <img src="/static/uploads/sample.jpg" alt="업로드된 이미지" style="max-width: 100%; height: auto;">
+            <img src="/uploads/sample.jpg" alt="업로드된 이미지" style="max-width: 100%; height: auto;">
         `;
         peopleCount.textContent = '2';
         uploadTime.textContent = new Date().toLocaleTimeString();

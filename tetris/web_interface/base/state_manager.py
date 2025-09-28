@@ -19,7 +19,7 @@ class StateManager:
             # 프로젝트 루트 디렉토리 찾기 (Web_v1 디렉토리)
             current_dir = Path(__file__).parent  # web_interface/base
             project_root = current_dir.parent.parent.parent  # Web_v1 디렉토리
-            state_file = project_root / 'state.json'
+            state_file = project_root / 'tetris' / 'state.json'
         
         self.state_file = Path(state_file).resolve()  # 절대 경로로 변환
         self.state: Dict[str, Any] = {}

@@ -238,7 +238,7 @@ class ConfigManager:
             'upload': {
                 'MAX_FILE_SIZE': int(os.getenv('TETRIS_MAX_FILE_SIZE', '10485760')),  # 10MB
                 'ALLOWED_EXTENSIONS': {'jpg', 'jpeg', 'png', 'gif', 'webp'},
-                'UPLOAD_FOLDER': os.getenv('TETRIS_UPLOAD_FOLDER', 'uploads')
+                'UPLOAD_FOLDER': os.getenv('TETRIS_UPLOAD_FOLDER', 'tetris_IO/uploads')
             },
             'ai': {
                 'API_KEY': os.getenv('TETRIS_AI_API_KEY', ''),

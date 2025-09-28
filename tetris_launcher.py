@@ -176,7 +176,7 @@ def reset_state_on_startup():
     
     try:
         # state.json 파일 경로 설정
-        state_file = Path("state.json")
+        state_file = Path("tetris/state.json")
         
         # 초기 상태 생성
         initial_state = {
