@@ -80,7 +80,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     print(f"AI 체인 입력 생성 완료: {len(user_msgs)}개 메시지")
 
     # 2-1) 출력 파일 경로 준비
-    OUT_ROOT = HERE / "tetris_out"
+    OUT_ROOT = HERE / "tetris_IO"
     OUT_DIR = OUT_DIR = OUT_ROOT / "log_data"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{scenario}.txt"
@@ -391,7 +391,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         total_elapsed = step1_elapsed + step2_elapsed + step3_elapsed + step4_elapsed
         
         # 결과 저장
-        OUT_ROOT = HERE / "tetris_out"
+        OUT_ROOT = HERE / "tetris_IO"
         OUT_DIR = OUT_ROOT / "log_data"
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         out_path = OUT_DIR / f"{scenario}.txt"

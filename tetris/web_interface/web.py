@@ -63,6 +63,11 @@ def static_files(filename):
     """정적 파일 서빙"""
     return send_from_directory(str(Path(__file__).parent / 'base' / 'static'), filename)
 
+@app.route('/uploads/<path:filename>')
+def uploaded_files(filename):
+    """업로드된 파일 서빙"""
+    return send_from_directory(str(Path(__file__).parent.parent / 'tetris_IO' / 'uploads'), filename)
+
 @app.route('/api/system/performance')
 def system_performance():
     """시스템 성능 정보 API (performance_monitor 사용)"""

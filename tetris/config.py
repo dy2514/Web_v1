@@ -32,7 +32,7 @@ WEB_CONFIG = {
 
 # 파일 업로드 설정 (라즈베리파이5 최적화)
 UPLOAD_CONFIG = {
-    'UPLOAD_FOLDER': BASE_DIR / 'uploads',
+    'UPLOAD_FOLDER': BASE_DIR / 'tetris_IO' / 'uploads',
     'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg', 'webp'},  # gif 제거로 처리 속도 향상
     'MAX_FILE_SIZE': 5 * 1024 * 1024,  # 5MB로 감소 (메모리 효율성)
     'MIN_PEOPLE_COUNT': 0,
@@ -81,9 +81,9 @@ HARDWARE_CONFIG = {
 
 # 출력 설정
 OUTPUT_CONFIG = {
-    'OUTPUT_ROOT': BASE_DIR / 'tetris_out',
-    'OUTPUT_RT_DIR': BASE_DIR / 'tetris_out' / 'out_rt',
-    'OUTPUT_SCENARIO_DIR': BASE_DIR / 'tetris_out' / 'out_scenario'
+    'OUTPUT_ROOT': BASE_DIR / 'tetris_IO',
+    'OUTPUT_RT_DIR': BASE_DIR / 'tetris_IO' / 'out_rt',
+    'OUTPUT_SCENARIO_DIR': BASE_DIR / 'tetris_IO' / 'out_scenario'
 }
 
 # 로깅 설정 (라즈베리파이5 최적화)
