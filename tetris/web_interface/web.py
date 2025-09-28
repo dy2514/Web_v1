@@ -66,7 +66,7 @@ def static_files(filename):
 @app.route('/uploads/<path:filename>')
 def uploaded_files(filename):
     """업로드된 파일 서빙"""
-    return send_from_directory(str(Path(__file__).parent.parent / 'tetris_IO' / 'uploads'), filename)
+    return send_from_directory(str(config['upload']['UPLOAD_FOLDER']), filename)
 
 @app.route('/api/system/performance')
 def system_performance():

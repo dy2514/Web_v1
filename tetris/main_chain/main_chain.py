@@ -14,7 +14,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 # [경로/키] __file__ 기준 상대경로와 GOOGLE_API_KEY 확보
 ROOT = Path(__file__).resolve().parent                        # .../AIRL_ATM/SW/tetris/main_chain
 TETRIS_ROOT = ROOT.parent                                     # .../AIRL_ATM/SW/tetris
-SECRETS_JSON = TETRIS_ROOT / "tetris_secrets.json"            # tetris_secrets.json
+
+# config에서 secrets 파일 경로 로드
+import sys
+sys.path.insert(0, str(TETRIS_ROOT))
+from config import get_config
+config = get_config()
+SECRETS_JSON = config['ai']['SECRETS_JSON']
 
 #[Chain1 경로]
 CHAIN1_PROMPT_TXT = ROOT / "chain1_prompt" / "chain1_prompt.txt"
