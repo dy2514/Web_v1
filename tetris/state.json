@@ -1,13 +1,13 @@
 {
   "system": {
-    "status": "idle",
-    "last_updated": "2025-09-29T01:17:34.374115",
+    "status": "running",
+    "last_updated": "2025-09-29T02:05:05.009970",
     "version": "1.0.0"
   },
   "sessions": {},
   "processing": {
     "current_scenario": null,
-    "progress": 0,
+    "progress": 50,
     "status": "idle",
     "started_at": null,
     "completed_at": null
@@ -20,7 +20,7 @@
     "scenario": null
   },
   "hardware": {
-    "arduino_connected": false,
+    "arduino_connected": true,
     "motor_status": "idle",
     "last_command": null
   },
