@@ -1,3 +1,18 @@
+@font-face {
+    font-family: "HyundaiSansTextKRMedium";
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.9956f07.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRRegular";
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.e5673b8.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* AI TETRIS 홈화면 스타일 */
 * {
     margin: 0;
@@ -6,75 +21,40 @@
 }
 
 body {
-    font-family: 'HyundaiHarmonyM', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     color: #333;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* 상단 바 */
 .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
-    z-index: 100;
-}
-
-.topbar img {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.topbar img:hover {
-    opacity: 1;
-}
-
-.topbar h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #002c5f;
-    flex: 1;
-    text-align: center;
-    margin: 0 20px;
-}
-
-.topbar-actions {
-    display: flex;
-    gap: 12px;
-}
-
-.notification-btn, .settings-btn {
-    background: none;
-    border: none;
-    padding: 8px;
-    border-radius: 50%;
-    cursor: pointer;
-    color: #666;
-    transition: all 0.3s ease;
+    z-index: 20;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 10px 16px;
 }
 
-.notification-btn:hover, .settings-btn:hover {
-    background: rgba(0, 44, 95, 0.1);
-    color: #002c5f;
+.topbar img {
+    width: 50%;
+    height: 50%;
+    margin: 3px;
 }
 
-.notification-btn svg, .settings-btn svg {
-    width: 20px;
-    height: 20px;
+.topbar h1 {
+    margin-right: auto;
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 25px;
+    color: #000;
+    letter-spacing: .2px;
 }
+
 
 /* 메인 컨테이너 */
 .home-container {
@@ -114,38 +94,124 @@ body {
 .welcome-section {
     text-align: left;
     margin-bottom: 30px;
-    padding: 0 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    margin: 0 20px 30px 20px;
+    border: 1px solid rgba(0, 44, 95, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 44, 95, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -30%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(0, 64, 128, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .welcome-title {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 18px;
-    font-weight: 500;
     color: #333;
     line-height: 1.5;
-    margin-bottom: 20px;
     text-align: left;
+    position: relative;
+    z-index: 1;
 }
 
 .brand-logo {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
 }
 
 .brand-img {
     width: 100%;
-    height: 100%;
-    opacity: 0.8;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    filter: brightness(1.02) contrast(1.05);
+}
+
+.brand-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 44, 95, 0.2);
 }
 
 /* 시작하기 버튼 컨테이너 */
 .start-container {
     background: white;
     border-radius: 16px;
-    padding: 20px;
+    padding: 24px;
     margin: 0 20px 20px 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.start-text-section {
+    flex: 1;
+}
+
+.start-title {
+    font-family: "HyundaiSansTextKRRegular", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.start-logo-section {
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.logo-placeholder {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 44, 95, 0.2);
+}
+
+.logo-text {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: white;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .start-button {
@@ -153,7 +219,7 @@ body {
     color: white;
     border: none;
     padding: 16px 32px;
-    border-radius: 30px;
+    border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -162,7 +228,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     width: 100%;
 }
 
@@ -176,16 +241,9 @@ body {
 }
 
 .button-text {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 16px;
-}
-
-.button-arrow {
-    font-size: 14px;
-    transition: transform 0.3s ease;
-}
-
-.start-button:hover .button-arrow {
-    transform: translateX(4px);
+    font-weight: 600;
 }
 
 /* 제어 패널 */
@@ -241,6 +299,7 @@ body {
 }
 
 .control-text {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     font-weight: 500;
     color: #333;
@@ -299,6 +358,7 @@ body {
 }
 
 .nav-label {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     font-weight: 500;
     color: #666;
@@ -357,6 +417,7 @@ body {
 }
 
 .modal-header h3 {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 18px;
     font-weight: 600;
     color: #333;
@@ -407,6 +468,7 @@ body {
 }
 
 .notification-content h4 {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: #333;
@@ -414,6 +476,7 @@ body {
 }
 
 .notification-content p {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 13px;
     color: #666;
     line-height: 1.4;
@@ -421,6 +484,7 @@ body {
 }
 
 .notification-time {
+    font-family: "HyundaiSansTextKRMedium", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 12px;
     color: #999;
 }
@@ -431,10 +495,6 @@ body {
         padding: 10px 16px;
     }
     
-    .topbar h1 {
-        font-size: 18px;
-        margin: 0 16px;
-    }
     
     .main-content {
         padding: 0 16px;
@@ -446,6 +506,24 @@ body {
     
     .welcome-title {
         font-size: 16px;
+    }
+    
+    .start-container {
+        padding: 20px;
+        margin: 0 16px 20px 16px;
+    }
+    
+    .start-title {
+        font-size: 16px;
+    }
+    
+    .logo-placeholder {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .logo-text {
+        font-size: 7px;
     }
     
     .start-button {
@@ -474,6 +552,15 @@ body {
     .control-text {
         font-size: 11px;
     }
+    
+    .welcome-section {
+        margin: 25px 16px 30px 16px;
+        padding: 16px;
+    }
+    
+    .brand-img {
+        max-width: 350px;
+    }
 }
 
 @media (max-width: 360px) {
@@ -483,6 +570,24 @@ body {
     
     .welcome-title {
         font-size: 16px;
+    }
+    
+    .start-container {
+        padding: 16px;
+        margin: 0 12px 20px 12px;
+    }
+    
+    .start-title {
+        font-size: 15px;
+    }
+    
+    .logo-placeholder {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .logo-text {
+        font-size: 6px;
     }
     
     .control-grid {
@@ -505,6 +610,15 @@ body {
     
     .control-text {
         font-size: 10px;
+    }
+    
+    .welcome-section {
+        margin: 0 12px 30px 12px;
+        padding: 12px;
+    }
+    
+    .brand-img {
+        max-width: 300px;
     }
 }
 
@@ -552,9 +666,6 @@ body {
         border-bottom-color: rgba(255, 255, 255, 0.1);
     }
     
-    .topbar h1 {
-        color: #fff;
-    }
     
     .vehicle-section {
         background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 0.4) 100%);
@@ -592,5 +703,46 @@ body {
     
     .notification-content p {
         color: #ccc;
+    }
+    
+    .welcome-section {
+        background: linear-gradient(135deg, rgba(0, 44, 95, 0.1) 0%, rgba(0, 64, 128, 0.15) 100%);
+        border-color: rgba(0, 44, 95, 0.2);
+    }
+    
+    .welcome-section::before {
+        background: radial-gradient(circle, rgba(0, 44, 95, 0.08) 0%, transparent 70%);
+    }
+    
+    .welcome-section::after {
+        background: radial-gradient(circle, rgba(0, 64, 128, 0.05) 0%, transparent 70%);
+    }
+    
+    .welcome-title {
+        color: #fff;
+    }
+    
+    .brand-img {
+        filter: brightness(1.05) contrast(1.1);
+        box-shadow: 0 8px 32px rgba(0, 44, 95, 0.25);
+    }
+    
+    .brand-img:hover {
+        box-shadow: 0 12px 40px rgba(0, 44, 95, 0.3);
+    }
+    
+    .start-container {
+        background: #2d2d2d;
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .start-title {
+        color: #fff;
+    }
+    
+    .logo-placeholder {
+        background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+        box-shadow: 0 2px 8px rgba(0, 44, 95, 0.4);
     }
 }
