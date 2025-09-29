@@ -518,7 +518,7 @@ html, body {
 }
 
 .ai-brain.step5::before {
-    content: "✅";
+    content: "🚗";
     font-size: 48px;
 }
 

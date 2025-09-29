@@ -279,6 +279,10 @@ async function handleStatusData(statusData) {
                 showResultButton(); // 분석 완료 시 버튼 활성화
                 // 모든 단계 아이콘을 성공 상태로 업데이트
                 updateAllStepIconsToSuccess();
+                // 상세 패널이 열려있다면 메시지 동기화
+                if (detailPanelOpen) {
+                    syncDetailProgressCard();
+                }
             } else if (currentStep >= 5 && !hasStep4Output) {
                 doneWaitCount = (doneWaitCount || 0) + 1;
                 console.log(`⏳ 5단계 신호 수신, 그러나 step4 출력 미도착 → 완료 처리 보류 (시도 ${doneWaitCount})`);
@@ -290,6 +294,10 @@ async function handleStatusData(statusData) {
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
+                    // 상세 패널이 열려있다면 메시지 동기화
+                    if (detailPanelOpen) {
+                        syncDetailProgressCard();
+                    }
                 }
             }
             
@@ -303,6 +311,10 @@ async function handleStatusData(statusData) {
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
+                    // 상세 패널이 열려있다면 메시지 동기화
+                    if (detailPanelOpen) {
+                        syncDetailProgressCard();
+                    }
                 } else {
                     doneWaitCount = (doneWaitCount || 0) + 1;
                     console.log(`분석 완료 신호 수신, 그러나 최종 출력 미도착 → 폴링 유지 (시도 ${doneWaitCount})`);
@@ -1277,6 +1289,10 @@ async function startSSE() {
                 if (status === 'done' && hasFinal) {
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     showResultButton(); // 분석 완료 시 버튼 활성화
+                    // 상세 패널이 열려있다면 메시지 동기화
+                    if (detailPanelOpen) {
+                        syncDetailProgressCard();
+                    }
                     eventSource.close();
                 } else if (status === 'error') {
                     document.getElementById('progressText').innerHTML = '분석 중 오류가 발생했습니다.';
