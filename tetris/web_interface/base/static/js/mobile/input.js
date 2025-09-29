@@ -50,20 +50,6 @@ function startProgressDisplay() {
     updateStepDisplay();
 }
 
-// 진행률 업데이트 (시뮬 제거됨)
-function updateProgress() {
-    if (currentStep < 5) {
-        currentStep++;
-        progressValue = (currentStep / 5) * 100;
-        updateProgressBar(progressValue);
-        updateStepDisplay();
-
-        if (currentStep === 5) {
-            setTimeout(() => { completeProgress(); }, 2000);
-        }
-    }
-}
-
 // 진행률 바 업데이트
 function updateProgressBar(percentage) {
     const progressBarFill = document.getElementById('progressBarFill');
@@ -95,19 +81,6 @@ function updateStepDisplay() {
     }
 }
 
-// 진행률 완료
-function completeProgress() {
-    if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
-    }
-    showNotice('AI 분석이 완료되었습니다!');
-    setTimeout(() => {
-        const progressContainer = document.getElementById('progressContainer');
-        progressContainer.classList.remove('show');
-        showConfirmationDialog();
-    }, 3000);
-}
 
 // 결과 표시 (시뮬 또는 서버 데이터)
 function showResult() {
@@ -142,24 +115,6 @@ function showResult() {
     document.getElementById('utilizationRate').textContent = utilizationRate + '%';
     document.getElementById('arrangementTime').textContent = arrangementTime + '분';
     document.getElementById('efficiencyScore').textContent = efficiencyScore + '점';
-}
-
-function shareResult() {
-    if (navigator.share) {
-        navigator.share({
-            title: 'AI TETRIS 최적 배치 결과',
-            text: 'AI가 분석한 최적의 차량 배치 결과를 확인해보세요!',
-            url: window.location.href
-        });
-    } else {
-        navigator.clipboard.writeText('AI TETRIS 최적 배치 결과: ' + window.location.href);
-        showNotice('결과 링크가 클립보드에 복사되었습니다!');
-    }
-}
-
-function showConfirmationDialog() {
-    const dialog = document.getElementById('confirmationDialog');
-    if (dialog) dialog.classList.add('show');
 }
 
 function hideConfirmationDialog() {
@@ -226,11 +181,6 @@ function showResultWithData(resultData) {
     const resultImage = document.getElementById('resultImage');
     resultImage.src = '/user_input/analysis_result.jpg';
     resultImage.style.display = 'block';
-
-    if (resultData.chain1_out) updateStepDetailData('step1', resultData.chain1_out);
-    if (resultData.chain2_out) updateStepDetailData('step2', resultData.chain2_out);
-    if (resultData.chain3_out) updateStepDetailData('step3', resultData.chain3_out);
-    if (resultData.chain4_out) updateStepDetailData('step4', resultData.chain4_out);
 }
 
 function stopProgress() {
@@ -422,172 +372,6 @@ submit.addEventListener('click', async () => {
     sessionStorage.setItem('analysisData', JSON.stringify(analysisData));
     window.location.href = `/mobile/progress?scenario=${encodeURIComponent(currentScenario)}`;
 });
-
-function toggleProgressStepDetail(stepId) {
-    const stepElement = document.getElementById(stepId);
-    const detailElement = document.getElementById(`${stepId}-detail`);
-    if (!stepElement || !stepElement.classList.contains('clickable')) return;
-    const isExpanded = stepElement.classList.contains('expanded');
-    if (isExpanded) {
-        stepElement.classList.remove('expanded');
-        if (detailElement) {
-            detailElement.style.maxHeight = '0px';
-            detailElement.style.overflow = 'hidden';
-            detailElement.style.padding = '0px 20px';
-            setTimeout(() => { detailElement.style.display = 'none'; }, 300);
-        }
-    } else {
-        stepElement.classList.add('expanded');
-        if (detailElement) {
-            detailElement.style.display = 'block';
-            detailElement.style.overflow = 'hidden';
-            detailElement.style.padding = '15px 20px';
-            detailElement.offsetHeight; // reflow
-            detailElement.style.maxHeight = '1000px';
-        }
-    }
-}
-
-function makeStepClickable(stepId) {
-    const stepElement = document.getElementById(stepId);
-    const toggleElement = stepElement.querySelector('.step-toggle');
-    if (stepElement && toggleElement) {
-        stepElement.classList.add('clickable');
-        toggleElement.style.display = 'block';
-        stepElement.removeEventListener('click', stepElement._clickHandler);
-        stepElement._clickHandler = () => { toggleProgressStepDetail(stepId); };
-        stepElement.addEventListener('click', stepElement._clickHandler);
-    }
-}
-
-function updateProgressStepData(stepId, data) {
-    const dataElement = document.getElementById(`${stepId}-data`);
-    if (!dataElement) return;
-    let formattedData = '';
-    switch(stepId) {
-        case 'step1':
-            try {
-                const chain1Data = JSON.parse(data);
-                formattedData = `
-                    <p><strong>👥 인원 수:</strong> ${chain1Data.people || 0}명</p>
-                    <p><strong>🧳 총 짐 개수:</strong> ${chain1Data.total_luggage_count || 0}개</p>
-                    <p><strong>📋 짐 상세 정보:</strong></p>
-                    <pre>${JSON.stringify(chain1Data.luggage_details || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step2':
-            try {
-                const chain2Data = JSON.parse(data);
-                formattedData = `
-                    <p><strong>🪑 좌석 배치 지시사항:</strong></p>
-                    <pre>${JSON.stringify(chain2Data.instruction || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step3':
-            try {
-                const cleanData = data.replace(/```json\n|\n```/g, '');
-                const chain3Data = JSON.parse(cleanData);
-                formattedData = `
-                    <p><strong>🚗 환경 설정 (이전):</strong></p>
-                    <pre>${JSON.stringify(chain3Data.environment_before || {}, null, 2)}</pre>
-                    <p><strong>📋 작업 순서:</strong></p>
-                    <pre>${JSON.stringify(chain3Data.task_sequence || {}, null, 2)}</pre>
-                    <p><strong>🚗 환경 설정 (이후):</strong></p>
-                    <pre>${JSON.stringify(chain3Data.environment_after || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step4':
-            formattedData = `
-                <p><strong>🎯 최적 배치 코드:</strong></p>
-                <pre>${data}</pre>
-                <p><em>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</em></p>
-            `;
-            break;
-        case 'step5':
-            formattedData = `
-                <p><strong>✅ 분석 완료!</strong></p>
-                <p>모든 단계가 성공적으로 완료되었습니다.</p>
-                <p>최적 배치 결과를 확인하실 수 있습니다.</p>
-            `;
-            break;
-        default:
-            formattedData = `<pre>${data}</pre>`;
-    }
-    dataElement.innerHTML = formattedData;
-    if (formattedData && formattedData.trim() !== '' && !formattedData.includes('...')) {
-        makeStepClickable(stepId);
-        const stepElement = document.getElementById(stepId);
-        const icon = stepElement.querySelector('.step-icon');
-        const text = stepElement.querySelector('.step-text');
-        if (icon && text) {
-            icon.className = 'step-icon completed';
-            icon.textContent = '✓';
-            text.className = 'step-text completed';
-        }
-    }
-}
-
-function toggleStepDetail(stepId) {
-    const stepItem = document.querySelector(`#${stepId}-content`).parentElement;
-    const isExpanded = stepItem.classList.contains('expanded');
-    if (isExpanded) stepItem.classList.remove('expanded');
-    else stepItem.classList.add('expanded');
-}
-
-function updateStepDetailData(stepId, data) {
-    const dataElement = document.getElementById(`${stepId}-data`);
-    if (!dataElement) return;
-    let formattedData = '';
-    switch(stepId) {
-        case 'step1':
-            try {
-                const chain1Data = JSON.parse(data);
-                formattedData = `
-                    <p><strong>👥 인원 수:</strong> ${chain1Data.people || 0}명</p>
-                    <p><strong>🧳 총 짐 개수:</strong> ${chain1Data.total_luggage_count || 0}개</p>
-                    <p><strong>📋 짐 상세 정보:</strong></p>
-                    <pre>${JSON.stringify(chain1Data.luggage_details || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step2':
-            try {
-                const chain2Data = JSON.parse(data);
-                formattedData = `
-                    <p><strong>🪑 좌석 배치 지시사항:</strong></p>
-                    <pre>${JSON.stringify(chain2Data.instruction || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step3':
-            try {
-                const cleanData = data.replace(/```json\n|\n```/g, '');
-                const chain3Data = JSON.parse(cleanData);
-                formattedData = `
-                    <p><strong>🚗 환경 설정 (이전):</strong></p>
-                    <pre>${JSON.stringify(chain3Data.environment_before || {}, null, 2)}</pre>
-                    <p><strong>📋 작업 순서:</strong></p>
-                    <pre>${JSON.stringify(chain3Data.task_sequence || {}, null, 2)}</pre>
-                    <p><strong>🚗 환경 설정 (이후):</strong></p>
-                    <pre>${JSON.stringify(chain3Data.environment_after || {}, null, 2)}</pre>
-                `;
-            } catch (e) { formattedData = `<p>데이터 파싱 오류: ${e.message}</p><pre>${data}</pre>`; }
-            break;
-        case 'step4':
-            formattedData = `
-                <p><strong>🎯 최적 배치 코드:</strong></p>
-                <pre>${data}</pre>
-                <p><em>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</em></p>
-            `;
-            break;
-        default:
-            formattedData = `<pre>${data}</pre>`;
-    }
-    dataElement.innerHTML = formattedData;
-}
 
 function hideAllResultElements() {
     const progressContainer = document.getElementById('progressContainer');
