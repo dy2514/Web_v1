@@ -51,16 +51,14 @@ function updateProgressBar(percentage) {
         progressFill.style.width = percentage + '%';
         
         // 진행률에 따른 색상 변경
-        if (percentage < 20) {
+        if (percentage < 25) {
             progressFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)';
-        } else if (percentage < 40) {
+        } else if (percentage < 50) {
             progressFill.style.background = 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)';
-        } else if (percentage < 60) {
+        } else if (percentage < 75) {
             progressFill.style.background = 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)';
-        } else if (percentage < 80) {
-            progressFill.style.background = 'linear-gradient(90deg, #22c55e 0%, #16a34a 100%)';
         } else {
-            progressFill.style.background = 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)';
+            progressFill.style.background = 'linear-gradient(90deg, #22c55e 0%, #16a34a 100%)';
         }
     }
 }
@@ -173,14 +171,27 @@ async function handleStatusData(statusData) {
                 console.log('✅ current_step 값:', statusData.current_step, '타입:', typeof statusData.current_step);
             }
             
-            // 진행률 업데이트 (서버 값만 사용)
-            const progress = statusData.progress || statusData.processing?.progress;
-            if (progress !== undefined && serverStep !== null && serverStep !== undefined) {
-                console.log('📊 서버 진행률 업데이트:', progress + '%', '단계:', serverStep);
+            // 진행률 업데이트 (단계별 고정값 사용)
+            if (serverStep !== null && serverStep !== undefined) {
+                let progress;
+                switch(serverStep) {
+                    case 1:
+                        progress = 25;
+                        break;
+                    case 2:
+                        progress = 50;
+                        break;
+                    case 3:
+                        progress = 75;
+                        break;
+                    default:
+                        progress = 0;
+                }
+                console.log('📊 단계별 고정 진행률 업데이트:', progress + '%', '단계:', serverStep);
                 updateProgress(progress, serverStep);
+                updateMainIcon(serverStep);
             } else {
-                console.log('⚠️ 서버에서 진행률 또는 단계 정보가 불완전함:', {
-                    progress: progress,
+                console.log('⚠️ 서버에서 단계 정보가 불완전함:', {
                     serverStep: serverStep
                 });
             }
@@ -214,13 +225,11 @@ async function handleStatusData(statusData) {
                     displayProcessedStepResult(2, pr.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (pr.chain3_out && !shownSteps[3]) {
+                if (pr.chain3_out && pr.chain4_out && !shownSteps[3]) {
+                    pr.chain3_out = safeJsonParse(pr.chain3_out)
+                    pr.chain3_out.placement_code = pr.chain4_out;
                     displayProcessedStepResult(3, pr.chain3_out);
                     shownSteps[3] = true;
-                }
-                if (pr.chain4_out && !shownSteps[4]) {
-                    displayProcessedStepResult(4, pr.chain4_out);
-                    shownSteps[4] = true;
                 }
 
                 // 원본 결과 표시 (가공된 결과가 없을 때)
@@ -232,13 +241,11 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, ar.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (ar.chain3_out && !shownSteps[3]) {
+                if (ar.chain3_out && ar.chain4_out && !shownSteps[3]) {
+                    ar.chain3_out = safeJsonParse(ar.chain3_out)
+                    ar.chain3_out.placement_code = ar.chain4_out;
                     await displayStepResult(3, ar.chain3_out);
                     shownSteps[3] = true;
-                }
-                if (ar.chain4_out && !shownSteps[4]) {
-                    await displayStepResult(4, ar.chain4_out);
-                    shownSteps[4] = true;
                 }
 
                 // 루트에 실린 경우도 대응
@@ -250,13 +257,11 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, statusData.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (statusData.chain3_out && !shownSteps[3]) {
+                if (statusData.chain3_out && statusData.chain4_out && !shownSteps[3]) {
+                    statusData.chain3_out = safeJsonParse(statusData.chain3_out)
+                    statusData.chain3_out.placement_code = statusData.chain4_out;
                     await displayStepResult(3, statusData.chain3_out);
                     shownSteps[3] = true;
-                }
-                if (statusData.chain4_out && !shownSteps[4]) {
-                    await displayStepResult(4, statusData.chain4_out);
-                    shownSteps[4] = true;
                 }
             } catch (e) {
                 console.warn('단계별 결과 반영 중 오류:', e);
@@ -751,15 +756,11 @@ async function updateStepResults(resultData) {
     }
     
     // 3단계: 시트 동작 계획 결과
-    if (resultData.chain3_out) {
+    if (resultData.chain3_out && resultData.chain4_out) {
         console.log('3단계 결과 발견:', resultData.chain3_out);
-        await displayStepResult(3, resultData.chain3_out);
-    }
-    
-    // 4단계: 최적 배치 생성 결과
-    if (resultData.chain4_out) {
         console.log('4단계 결과 발견:', resultData.chain4_out);
-        await displayStepResult(4, resultData.chain4_out);
+        resultData.chain3_out.placement_code = resultData.chain4_out;
+        await displayStepResult(3, resultData.chain3_out);
     }
 }
 
@@ -1083,14 +1084,8 @@ async function formatStepResult(stepNumber, resultData) {
                     <div class="image-container">
                     <img src="/static/images/options/option2.png" alt="시트 동작 계획" class="analysis-image"></div>
                     <p>📋 작업 순서</p>
-                        <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
-                        `;
-
-                break;
-                
-            case 4: // 최적 배치 생성
-                formattedResult = `
-                    <p>🎯 최적 배치 코드:</p> ${resultData}
+                    <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
+                    <p>🎯 최적 배치 코드: ${chain3Data.placement_code}</p>
                     <p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                 `;
                 break;
