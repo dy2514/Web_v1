@@ -512,6 +512,16 @@ html, body {
     font-size: 48px;
 }
 
+.ai-brain.step4::before {
+    content: "🎯";
+    font-size: 48px;
+}
+
+.ai-brain.step5::before {
+    content: "✅";
+    font-size: 48px;
+}
+
 .ai-brain::after {
     content: "";
     position: absolute;

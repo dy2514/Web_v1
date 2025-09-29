@@ -51,11 +51,11 @@ function updateProgressBar(percentage) {
         progressFill.style.width = percentage + '%';
         
         // 진행률에 따른 색상 변경
-        if (percentage < 25) {
+        if (percentage <= 25) {
             progressFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)';
-        } else if (percentage < 50) {
+        } else if (percentage <= 50) {
             progressFill.style.background = 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)';
-        } else if (percentage < 75) {
+        } else if (percentage <= 75) {
             progressFill.style.background = 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)';
         } else {
             progressFill.style.background = 'linear-gradient(90deg, #22c55e 0%, #16a34a 100%)';
@@ -183,6 +183,9 @@ async function handleStatusData(statusData) {
                         break;
                     case 3:
                         progress = 75;
+                        break;
+                    case 5:
+                        progress = 100;
                         break;
                     default:
                         progress = 0;
@@ -1353,3 +1356,26 @@ window.addEventListener('pagehide', function() {
     console.log('[이탈] 페이지 종료 감지 - 분석 중지');
     stopAnalysisOnExit();
 });
+
+/**
+ * 메인 아이콘을 현재 스텝에 맞게 업데이트
+ * @param {number} step - 현재 진행 중인 스텝 (1, 2, 3, 4, 5)
+ */
+function updateMainIcon(step) {
+    const mainIcon = document.getElementById('mainIcon');
+    if (!mainIcon) {
+        console.warn('⚠️ 메인 아이콘 요소를 찾을 수 없습니다.');
+        return;
+    }
+
+    // 기존 스텝 클래스 제거
+    mainIcon.classList.remove('step1', 'step2', 'step3', 'step4', 'step5');
+
+    // 현재 스텝에 맞는 클래스 추가
+    if (step >= 1 && step <= 5) {
+        mainIcon.classList.add(`step${step}`);
+        console.log(`🎯 메인 아이콘 업데이트: 스텝 ${step} 아이콘으로 변경`);
+    } else {
+        console.log('🎯 메인 아이콘: 기본 차량 아이콘 유지');
+    }
+}
