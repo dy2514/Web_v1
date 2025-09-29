@@ -1227,28 +1227,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     currentScenario = getScenarioFromURL();
     console.log('시나리오:', currentScenario);
     
-    // 페이지 진입 시 이전 분석 상태 확인 및 초기화
-    console.log('[진입] Progress 페이지 진입 - 이전 상태 확인');
-    
-    // 진행 중인 분석이 있다면 중지 요청 (동기적으로 처리)
-    fetch('/desktop/api/reset', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        if (response.ok) {
-            console.log('[진입] 이전 분석 중지 완료');
-        }
-    }).catch(error => {
-        console.warn('[진입] 이전 분석 중지 실패:', error);
-    });
+    console.log('[진입] Progress 페이지 진입');
     
     // 클라이언트 측 상태 강제 초기화
     currentStep = 0;
     progressValue = 0;
     doneWaitCount = 0;
-    
+
     // 초기 상태 설정
     updateProgress(0);
     // updateStepDisplay();
@@ -1366,14 +1351,6 @@ window.addEventListener('beforeunload', function(e) {
 window.addEventListener('unload', function(e) {
     console.log('[이탈] 페이지 언로드 감지 - 분석 중지');
     stopAnalysisOnExit();
-});
-
-// 페이지 숨김 시 분석 중지 (모바일에서 뒤로가기 등)
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-        console.log('[이탈] 페이지 숨김 감지 - 분석 중지');
-        stopAnalysisOnExit();
-    }
 });
 
 // 페이지 완전 종료 시 분석 중지
