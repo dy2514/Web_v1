@@ -66,6 +66,7 @@ html, body {
     width: 16px;
     height: 20px;
     margin-right: auto;
+    cursor: pointer;
 }
 
 .topbar h1 {
@@ -161,6 +162,7 @@ html, body {
     color: gray;
     text-decoration: underline;
     font-size: 16px;
+    cursor: pointer;
 }
 
 /* Progress Bar 스타일 */

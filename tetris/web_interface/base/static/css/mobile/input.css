@@ -52,6 +52,7 @@ html, body {
     width: 16px;
     height: 20px;
     margin-right: auto;
+    cursor: pointer;
 }
 
 .topbar h1 {

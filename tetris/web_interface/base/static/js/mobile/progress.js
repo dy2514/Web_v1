@@ -46,9 +46,11 @@ function getAnimatedMessage(step) {
 
 // Progress Bar 업데이트 함수
 function updateProgressBar(percentage) {
+    console.log('🎨 updateProgressBar 호출:', percentage + '%');
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
         progressFill.style.width = percentage + '%';
+        console.log('🎨 progressFill width 설정:', percentage + '%');
         
         // 진행률에 따른 색상 변경
         if (percentage <= 25) {
@@ -63,19 +65,140 @@ function updateProgressBar(percentage) {
     }
 }
 
+// 현재 진행 바의 퍼센트를 가져오는 함수
+function getCurrentProgressPercentage() {
+    const progressElement = document.getElementById('progressPercentage');
+    if (progressElement) {
+        const text = progressElement.textContent;
+        const match = text.match(/(\d+)%/);
+        return match ? parseInt(match[1]) : 0;
+    }
+    return 0;
+}
+
+// 3단계 분석 중 현재 진행률에서 95%까지의 애니메이션 함수
+function animateProgressTo95() {
+    let currentProgress = getCurrentProgressPercentage();
+    
+    // 애니메이션 진행 중인지 확인하는 플래그
+    if (window.progressTo95AnimationInProgress) {
+        return; // 이미 애니메이션이 진행 중이면 중복 실행 방지
+    }
+    
+    window.progressTo95AnimationInProgress = true;
+    
+    const animateStep = () => {
+        if (currentProgress < 95) {
+            // 75%부터 95%까지 5%씩 증가
+            currentProgress += 5;
+        } else {
+            // 95% 도달 - 여기서 멈춤
+            currentProgress = 95;
+            document.getElementById('progressPercentage').textContent = '95%';
+            updateProgressBar(95);
+            
+            if (detailPanelOpen) {
+                const dp = document.getElementById('detailProgressPercentage');
+                if (dp) dp.textContent = '95%';
+            }
+            
+            window.progressTo95AnimationInProgress = false;
+            return;
+        }
+        
+        // UI 업데이트
+        document.getElementById('progressPercentage').textContent = currentProgress + '%';
+        updateProgressBar(currentProgress);
+        
+        if (detailPanelOpen) {
+            const dp = document.getElementById('detailProgressPercentage');
+            if (dp) dp.textContent = currentProgress + '%';
+        }
+        
+        // 다음 단계로 진행
+        setTimeout(animateStep, 50);
+    };
+    
+    // 애니메이션 시작
+    animateStep();
+}
+
+// 분석 완료 시 현재 진행률에서 100%까지의 애니메이션 함수
+function animateCompletionProgress() {
+    let currentProgress = getCurrentProgressPercentage();
+    
+    // 애니메이션 진행 중인지 확인하는 플래그
+    if (window.progressAnimationInProgress) {
+        return; // 이미 애니메이션이 진행 중이면 중복 실행 방지
+    }
+    
+    window.progressAnimationInProgress = true;
+    
+    const animateStep = () => {
+        if (currentProgress < 100) {
+            // 95%부터 100%까지 1%씩 증가
+            currentProgress += 5;
+        } else {
+            // 애니메이션 완료 - 100%로 설정
+            currentProgress = 100;
+            document.getElementById('progressPercentage').textContent = '100%';
+            updateProgressBar(100);
+            
+            if (detailPanelOpen) {
+                const dp = document.getElementById('detailProgressPercentage');
+                if (dp) dp.textContent = '100%';
+            }
+            
+            window.progressAnimationInProgress = false;
+            return;
+        }
+        
+        // UI 업데이트
+        document.getElementById('progressPercentage').textContent = currentProgress + '%';
+        updateProgressBar(currentProgress);
+        
+        if (detailPanelOpen) {
+            const dp = document.getElementById('detailProgressPercentage');
+            if (dp) dp.textContent = currentProgress + '%';
+        }
+        
+        // 다음 단계로 진행
+        setTimeout(animateStep, 200);
+    };
+    
+    // 애니메이션 시작
+    animateStep();
+}
+
 // 진행률 업데이트 - 서버 값만 사용
 function updateProgress(percentage, serverStep = null) {
     // 진행률은 후퇴하지 않도록 보장
     if (typeof percentage === 'number') {
         progressValue = Math.max(progressValue || 0, percentage);
-        document.getElementById('progressPercentage').textContent = progressValue + '%';
         
-        // Progress Bar 업데이트
-        updateProgressBar(progressValue);
-        
-        if (detailPanelOpen) {
-            const dp = document.getElementById('detailProgressPercentage');
-            if (dp) dp.textContent = progressValue + '%';
+        // 현재 진행률에서 95%까지의 애니메이션 처리 (3단계에서만)
+        if (progressValue > 75 && progressValue < 95 && serverStep === 3) {
+            animateProgressTo95();
+        } else if (progressValue >= 95 && progressValue < 100) {
+            animateCompletionProgress();
+        } else if (progressValue >= 100) {
+            // 100% 도달 시 즉시 업데이트
+            document.getElementById('progressPercentage').textContent = '100%';
+            updateProgressBar(100);
+            
+            if (detailPanelOpen) {
+                const dp = document.getElementById('detailProgressPercentage');
+                if (dp) dp.textContent = '100%';
+            }
+        } else {
+            // 일반적인 진행률 업데이트
+            document.getElementById('progressPercentage').textContent = progressValue + '%';
+            updateProgressBar(progressValue);
+            
+            if (detailPanelOpen) {
+                const dp = document.getElementById('detailProgressPercentage');
+                if (dp) dp.textContent = progressValue + '%';
+            }
         }
     }
     
@@ -182,10 +305,10 @@ async function handleStatusData(statusData) {
                         progress = 50;
                         break;
                     case 3:
-                        progress = 75;
+                        progress = 75; // 3단계에서 75%부터 시작
                         break;
                     case 5:
-                        progress = 100;
+                        progress = 95; // 분석 완료 시 95%에서 애니메이션 시작
                         break;
                     default:
                         progress = 0;
@@ -274,7 +397,7 @@ async function handleStatusData(statusData) {
             const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
             if (currentStep >= 5 && hasStep4Output) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
-                updateProgress(100, 5);
+                updateProgress(95, 5); // 95%에서 애니메이션 시작
                 document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                 showResultButton(); // 분석 완료 시 버튼 활성화
                 // 모든 단계 아이콘을 성공 상태로 업데이트
@@ -290,7 +413,7 @@ async function handleStatusData(statusData) {
                 if (doneWaitCount >= 5) {
                     console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
-                    updateProgress(100, 5);
+                    updateProgress(95, 5); // 95%에서 애니메이션 시작
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
