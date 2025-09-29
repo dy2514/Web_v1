@@ -1013,7 +1013,7 @@ async function formatStepResult(stepNumber, resultData) {
                 }
 
                 formattedResult = `
-                    <div style="text-align: center;"><img src="${imageDataUrl}" alt="짐 상세 정보" style="width: 80%; height: auto; border-radius: 5px; margin-bottom: 10px;"></div>
+                    <div class="image-container"><img src="${imageDataUrl}" alt="짐 상세 정보" class="analysis-image"></div>
                     <p>👥 인원 수: ${chain1Data.people || 0}명</p>
                     <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
                     <p>📋 짐 상세 정보</p>
@@ -1055,19 +1055,10 @@ async function formatStepResult(stepNumber, resultData) {
                     });
                     seatsTableRows += `<tr>${tableSeatData}</tr>`;
                 }
-                formattedResult += `
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>위치</th>
-                                <th>방법</th>
-                                <th>용량</th>
-                                <th>chair|storage</th>
-                            </tr>
-                        </thead>
-                        <tbody>${seatsTableRows}</tbody>
-                    </table>
-                `;
+
+                formattedResult += `<div class="image-container">
+                    <img src="/static/images/options/option1.png" alt="최적 배치 생성" class="analysis-image">
+                </div>`;
                 break;
                 
             case 3: // 시트 동작 계획
@@ -1077,15 +1068,6 @@ async function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
 
-                let environmentBeforeTableRows = '';
-                for (let seat in chain3Data.environment_before.seats) {
-                    environmentBeforeTableRows += `<tr>
-                        <td>${chain3Data.environment_before.seats[seat].rail_axis}</td>
-                        <td>${chain3Data.environment_before.seats[seat].position}</td>
-                        <td>${chain3Data.environment_before.seats[seat].facing}</td>
-                        <td>${chain3Data.environment_before.seats[seat].mode}</td>
-                    </tr>`;
-                }
 
                 let taskSequenceTableRows = '';
                 for (let seq in chain3Data.task_sequence) {
@@ -1097,47 +1079,12 @@ async function formatStepResult(stepNumber, resultData) {
                     taskSequenceTableRows += `<li>${tabletaskSequenceData}</li>`;
                 }
 
-                let environmentAfterTableRows = '';
-                for (let seat in chain3Data.environment_after.seats) {
-                    environmentAfterTableRows += `<tr>
-                        <td>${chain3Data.environment_after.seats[seat].rail_axis}</td>
-                        <td>${chain3Data.environment_after.seats[seat].position}</td>
-                        <td>${chain3Data.environment_after.seats[seat].facing}</td>
-                        <td>${chain3Data.environment_after.seats[seat].mode}</td>
-                    </tr>`;
-                }
-
-
                 formattedResult = `
-                    <p>🚗 환경 설정 (이전)</p>
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>rail_axis</th>
-                                <th>position</th>
-                                <th>facing</th>
-                                <th>mode</th>
-                            </tr>
-                        </thead>
-                        <tbody>${environmentBeforeTableRows}</tbody>
-                    </table>
+                    <div class="image-container">
+                    <img src="/static/images/options/option2.png" alt="시트 동작 계획" class="analysis-image"></div>
                     <p>📋 작업 순서</p>
-                    <table border="1">
                         <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
-                    </table>
-                    <p>🚗 환경 설정 (이후)</p>
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>rail_axis</th>
-                                <th>position</th>
-                                <th>facing</th>
-                                <th>mode</th>
-                            </tr>
-                        </thead>
-                        <tbody>${environmentAfterTableRows}</tbody>
-                    </table>
-                `;
+                        `;
 
                 break;
                 
@@ -1152,7 +1099,7 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `<pre>${resultData}</pre>`;
         }
         
-        return `<div style="font-family: 'HyundaiSansTextKRR'; margin: 0 10px; background-color: #ececec8c; padding: 10px; border-radius: 5px;">${formattedResult}</div>`;
+        return `<div class="analysis-result-container">${formattedResult}</div>`;
         
     } catch (error) {
         console.error(`단계 ${stepNumber} 결과 포맷팅 오류:`, error);

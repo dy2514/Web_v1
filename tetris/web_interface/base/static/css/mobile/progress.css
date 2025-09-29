@@ -1082,6 +1082,35 @@ html, body {
     color: #000;
 }
 
+/* 분석 결과 컨테이너 스타일 */
+.analysis-result-container {
+    font-family: 'HyundaiSansTextKRR';
+    margin: 0 10px;
+    background-color: #f3f3f38c;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 분석 이미지 스타일 */
+.analysis-image {
+    width: 80%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 이미지 컨테이너 */
+.image-container {
+    text-align: center;
+}
+
 @keyframes slideInFromRight {
     from {
         opacity: 0;

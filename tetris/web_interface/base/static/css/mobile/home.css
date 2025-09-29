@@ -503,6 +503,10 @@ body {
     }
     
     .welcome-title {
+        font-size: 18px;
+    }
+
+    .welcome-sub-title {
         font-size: 16px;
     }
     
@@ -649,85 +653,5 @@ body {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-    }
-}
-
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-    body {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        color: #fff;
-    }
-    
-    .topbar {
-        background: rgba(26, 26, 26, 0.95);
-        border-bottom-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    
-    .vehicle-section {
-        background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 0.4) 100%);
-    }
-    
-    .shortcut-item {
-        background: #2d2d2d;
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .shortcut-text {
-        color: #fff;
-    }
-    
-    .bottom-navigation {
-        background: #1a1a1a;
-        border-top-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .modal-content {
-        background: #2d2d2d;
-    }
-    
-    .modal-header {
-        border-bottom-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .modal-header h3 {
-        color: #fff;
-    }
-    
-    .notification-content h4 {
-        color: #fff;
-    }
-    
-    .notification-content p {
-        color: #ccc;
-    }
-    
-    .welcome-title {
-        color: #fff;
-    }
-    
-    .brand-img {
-        filter: brightness(1.05) contrast(1.1);
-        box-shadow: 0 8px 32px rgba(0, 44, 95, 0.25);
-    }
-    
-    .brand-img:hover {
-        box-shadow: 0 12px 40px rgba(0, 44, 95, 0.3);
-    }
-    
-    .start-container {
-        background: #2d2d2d;
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    
-    .start-title {
-        color: #fff;
-    }
-    
-    .logo-placeholder {
-        background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
-        box-shadow: 0 2px 8px rgba(0, 44, 95, 0.4);
     }
 }
