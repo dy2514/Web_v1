@@ -82,12 +82,12 @@ chain1_llm = ChatGoogleGenerativeAI(
     api_key=GOOGLE_API_KEY
 )
 chain2_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash-image-preview",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
 chain3_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-image-preview",
+    model="gemini-2.5-pro",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
@@ -341,8 +341,19 @@ class chain4:
             raise ValueError(f"Invalid JSON format: {e}")
 
 def _extract_json_str_for_chain4(text: str) -> str:
-    if not text:
-        raise ValueError("chain3_out is empty.")
+    if not text or text.strip() == "":
+        # Chain3 빈 응답에 대한 폴백 처리
+        print("[경고] Chain3 응답이 비어있습니다. 기본 작업 순서를 사용합니다.")
+        fallback_json = {
+            "task_sequence": {
+                "1": "unchanged",
+                "2": "unchanged", 
+                "3": "unchanged",
+                "4": "unchanged"
+            }
+        }
+        return json.dumps(fallback_json, ensure_ascii=False, indent=2)
+    
     t = text.strip()
     m = re.search(r"```(?:json)?\s*(.*?)```", t, re.S | re.I)
     if m:
@@ -354,6 +365,40 @@ def _extract_json_str_for_chain4(text: str) -> str:
     return t
 
 _chain4_converter = chain4()
+
+def _run_chain3_with_retry(inputs: dict) -> str:
+    """Chain3 실행 시 빈 응답에 대한 재시도 로직"""
+    max_retries = 3
+    
+    for attempt in range(max_retries):
+        try:
+            # Chain3 실행
+            result = (chain3_prompt | chain3_llm | StrOutputParser()).invoke(inputs)
+            
+            # 빈 응답 체크
+            if result and result.strip():
+                print(f"[성공] Chain3 실행 성공 (시도 {attempt + 1})")
+                return result
+            else:
+                print(f"[경고] Chain3 빈 응답 (시도 {attempt + 1}/{max_retries})")
+                if attempt < max_retries - 1:
+                    print(f"[재시도] Chain3 재시도 중... ({attempt + 2}/{max_retries})")
+                    continue
+                else:
+                    print("[폴백] Chain3 최대 재시도 초과, 기본 응답 사용")
+                    return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
+                    
+        except Exception as e:
+            print(f"[오류] Chain3 실행 실패 (시도 {attempt + 1}): {e}")
+            if attempt < max_retries - 1:
+                print(f"[재시도] Chain3 재시도 중... ({attempt + 2}/{max_retries})")
+                continue
+            else:
+                print("[폴백] Chain3 최대 재시도 초과, 기본 응답 사용")
+                return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
+    
+    # 최종 폴백
+    return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
 
 def _run_chain4_transform(inputs: dict) -> dict:
     raw = inputs.get("chain3_out", "")
@@ -373,19 +418,19 @@ def _run_chain4_transform(inputs: dict) -> dict:
 def _tap_print_chain1(d):
     print("\n=====================chain1_out =====================")
     print(d.get("chain1_out", ""))
-    print(f"\n🕒 chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
     return ""
 
 def _tap_print_chain2(d):
     print("\n=====================chain2_out =====================")
     print(d.get("chain2_out_raw", ""))
-    print(f"\n🕒 chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
     return ""
 
 def _tap_print_chain3(d):
     print("\n=====================chain3_out =====================")
     print(d.get("chain3_out", ""))
-    print(f"\n🕒 chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
     return ""
 
 def _tap_print_chain4(d):
@@ -399,11 +444,11 @@ def _tap_save_chain1(d):
     # 기존 출력 기능
     print("\n=====================chain1_out =====================")
     print(d.get("chain1_out", ""))
-    print(f"\n🕒 chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
     
     # 상태 저장
     try:
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         analysis_result = state_manager.get('analysis_result', {})
         analysis_result['chain1_out'] = d.get("chain1_out", "")
         state_manager.set('analysis_result', analysis_result)
@@ -423,11 +468,11 @@ def _tap_save_chain2(d):
     # 기존 출력 기능
     print("\n=====================chain2_out =====================")
     print(d.get("chain2_out_raw", ""))
-    print(f"\n🕒 chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
     
     # 상태 저장
     try:
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         analysis_result = state_manager.get('analysis_result', {})
         analysis_result['chain2_out'] = d.get("chain2_out", "")
         state_manager.set('analysis_result', analysis_result)
@@ -447,11 +492,11 @@ def _tap_save_chain3(d):
     # 기존 출력 기능
     print("\n=====================chain3_out =====================")
     print(d.get("chain3_out", ""))
-    print(f"\n🕒 chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
+    print(f"\n[시간] chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
     
     # 상태 저장
     try:
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         analysis_result = state_manager.get('analysis_result', {})
         analysis_result['chain3_out'] = d.get("chain3_out", "")
         state_manager.set('analysis_result', analysis_result)
@@ -474,7 +519,7 @@ def _tap_save_chain4(d):
     
     # 상태 저장
     try:
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         analysis_result = state_manager.get('analysis_result', {})
         analysis_result['chain4_out'] = d.get("chain4_out", "")
         state_manager.set('analysis_result', analysis_result)
@@ -512,7 +557,7 @@ _pipeline = (
 
     # --- chain3 ---
     .assign(_t3_start=RunnableLambda(lambda _: perf_counter()))
-    .assign(chain3_out=(chain3_prompt | chain3_llm | StrOutputParser()))
+    .assign(chain3_out=RunnableLambda(lambda d: _run_chain3_with_retry(d)))
     .assign(chain3_run_time=RunnableLambda(lambda d: perf_counter() - d["_t3_start"]))
     .assign(_tap3=RunnableLambda(_tap_print_chain3))
     .assign(_save3=RunnableLambda(_tap_save_chain3))  # 상태 저장 추가

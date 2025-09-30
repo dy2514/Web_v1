@@ -17,16 +17,16 @@ def get_user_input_web(
     
     # 통합 웹 서버의 상태 관리 모듈 import
     try:
-        from ..base.state_manager import get_global_status
+        from web_interface.base.state_manager import get_global_status
     except ImportError:
         try:
-            from base.state_manager import get_global_status
+            from ..base.state_manager import get_global_status
         except ImportError:
             # 직접 경로 추가
             web_interface_path = Path(__file__).parent.parent
             if str(web_interface_path) not in sys.path:
                 sys.path.insert(0, str(web_interface_path))
-            from base.state_manager import get_global_status
+            from web_interface.base.state_manager import get_global_status
 
     print(f"통합 웹 서버에서 사용자 입력을 기다리는 중...")
     print(f"모바일 접속: http://localhost:{port}/mobile/input")
@@ -48,7 +48,7 @@ def get_user_input_web(
                 collected_data_url = status.get('image_data_url', '')
                 scenario = status.get('scenario', 'items_unknown')
                 
-                print(f"✅ 사용자 입력 수집 완료: 인원 {collected_people}명, 시나리오 {scenario}")
+                print(f"[완료] 사용자 입력 수집 완료: 인원 {collected_people}명, 시나리오 {scenario}")
                 break
                 
             time.sleep(0.5)

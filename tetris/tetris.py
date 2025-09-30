@@ -115,7 +115,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
             print("연결된 아두이노가 없습니다. DRY-RUN 모드로 진행합니다.")
             print(f"[DRY-RUN] 16-digit 코드: {chain4_out}")
         else:
-            print(f"🔌 아두이노 {len(connected)}개 연결됨")
+            print(f"[연결] 아두이노 {len(connected)}개 연결됨")
             # 연결 직후 약간 대기 (보드 리셋/초기화 여유)
             time.sleep(0.3)
 
@@ -134,7 +134,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
         # 연결 유무와 상관없이 안전 종료 시도
         try:
             RPI.close_all_connections()
-            print("🔌 아두이노 연결 종료")
+            print("[연결] 아두이노 연결 종료")
         except Exception:
             pass
     print("모터 제어 완료")
@@ -198,7 +198,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
             raise AnalysisCancelledException("분석이 중지되었습니다.")
         
         # state_manager 초기화 (web_interface 호환성)
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         state_manager.set('current_step', 0)
         state_manager.set('processing.progress', 0)
         state_manager.set('processing.status', 'running')

@@ -55,25 +55,25 @@ def connect_to_arduinos():
 
                     time.sleep(2)
                     arduino_connections[sn] = ser
-                    print(f"  ✅ 셀 {i+1}번 연결 성공 (SN: {sn}, Port: {p.device})")
+                    print(f"  [성공] 셀 {i+1}번 연결 성공 (SN: {sn}, Port: {p.device})")
                     port_found = True
                     break
                 except serial.SerialException as e:
-                    print(f"  ❌ 에러: 셀 {i+1}번 연결 실패 (SN: {sn}). {e}")
+                    print(f"  [에러] 셀 {i+1}번 연결 실패 (SN: {sn}). {e}")
                     break
         if not port_found:
-            print(f"  ⚠️ 경고: 셀 {i+1}번 아두이노를 찾을 수 없습니다 (SN: {sn}).")
+            print(f"  [경고] 셀 {i+1}번 아두이노를 찾을 수 없습니다 (SN: {sn}).")
 
 def run_manual_mode(cell_number):
     """선택된 셀에 대해 수동 모드를 실행합니다."""
     try:
         target_sn = ARDUINO_SERIAL_NUMBERS[cell_number - 1]
     except IndexError:
-        print("❌ 잘못된 셀 번호입니다.")
+        print("[에러] 잘못된 셀 번호입니다.")
         return
 
     if target_sn not in arduino_connections:
-        print(f"❌ 셀 {cell_number}번은 연결되어 있지 않습니다. 메인 메뉴로 돌아갑니다.")
+        print(f"[에러] 셀 {cell_number}번은 연결되어 있지 않습니다. 메인 메뉴로 돌아갑니다.")
         return
 
     print("\n" + "="*55)
@@ -87,7 +87,7 @@ def run_manual_mode(cell_number):
             key_upper = key.upper()
 
             if key == '\x1b': # ESC 키
-                print("\n✅ 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
+                print("\n[완료] 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
                 break
 
             if key_upper in manual_key_map:
@@ -97,11 +97,11 @@ def run_manual_mode(cell_number):
                 print(f"  > 셀 {cell_number}에 전송: '{command}'")
 
         except KeyboardInterrupt:
-            print("\n✅ 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
+            print("\n[완료] 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
             break
 
 def send_automated_command(full_command):
-    print(f"⚙️  자동화 명령 실행: {full_command}")
+    print(f"[실행] 자동화 명령 실행: {full_command}")
     num_arduinos = AUTOMATION_COMMAND_LENGTH // 4
     command_chunks = [full_command[i:i+4] for i in range(0, AUTOMATION_COMMAND_LENGTH, 4)]
 
@@ -138,13 +138,13 @@ def close_all_connections():
     for conn in arduino_connections.values():
         if conn.isOpen():
             conn.close()
-    print("✅ 모든 연결이 안전하게 종료되었습니다.")
+    print("[완료] 모든 연결이 안전하게 종료되었습니다.")
 
 # --- 메인 실행 영역 ---
 if __name__ == "__main__":
     connect_to_arduinos()
     if not arduino_connections:
-        print("\n❌ 연결된 아두이노가 없습니다. 프로그램을 종료합니다.")
+        print("\n[에러] 연결된 아두이노가 없습니다. 프로그램을 종료합니다.")
         exit()
 
     print("\n" + "="*55)
@@ -174,7 +174,7 @@ if __name__ == "__main__":
                 send_automated_command(user_input)
             
             else:
-                print("❌ 잘못된 명령입니다. 메뉴를 확인하고 다시 입력해주세요.")
+                print("[에러] 잘못된 명령입니다. 메뉴를 확인하고 다시 입력해주세요.")
 
     except (KeyboardInterrupt, Exception) as e:
         print(f"\n예외 발생 ({type(e).__name__}): 프로그램을 안전하게 종료합니다.")

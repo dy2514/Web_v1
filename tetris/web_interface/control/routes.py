@@ -18,7 +18,11 @@ web_interface_dir = current_dir.parent
 sys.path.insert(0, str(web_interface_dir))
 
 # Simplified imports
-from base.state_manager import get_global_status, update_status
+from web_interface.base.state_manager import get_global_status, update_status
+from web_interface.base.error_handler import (
+    handle_tetris_error, handle_generic_error, create_success_response,
+    ValidationError, StateError, ChainError
+)
 
 from .control_utils import (
     create_processing_steps,
@@ -40,7 +44,7 @@ analysis_stop_flags = {}  # 분석 중지 플래그
 analysis_abort_controllers = {}  # 분석 AbortController 관리
 
 
-# Blueprint 참조를 위해 동적 import
+# Blueprint import
 from . import control_bp
 
 # 서버 URL 생성 함수
@@ -116,7 +120,7 @@ def stop_all_analysis():
     analysis_abort_controllers.clear()
     
     # 상태 강제 초기화 (중지 후 즉시 상태 리셋)
-    from base.state_manager import state_manager
+    from web_interface.base.state_manager import state_manager
     state_manager.set('processing.status', 'idle')
     state_manager.set('processing.progress', 0)
     state_manager.set('processing.current_scenario', None)
@@ -430,7 +434,7 @@ def reset_system():
         stop_all_analysis()
         
         # 2. 상태 초기화
-        from base.state_manager import reset_global_status, state_manager
+        from web_interface.base.state_manager import reset_global_status, state_manager
         reset_global_status()
         
         # 3. 모든 분석 관련 필드 강제 초기화

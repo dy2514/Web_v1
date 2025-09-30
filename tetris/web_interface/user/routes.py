@@ -14,15 +14,20 @@ web_interface_dir = current_dir.parent
 sys.path.insert(0, str(web_interface_dir))
 
 # Simplified imports
-from base.api_utils import APIResponse, log_api_request, log_api_response, validate_file_upload
+from base.api_utils import APIResponse, log_api_request, log_api_response
 from base.file_handler import save_uploaded_file
-from base.state_manager import update_status
+from web_interface.base.state_manager import update_status
+from web_interface.base.error_handler import (
+    handle_tetris_error, handle_generic_error, create_success_response,
+    validate_required_fields, validate_file_upload, validate_people_count,
+    ValidationError, StateError
+)
 
 from .user_utils import format_upload_response, get_mobile_status_info, log_user_action
 
 logger = logging.getLogger(__name__)
 
-# Blueprint 참조를 위해 동적 import
+# Blueprint import
 from . import user_bp
 
 @user_bp.route('/')
@@ -32,7 +37,7 @@ def mobile_home():
     try:
         # 진행 중인 분석이 있다면 중지
         from control.routes import stop_all_analysis
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         
         # 분석 상태 확인 (더 포괄적으로 체크)
         current_status = state_manager.get('processing.status', 'idle')
@@ -124,24 +129,20 @@ def upload_file():
     
     # 요청 정보 로깅
     logger.info(f"[시작] 업로드 요청 시작 - Content-Type: {request.content_type}, Files: {list(request.files.keys())}")
+    logger.info(f"[요청 데이터] Form data: {dict(request.form)}")
     
     try:
-        # 파일 검증
-        if 'photo' not in request.files:
-            error_msg = "업로드할 파일이 선택되지 않았습니다. 'photo' 필드가 누락되었습니다."
-            logger.error(f"[에러] 파일 업로드 실패: {error_msg}")
-            return APIResponse.error(error_msg, "NO_FILE", 400)
+        # 필수 필드 검증 (people_count는 선택적)
+        validate_required_fields(request.files, ['photo'])
         
         file = request.files['photo']
-        people_count = request.form.get('people_count', '0')
+        people_count = validate_people_count(request.form.get('people_count', '0'))
         session_id = request.form.get('session_id')
         
-        logger.info(f"업로드 파일 정보 - 파일명: {file.filename}, 크기: {file.content_length if hasattr(file, 'content_length') else 'unknown'}, 세션: {session_id}")
+        logger.info(f"업로드 파일 정보 - 파일명: {file.filename}, 크기: {file.content_length if hasattr(file, 'content_length') else 'unknown'}, 세션: {session_id}, 인원수: {people_count}")
         
-        if file.filename == '':
-            error_msg = "파일이 선택되지 않았습니다. 이미지를 선택해주세요."
-            logger.error(f"[에러] 파일 업로드 실패: {error_msg}")
-            return APIResponse.error(error_msg, "NO_FILE", 400)
+        # 파일 검증
+        validate_file_upload(file, {'png', 'jpg', 'jpeg', 'webp'}, 5 * 1024 * 1024)  # 5MB
         
         # 중앙 설정을 사용하여 업로드 제한 일치 (config_manager 사용)
         try:
@@ -202,9 +203,8 @@ def upload_file():
             logger.info(f"[성공] 이미지 데이터 처리 완료 - MIME: {mime}, 크기: {len(image_data)} bytes")
             
         except Exception as process_error:
-            error_msg = f"이미지 처리 중 오류가 발생했습니다: {str(process_error)}"
             logger.error(f"[에러] 이미지 처리 실패: {process_error}", exc_info=True)
-            return APIResponse.error(error_msg, "PROCESS_ERROR", 500)
+            return handle_generic_error(process_error)
         
         scenario = f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
@@ -222,7 +222,7 @@ def upload_file():
                 scenario=scenario
             )
             logger.info(f"[성공] 상태 업데이트 완료 - 시나리오: {scenario}, 인원수: {people_count}")
-        except Exception as status_error:
+        except StateError as status_error:
             logger.warning(f"[경고] 상태 업데이트 실패: {status_error}")
             # 상태 업데이트 실패는 업로드 자체를 실패로 처리하지 않음
         
@@ -236,26 +236,23 @@ def upload_file():
         
         # logger.info(f"[성공] 업로드 성공 - 파일: {filename}, 시나리오: {scenario}")
         log_api_response('/mobile/api/upload', 200, "File uploaded successfully")
-        return APIResponse.success(response_data, "파일이 성공적으로 업로드되었습니다")
+        return create_success_response(response_data, "파일이 성공적으로 업로드되었습니다")
         
+    except ValidationError as e:
+        logger.error(f"[에러] 검증 오류: {e}")
+        return handle_tetris_error(e)
+    except StateError as e:
+        logger.error(f"[에러] 상태 관리 오류: {e}")
+        return handle_tetris_error(e)
     except Exception as e:
-        error_msg = f"파일 업로드 중 예상치 못한 오류가 발생했습니다: {str(e)}"
         logger.error(f"[에러] 파일 업로드 예외 발생: {e}", exc_info=True)
-        
-        # 상태 업데이트 시도 (실패해도 무시)
-        try:
-            update_status(status='error', message=error_msg)
-        except:
-            pass
-        
-        log_api_response('/api/upload', 500, str(e))
-        return APIResponse.server_error(error_msg)
+        return handle_generic_error(e)
 
 @user_bp.route('/progress')
 def progress():
     """진행률 페이지 - 분석 내용 초기화"""
     try:
-        from base.state_manager import state_manager
+        from web_interface.base.state_manager import state_manager
         from control.routes import stop_all_analysis
         
         # 진행 중인 분석이 있다면 중지
