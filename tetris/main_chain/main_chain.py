@@ -393,6 +393,102 @@ def _tap_print_chain4(d):
     print(d.get("chain4_out", ""))
     return ""
 
+# ---------------------- 상태 저장 함수들 (진행률 콜백 포함) ----------------------
+def _tap_save_chain1(d):
+    """1단계 결과 저장 및 진행률 업데이트"""
+    # 기존 출력 기능
+    print("\n=====================chain1_out =====================")
+    print(d.get("chain1_out", ""))
+    print(f"\n🕒 chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
+    
+    # 상태 저장
+    try:
+        from base.state_manager import state_manager
+        analysis_result = state_manager.get('analysis_result', {})
+        analysis_result['chain1_out'] = d.get("chain1_out", "")
+        state_manager.set('analysis_result', analysis_result)
+        
+        # 진행률 콜백 호출
+        if hasattr(state_manager, '_progress_callback') and state_manager._progress_callback:
+            state_manager._progress_callback(25, "사용자 입력 분석 완료", "1단계 완료", current_step=1)
+        
+        print(f"[DEBUG] 1단계 결과 저장 완료")
+    except Exception as e:
+        print(f"[오류] 1단계 상태 저장 실패: {e}")
+    
+    return ""
+
+def _tap_save_chain2(d):
+    """2단계 결과 저장 및 진행률 업데이트"""
+    # 기존 출력 기능
+    print("\n=====================chain2_out =====================")
+    print(d.get("chain2_out_raw", ""))
+    print(f"\n🕒 chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
+    
+    # 상태 저장
+    try:
+        from base.state_manager import state_manager
+        analysis_result = state_manager.get('analysis_result', {})
+        analysis_result['chain2_out'] = d.get("chain2_out", "")
+        state_manager.set('analysis_result', analysis_result)
+        
+        # 진행률 콜백 호출
+        if hasattr(state_manager, '_progress_callback') and state_manager._progress_callback:
+            state_manager._progress_callback(50, "최적 배치 생성 완료", "2단계 완료", current_step=2)
+        
+        print(f"[DEBUG] 2단계 결과 저장 완료")
+    except Exception as e:
+        print(f"[오류] 2단계 상태 저장 실패: {e}")
+    
+    return ""
+
+def _tap_save_chain3(d):
+    """3단계 결과 저장 및 진행률 업데이트"""
+    # 기존 출력 기능
+    print("\n=====================chain3_out =====================")
+    print(d.get("chain3_out", ""))
+    print(f"\n🕒 chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
+    
+    # 상태 저장
+    try:
+        from base.state_manager import state_manager
+        analysis_result = state_manager.get('analysis_result', {})
+        analysis_result['chain3_out'] = d.get("chain3_out", "")
+        state_manager.set('analysis_result', analysis_result)
+        
+        # 진행률 콜백 호출
+        if hasattr(state_manager, '_progress_callback') and state_manager._progress_callback:
+            state_manager._progress_callback(75, "시트 동작 계획 완료", "3단계 완료", current_step=3)
+        
+        print(f"[DEBUG] 3단계 결과 저장 완료")
+    except Exception as e:
+        print(f"[오류] 3단계 상태 저장 실패: {e}")
+    
+    return ""
+
+def _tap_save_chain4(d):
+    """4단계 결과 저장 및 진행률 업데이트"""
+    # 기존 출력 기능
+    print("\n=====================chain4_out =====================")
+    print(d.get("chain4_out", ""))
+    
+    # 상태 저장
+    try:
+        from base.state_manager import state_manager
+        analysis_result = state_manager.get('analysis_result', {})
+        analysis_result['chain4_out'] = d.get("chain4_out", "")
+        state_manager.set('analysis_result', analysis_result)
+        
+        # 진행률 콜백 호출
+        if hasattr(state_manager, '_progress_callback') and state_manager._progress_callback:
+            state_manager._progress_callback(100, "최적 배치 생성 완료", "4단계 완료", current_step=4)
+        
+        print(f"[DEBUG] 4단계 결과 저장 완료")
+    except Exception as e:
+        print(f"[오류] 4단계 상태 저장 실패: {e}")
+    
+    return ""
+
 # =============================== LCEL 파이프라인 ===============================
 _pipeline = (
     RunnablePassthrough()
@@ -403,6 +499,7 @@ _pipeline = (
     .assign(chain1_out=RunnableLambda(_inject_people_value))
     .assign(chain1_run_time=RunnableLambda(lambda d: perf_counter() - d["_t1_start"]))
     .assign(_tap1=RunnableLambda(_tap_print_chain1))
+    .assign(_save1=RunnableLambda(_tap_save_chain1))  # 상태 저장 추가
 
     # --- chain2 ---
     .assign(chain2_image=RunnableLambda(_chain2_image_value))
@@ -411,16 +508,19 @@ _pipeline = (
     .assign(chain2_out=RunnableLambda(_inject_instruction_value))
     .assign(chain2_run_time=RunnableLambda(lambda d: perf_counter() - d["_t2_start"]))
     .assign(_tap2=RunnableLambda(_tap_print_chain2))
+    .assign(_save2=RunnableLambda(_tap_save_chain2))  # 상태 저장 추가
 
     # --- chain3 ---
     .assign(_t3_start=RunnableLambda(lambda _: perf_counter()))
     .assign(chain3_out=(chain3_prompt | chain3_llm | StrOutputParser()))
     .assign(chain3_run_time=RunnableLambda(lambda d: perf_counter() - d["_t3_start"]))
     .assign(_tap3=RunnableLambda(_tap_print_chain3))
+    .assign(_save3=RunnableLambda(_tap_save_chain3))  # 상태 저장 추가
 
     # --- chain4 (변환) ---
     .assign(chain4_out=RunnableLambda(lambda d: _run_chain4_transform(d)["chain4_out"]))
     .assign(_tap4=RunnableLambda(_tap_print_chain4))
+    .assign(_save4=RunnableLambda(_tap_save_chain4))  # 상태 저장 추가
 )
 
 def _select_outputs(d: dict) -> dict:

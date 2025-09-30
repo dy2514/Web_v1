@@ -172,8 +172,8 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
 
 
 def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: str, progress_callback=None, stop_callback=None, abort_controller=None) -> dict:
-    """단순화된 단계별 AI 분석 - web_interface 호환성 유지"""
-    print("[DEBUG] 단순화된 단계별 AI 분석 시작...")
+    """상태 저장 기반 단계별 AI 분석 - web_interface 호환성 유지"""
+    print("[DEBUG] 상태 저장 기반 단계별 AI 분석 시작...")
     print(f"[DEBUG] 파라미터: people_count={people_count}, scenario={scenario}")
     
     # 중지 플래그 확인 함수
@@ -197,30 +197,36 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         if check_stop():
             raise AnalysisCancelledException("분석이 중지되었습니다.")
         
+        # state_manager 초기화 (web_interface 호환성)
+        from base.state_manager import state_manager
+        state_manager.set('current_step', 0)
+        state_manager.set('processing.progress', 0)
+        state_manager.set('processing.status', 'running')
+        state_manager.set('processing.current_scenario', scenario)
+        state_manager.set('upload.scenario', scenario)
+        state_manager.set('upload.image_data_url', image_data_url)
+        state_manager.set('upload.people_count', people_count)
+        state_manager.set('analysis_result', {})
+        state_manager.set('notifications', [])
+        
+        # 진행률 콜백을 state_manager에 저장 (핵심)
+        state_manager._progress_callback = progress_callback
+        
         # 입력 준비
         user_msgs = MC.make_chain1_user_input(
             people_count=people_count, image_data_url=image_data_url
         )
         
-        # 단일 파이프라인 실행 (핵심 변경)
-        print("단일 파이프라인 실행 시작...")
+        # 파이프라인 실행 (상태 저장 자동 처리)
+        print("상태 저장 기반 파이프라인 실행 시작...")
         result = MC.tetris_chain.invoke({
             "user_input": user_msgs,
             "people_count": people_count,
         })
-        print("단일 파이프라인 실행 완료")
+        print("상태 저장 기반 파이프라인 실행 완료")
         
-        # 결과 처리
-        analysis_result = {
-            "chain1_out": result.get("chain1_out", ""),
-            "chain2_out": result.get("chain2_out", ""),
-            "chain3_out": result.get("chain3_out", ""),
-            "chain4_out": result.get("chain4_out", "")
-        }
-        
-        # 진행률 콜백 호출 (web_interface 호환성)
-        if progress_callback:
-            progress_callback(100, "분석 완료", "모든 단계가 완료되었습니다!", current_step=4)
+        # 최종 결과 반환 (state_manager에서 자동으로 저장된 결과 사용)
+        analysis_result = state_manager.get('analysis_result', {})
         
         # 결과 저장
         OUT_ROOT = config['output']['OUTPUT_ROOT']
@@ -232,16 +238,16 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         lines.append("====================[ 단계별 AI 분석 결과 ]====================")
         lines.append("")
         lines.append("====================[ chain1_out ]====================")
-        lines.append(analysis_result["chain1_out"])
+        lines.append(analysis_result.get("chain1_out", ""))
         lines.append("")
         lines.append("====================[ chain2_out ]====================")
-        lines.append(analysis_result["chain2_out"])
+        lines.append(analysis_result.get("chain2_out", ""))
         lines.append("")
         lines.append("====================[ chain3_out ]====================")
-        lines.append(analysis_result["chain3_out"])
+        lines.append(analysis_result.get("chain3_out", ""))
         lines.append("")
         lines.append("====================[ chain4_out ]====================")
-        lines.append(analysis_result["chain4_out"])
+        lines.append(analysis_result.get("chain4_out", ""))
         
         out_path.write_text("\n".join(lines), encoding="utf-8")
         
