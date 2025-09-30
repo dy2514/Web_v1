@@ -1,28 +1,24 @@
 @font-face {
     font-family: "HyundaiSansHeadKRM";
     src: url("/static/css/fonts/HyundaiSansHeadKRMedium.woff2") format("woff2");
-    font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
     font-family: "HyundaiSansHeadKRR";
     src: url("/static/css/fonts/HyundaiSansHeadKRRegular.woff2") format("woff2");
-    font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
     font-family: "HyundaiSansTextKRM";
-    src: url("/static/css/fonts/HyundaiSansTextKRM.woff2") format("woff2");
-    font-weight: 400;
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.woff2") format("woff2");
     font-style: normal;
     font-display: swap;
 }
 @font-face {
     font-family: "HyundaiSansTextKRR";
-    src: url("/static/css/fonts/HyundaiSansTextKRR.woff2") format("woff2");
-    font-weight: 300;
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.woff2") format("woff2");
     font-style: normal;
     font-display: swap;
 }
