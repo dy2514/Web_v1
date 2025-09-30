@@ -12,9 +12,7 @@ ehthumbs.db
 Thumbs.db
 
 # TETRIS specific
-#tetris/tetris_IO/uploads/*
-#tetris/tetris_IO/log_data/*
-#tetris/tetris_IO/uploads/.gitkeep
-#tetris/tetris_IO/log_data/.gitkeep
+tetris/tetris_IO/uploads/*
+tetris/tetris_IO/log_data/*
 
 tetris_secrets.json
