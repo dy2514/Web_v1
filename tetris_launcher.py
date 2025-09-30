@@ -224,7 +224,7 @@ def main():
     """메인 실행 함수"""
 
     ap = argparse.ArgumentParser(description="AI TETRIS launcher")
-    ap.add_argument("--mode", choices=["web", "scenario"], default="web")
+    ap.add_argument("--mode", choices=["web"], default="web", help="실행 모드 (웹 모드만 지원)")
     ap.add_argument("--port", type=int, default=5002)
     ap.add_argument("--no-reset", action="store_true", help="상태 파일 초기화 건너뛰기")
     args = ap.parse_args()

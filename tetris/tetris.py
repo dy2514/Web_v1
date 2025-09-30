@@ -20,7 +20,7 @@ for p in (MC_DIR, UI_DIR):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from user_input import get_user_input_web, get_user_input_scenario
+from user_input import get_user_input_web
 import main_chain as MC
 
 # rpi_controller 로드 
@@ -64,17 +64,17 @@ def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
     
     # user_input.py의 웹 모드 함수 사용
     from user_input import get_user_input_web
-    return get_user_input_web(port=port, auto_open_browser=False)
+    return get_user_input_web(port=port)
 
 def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict:
-    # 1) 입력 수집
-    if mode == "web":
-        # 웹 모드: Blueprint 기반 통합 웹 서버 사용
-        people_count, image_data_url, scenario = run_web_mode(
-            port=port, open_browser=open_browser
-        )
-    else:  # scenario 모드
-        people_count, image_data_url, scenario = get_user_input_scenario()
+    # 1) 입력 수집 - 웹 모드만 지원
+    if mode != "web":
+        raise ValueError("웹 모드만 지원됩니다. --mode web을 사용해주세요.")
+    
+    # 웹 모드: Blueprint 기반 통합 웹 서버 사용
+    people_count, image_data_url, scenario = run_web_mode(
+        port=port, open_browser=open_browser
+    )
 
     # 2) main_chain 입력 생성
     print("AI 체인 입력 생성 중...")
@@ -447,7 +447,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
 
 def main():
     ap = argparse.ArgumentParser(description="AI TETRIS launcher")
-    ap.add_argument("--mode", required=True, choices=["web", "scenario"])
+    ap.add_argument("--mode", default="web", choices=["web"], help="실행 모드 (웹 모드만 지원)")
     ap.add_argument("--port", type=int, default=5002)
     ap.add_argument("--no-browser", action="store_true")
     args = ap.parse_args()

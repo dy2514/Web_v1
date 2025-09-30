@@ -1,15 +1,14 @@
 # main_chain.py
 
-import json
-import os
-import re
+import json, os, re
 from pathlib import Path
 from typing import Dict, List, Union
 
-from langchain.chains import LLMChain, SequentialChain, TransformChain
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import HumanMessage
 
 # [경로/키] __file__ 기준 상대경로와 GOOGLE_API_KEY 확보
 ROOT = Path(__file__).resolve().parent                        # .../AIRL_ATM/SW/tetris/main_chain
@@ -53,6 +52,7 @@ def _require_exists(p: Path, label: str):
     if not p.exists():
         raise FileNotFoundError(f"{label} 누락: {p}")
 
+# 필수 파일들 검증
 for p, label in [
     (CHAIN1_PROMPT_TXT, "chain1_prompt.txt"),
     (CHAIN2_PROMPT_TXT, "chain2_prompt.txt"),
@@ -64,7 +64,6 @@ for p, label in [
     (C3_FUNC_TXT, "chain3_prompt_function.txt"),
     (C3_OUTFMT_TXT, "chain3_prompt_output_format.txt"),
     (C3_EXAMPLE_TXT, "chain3_prompt_example.txt"),
-    (C3_IMAGE_PNG, "chain3_prompt_image.png"),
 ]:
     _require_exists(p, label)
 
@@ -76,12 +75,24 @@ if not GOOGLE_API_KEY and SECRETS_JSON.exists():
 if not GOOGLE_API_KEY:
     raise RuntimeError("GOOGLE_API_KEY가 설정되어야 합니다(환경변수 또는 tetris_secrets.json).")
 
-# === 모델/온도 환경변수로 오버라이드 가능 ===
-MODEL_NAME  = os.getenv("TETRIS_LLM_MODEL", "gemini-2.5-flash-image-preview")
-TEMPERATURE = float(os.getenv("TETRIS_LLM_TEMPERATURE", "0.2"))
+# === 모델/온도 환경변수 ===
+chain1_llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-pro",
+    temperature=0.2,
+    api_key=GOOGLE_API_KEY
+)
+chain2_llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.2,
+    api_key=GOOGLE_API_KEY
+)
+chain3_llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-image-preview",
+    temperature=0.2,
+    api_key=GOOGLE_API_KEY
+)
 
-# [LLM] Gemini 2.5 Flash 초기화
-llm = ChatGoogleGenerativeAI(model=MODEL_NAME, temperature=TEMPERATURE, api_key=GOOGLE_API_KEY)
+# [LLM] 모델 초기화 부재함!!!
 
 # ------------------------------------------------ chain ------------------------------------------------
 # chain 1
@@ -100,22 +111,13 @@ def make_chain1_user_input(people_count: int, image_data_url: str) -> List[Human
         HumanMessage(content=[{"type":"image_url","image_url":{"url":image_data_url}}]),
     ]
 
-# [Chain1 정의] 입력(user_input + system) → 출력(chain1_out: JSON 문자열 기대)
-chain_1 = LLMChain(
-    llm=llm,
-    prompt=chain1_prompt,
-    output_key="chain1_out_raw",
-)
-
-# [Chain1 출력 수정] chain1_out에 people 주입 
 def _inject_people_into_json(result_text: str, people_count: int) -> str:
     text = (result_text or "").strip()
     m = re.search(r"```(?:json)?\s*(.*?)```", text, re.S | re.I)
     if m:
         text = m.group(1).strip()
     if not (text.startswith("{") and text.endswith("}")):
-        first = text.find("{")
-        last = text.rfind("}")
+        first = text.find("{"); last = text.rfind("}")
         if first != -1 and last != -1 and first < last:
             text = text[first:last+1]
     try:
@@ -129,27 +131,27 @@ def _inject_people_into_json(result_text: str, people_count: int) -> str:
     except Exception:
         return json.dumps(
             {"people": int(people_count or 0), "raw_model_output": result_text},
-            ensure_ascii=False,
-            indent=2,
+            ensure_ascii=False, indent=2,
         )
 
-def _inject_people_transform(inputs: dict) -> dict:
-    return {
-        "chain1_out": _inject_people_into_json(
-            inputs.get("chain1_out_raw", ""),
-            int(inputs.get("people_count", 0)),
-        )
-    }
-
-inject_people_chain = TransformChain(
-    input_variables=["chain1_out_raw", "people_count"],
-    output_variables=["chain1_out"],
-    transform=_inject_people_transform,
-)
+def _inject_people_value(inputs: dict) -> str:
+    return _inject_people_into_json(
+        inputs.get("chain1_out_raw", ""),
+        int(inputs.get("people_count", 0)),
+    )
 
 # chain 2
-
 # user_input(List[HumanMessage])에서 이미지 메시지 추출 → chain2_image에 전달
+
+_chain2_system = _escape_braces(_read_text(CHAIN2_PROMPT_TXT))
+_chain2_option = _escape_braces(_read_text(CHAIN2_OPTION_TXT))
+chain2_prompt = ChatPromptTemplate.from_messages([
+    ("system", _chain2_system),
+    ("system", _chain2_option),
+    ("human", "{chain1_out}"),
+    MessagesPlaceholder(variable_name="chain2_image"),
+])
+
 def _extract_chain2_image(inputs: dict) -> dict:
     msgs = inputs["user_input"]
     img_msgs = [m for m in msgs if isinstance(m.content, list)]
@@ -157,31 +159,80 @@ def _extract_chain2_image(inputs: dict) -> dict:
         raise ValueError("user_input에 이미지 메시지가 없습니다.")
     return {"chain2_image": [img_msgs[0]]}
 
-prep_chain2_from_user_input = TransformChain(
-    input_variables=["user_input"],
-    output_variables=["chain2_image"],
-    transform=_extract_chain2_image,
-)
+def _chain2_image_value(inputs: dict):
+    return _extract_chain2_image(inputs)["chain2_image"]
 
-# [Chain2 프롬프트] system=chain2_prompt.txt, human={chain1_out}+이미지+chain2_option.txt
-_chain2_system = _escape_braces(_read_text(CHAIN2_PROMPT_TXT))
-_chain2_option = _escape_braces(_read_text(CHAIN2_OPTION_TXT))
-chain2_prompt = ChatPromptTemplate.from_messages([
-    ("system", _chain2_system),
-    ("human", "{chain1_out}"),
-    MessagesPlaceholder(variable_name="chain2_image"),
-    ("human", _chain2_option),
-])
+def _extract_instruction_json(result_text: str) -> str:
+    """
+    chain2_out_raw 전체 응답에서 instruction 딕셔너리만 꺼내
+    {"instruction": { ... }} 형태로 반환.
+    - 배열/콜론 뒤 공백 제거: separators=(",", ":")
+    - 보기 좋게 들여쓰기 2칸 유지: indent=2
+    """
+    text = (result_text or "").strip()
 
-# [Chain2 정의] 입력(chain1_out + 이미지 + option + system) → 출력(chain2_out)
-chain_2 = LLMChain(
-    llm=llm,
-    prompt=chain2_prompt,
-    output_key="chain2_out",
-)
+    # 코드펜스 우선 추출
+    m = re.search(r"```(?:json)?\s*(.*?)```", text, re.S | re.I)
+    if m:
+        text = m.group(1).strip()
+
+    # 바깥 텍스트 섞인 경우 { ... }만 재추출
+    if not (text.startswith("{") and text.endswith("}")):
+        first = text.find("{"); last = text.rfind("}")
+        if first != -1 and last != -1 and first < last:
+            text = text[first:last+1]
+
+    def _wrap(instr_obj: dict) -> str:
+        # 최종 포맷: {"instruction":{ ... }}  (콤마/콜론 뒤 공백 없음)
+        return json.dumps({"instruction": instr_obj}, ensure_ascii=False, indent=2, separators=(",", ":"))
+
+    # 1) 정식 JSON 파싱
+    try:
+        data = json.loads(text)
+
+        # (a) 표준 형태: {"instruction": {...}, ...}
+        if isinstance(data, dict) and "instruction" in data:
+            instr = data["instruction"]
+            # instruction이 dict가 아니면 안전하게 감싼다
+            if isinstance(instr, dict):
+                return _wrap(instr)
+            else:
+                return _wrap({"raw_model_output": instr})
+
+        # (b) 축약형: 최상위가 instruction 내용(= seats 포함)
+        if isinstance(data, dict) and ("seats" in data or "1" in data or "2" in data):
+            return _wrap(data)
+
+        # (c) dict지만 구조가 다른 경우도 래핑하여 반환
+        if isinstance(data, dict):
+            return _wrap(data)
+
+        # dict 아님 → raw 보존
+        return _wrap({"raw_model_output": data})
+
+    except Exception:
+        # 2) 정규식으로 "instruction": {...} 블록만 재시도
+        m2 = re.search(r'"instruction"\s*:\s*(\{.*\})', text, re.S | re.I)
+        if m2:
+            block = m2.group(1)
+            try:
+                instr = json.loads(block)
+                if isinstance(instr, dict):
+                    return _wrap(instr)
+                else:
+                    return _wrap({"raw_model_output": instr})
+            except Exception:
+                pass
+
+        # 실패 시 raw를 instruction으로 감싸서 반환
+        return _wrap({"raw_model_output": result_text})
+
+def _inject_instruction_value(inputs: dict) -> str:
+    """pipeline용: chain2_out_raw -> chain2_out(= {"instruction": {...}})"""
+    return _extract_instruction_json(inputs.get("chain2_out_raw", ""))
+
 
 # chain 3
-
 # [Chain3 프롬프트] system=chain3_system.txt, human=role/env/func/output_format/example + {chain2_out} + query + 이미지
 _chain3_system   = _escape_braces(_read_text(C3_SYSTEM_TXT))
 _chain3_role     = _escape_braces(_read_text(C3_ROLE_TXT))
@@ -203,40 +254,9 @@ chain3_prompt = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="chain3_image"),  # 휴먼: 체인3 레퍼런스 이미지
 ])
 
-# [Chain3 이미지 입력 헬퍼] chain3_prompt_image.png를 data URL로 읽어 HumanMessage 생성
-def make_chain3_image_input() -> List[HumanMessage]:
-    import base64, mimetypes
-    mime, _ = mimetypes.guess_type(str(C3_IMAGE_PNG))
-    if not mime: mime = "image/png"
-    data_url = "data:{};base64,{}".format(mime, base64.b64encode(C3_IMAGE_PNG.read_bytes()).decode("utf-8"))
-    return [HumanMessage(content=[{"type":"image_url","image_url":{"url":data_url}}])]
-
-# Chain3는 고정 PNG 이미지를 항상 부착
-def _attach_chain3_image(_: dict) -> dict:
-    return {"chain3_image": make_chain3_image_input()}
-
-prep_chain3_image = TransformChain(
-    input_variables=[],
-    output_variables=["chain3_image"],
-    transform=_attach_chain3_image,
-)
-
-# [Chain3 정의] 입력(chain2_out + 5문서 + query + 이미지 + system) → 출력(chain3_out)
-chain_3 = LLMChain(
-    llm=llm,
-    prompt=chain3_prompt,
-    output_key="chain3_out",
-)
-
-VERBOSE = os.getenv("TETRIS_VERBOSE", "0") == "1"
 
 # chain 4
-
-# [Chain4 클래스 정의] 
 class chain4:
-    """
-    Task sequence를 16자리 십진수로 변환하는 클래스
-    """
     def __init__(self):
         self.encoding_rules = {
             'disk_rotate': {0: '0000', 90: '0010'},
@@ -246,71 +266,27 @@ class chain4:
             'fold': '0001',
             'unchanged': '0000'
         }
-
     def parse_function_call(self, func_call: str) -> Dict[str, Union[str, int, None]]:
-    
         if not func_call or not isinstance(func_call, str):
             raise ValueError(f"Invalid function call (empty): {func_call}")
-
         s = func_call.strip()
         if not s:
             raise ValueError(f"Invalid function call (blank): {func_call}")
-
-        # 괄호 없는 단일 토큰 (예: 'unchanged')
         if "(" not in s and ")" not in s:
             return {"function": s, "param": None}
-
         m = re.match(r"^\s*(\w+)\s*\(\s*(.*?)\s*\)\s*$", s)
         if not m:
             raise ValueError(f"Invalid function call format: {func_call}")
-
         func_name, arg_str = m.group(1), m.group(2)
         if arg_str == "":
             param = None
         else:
-            # 단일 인자만 지원: '90' / 'M'
             param_raw = arg_str.strip().strip('\'"')
             param = int(param_raw) if param_raw.isdigit() else param_raw
-
         return {"function": func_name, "param": param}
-
-
-    def encode_function(self, function_data: Dict[str, Union[str, int]]) -> str:
-        func_name = function_data['function']
-        param = function_data['param']
-
-        if func_name == 'disk_rotate':
-            if param not in self.encoding_rules['disk_rotate']:
-                raise ValueError(f"Invalid degree value for disk_rotate: {param}")
-            return self.encoding_rules['disk_rotate'][param]
-        
-        elif func_name == 'move_on_rail':
-            if param not in self.encoding_rules['move_on_rail']:
-                raise ValueError(f"Invalid target value for move_on_rail: {param}")
-            return self.encoding_rules['move_on_rail'][param]
-        
-        elif func_name == 'seat_rotate':
-            if param not in self.encoding_rules['seat_rotate']:
-                raise ValueError(f"Invalid degree value for seat_rotate: {param}")
-            return self.encoding_rules['seat_rotate'][param]
-        
-        elif func_name == 'unfold':
-            return self.encoding_rules['unfold']
-        
-        elif func_name == 'fold':
-            return self.encoding_rules['fold']
-        
-        elif func_name == 'unchanged':
-            return self.encoding_rules['unchanged']
-        
-        else:
-            raise ValueError(f"Unknown function: {func_name}")
-
     def process_cell(self, function_calls: Union[str, List[str]]) -> str:
-
         if function_calls is None:
             return "0000"
-
         if isinstance(function_calls, str):
             raw = function_calls.strip()
             if not raw:
@@ -323,18 +299,13 @@ class chain4:
             calls = [str(x).strip() for x in function_calls if str(x).strip()]
         else:
             raise ValueError(f"Cell actions must be list or str, got: {type(function_calls)}")
-
-        # --- 인코딩 ---
         total_sum = 0
         unfold_count = 0
         for func_call in calls:
             parsed = self.parse_function_call(func_call)
-            func_name = parsed["function"]
-            param = parsed["param"]
-
-            # unchanged: 무동작. 현재 정책은 '0000' 인코딩과 동일 효과
+            func_name = parsed["function"]; param = parsed["param"]
             if func_name == "unchanged":
-                encoded_pin = self.encoding_rules["unchanged"]
+                encoded_pin = '0000'
             elif func_name == "disk_rotate":
                 if param not in self.encoding_rules["disk_rotate"]:
                     raise ValueError(f"Invalid degree value for disk_rotate: {param}")
@@ -348,30 +319,18 @@ class chain4:
                     raise ValueError(f"Invalid degree value for seat_rotate: {param}")
                 encoded_pin = self.encoding_rules["seat_rotate"][param]
             elif func_name == "unfold":
-                encoded_pin = self.encoding_rules["unfold"]
-                unfold_count += 1
+                encoded_pin = '0000'; unfold_count += 1
             elif func_name == "fold":
-                encoded_pin = self.encoding_rules["fold"]
+                encoded_pin = '0001'
             else:
                 raise ValueError(f"Unknown function: {func_name}")
-
             total_sum += int(encoded_pin)
-
         final_result = total_sum - unfold_count
         return f"{final_result:04d}"
-
     def convert_to_16_digit(self, task_sequence: Dict[str, Union[str, List[str]]]) -> str:
-    
         if not isinstance(task_sequence, dict):
             raise ValueError(f"task_sequence must be dict, got: {type(task_sequence)}")
-
-        result_parts = []
-        for cell_id in ['1', '2', '3', '4']:
-            seq = task_sequence.get(cell_id, "unchanged")
-            cell_result = self.process_cell(seq)
-            result_parts.append(cell_result)
-        return ''.join(result_parts)
-
+        return ''.join(self.process_cell(task_sequence.get(cell, "unchanged")) for cell in ['1','2','3','4'])
     def convert_from_json_string(self, json_string: str) -> str:
         try:
             data = json.loads(json_string)
@@ -382,7 +341,6 @@ class chain4:
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON format: {e}")
 
-# chain3_out에서 JSON만 안전 추출
 def _extract_json_str_for_chain4(text: str) -> str:
     if not text:
         raise ValueError("chain3_out is empty.")
@@ -411,17 +369,72 @@ def _run_chain4_transform(inputs: dict) -> dict:
         result16 = result16[:16]
     return {"chain4_out": result16}
 
-chain_4 = TransformChain(
-    input_variables=["chain3_out"],
-    output_variables=["chain4_out"],
-    transform=_run_chain4_transform,
+
+# ---------------------- 탭 프린터 (즉시 터미널 출력) ----------------------
+def _tap_print_chain1(d):
+    print("\n=====================chain1_out =====================")
+    print(d.get("chain1_out", ""))
+    print(f"\n🕒 chain1_run_time: {d.get('chain1_run_time', 0.0):.3f}s")
+    return ""
+
+def _tap_print_chain2(d):
+    print("\n=====================chain2_out =====================")
+    print(d.get("chain2_out_raw", ""))
+    print(f"\n🕒 chain2_run_time: {d.get('chain2_run_time', 0.0):.3f}s")
+    return ""
+
+def _tap_print_chain3(d):
+    print("\n=====================chain3_out =====================")
+    print(d.get("chain3_out", ""))
+    print(f"\n🕒 chain3_run_time: {d.get('chain3_run_time', 0.0):.3f}s")
+    return ""
+
+def _tap_print_chain4(d):
+    print("\n=====================chain4_out =====================")
+    print(d.get("chain4_out", ""))
+    return ""
+
+# =============================== LCEL 파이프라인 ===============================
+_pipeline = (
+    RunnablePassthrough()
+
+    # --- chain1 ---
+    .assign(_t1_start=RunnableLambda(lambda _: perf_counter()))
+    .assign(chain1_out_raw=(chain1_prompt | chain1_llm | StrOutputParser()))
+    .assign(chain1_out=RunnableLambda(_inject_people_value))
+    .assign(chain1_run_time=RunnableLambda(lambda d: perf_counter() - d["_t1_start"]))
+    .assign(_tap1=RunnableLambda(_tap_print_chain1))
+
+    # --- chain2 ---
+    .assign(chain2_image=RunnableLambda(_chain2_image_value))
+    .assign(_t2_start=RunnableLambda(lambda _: perf_counter()))
+    .assign(chain2_out_raw=(chain2_prompt | chain2_llm | StrOutputParser()))
+    .assign(chain2_out=RunnableLambda(_inject_instruction_value))
+    .assign(chain2_run_time=RunnableLambda(lambda d: perf_counter() - d["_t2_start"]))
+    .assign(_tap2=RunnableLambda(_tap_print_chain2))
+
+    # --- chain3 ---
+    .assign(_t3_start=RunnableLambda(lambda _: perf_counter()))
+    .assign(chain3_out=(chain3_prompt | chain3_llm | StrOutputParser()))
+    .assign(chain3_run_time=RunnableLambda(lambda d: perf_counter() - d["_t3_start"]))
+    .assign(_tap3=RunnableLambda(_tap_print_chain3))
+
+    # --- chain4 (변환) ---
+    .assign(chain4_out=RunnableLambda(lambda d: _run_chain4_transform(d)["chain4_out"]))
+    .assign(_tap4=RunnableLambda(_tap_print_chain4))
 )
 
-seq_chain = SequentialChain(
-    chains=[chain_1, inject_people_chain, prep_chain2_from_user_input, chain_2, prep_chain3_image, chain_3, chain_4],
-    input_variables=["user_input", "people_count"],
-    output_variables=["chain1_out", "chain2_out", "chain3_out", "chain4_out"],
-    verbose=VERBOSE,
-)
+def _select_outputs(d: dict) -> dict:
+    return {
+        "chain1_out": d.get("chain1_out", ""),
+        "chain2_out": d.get("chain2_out", ""),           # {"instruction":{...}}
+        "chain3_out": d.get("chain3_out", ""),
+        "chain4_out": d.get("chain4_out", ""),
+        "chain1_run_time": d.get("chain1_run_time", 0.0),
+        "chain2_run_time": d.get("chain2_run_time", 0.0),
+        "chain3_run_time": d.get("chain3_run_time", 0.0),
+        "chain2_out_raw": d.get("chain2_out_raw", ""),   # 원문(로그용)
+    }
 
+tetris_chain = _pipeline | RunnableLambda(_select_outputs)
 
