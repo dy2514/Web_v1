@@ -1,14 +1,14 @@
 # main_chain.py
 
-import json, os, re
+import os, json, re
 from pathlib import Path
-from typing import Dict, List, Union
-
+from typing import List, Dict, Union
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import HumanMessage
+from time import perf_counter
 
 # [경로/키] __file__ 기준 상대경로와 GOOGLE_API_KEY 확보
 ROOT = Path(__file__).resolve().parent                        # .../AIRL_ATM/SW/tetris/main_chain
@@ -73,7 +73,7 @@ if not GOOGLE_API_KEY and SECRETS_JSON.exists():
     GOOGLE_API_KEY = json.loads(_read_text(SECRETS_JSON))["google"]["GOOGLE_API_KEY"]
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 if not GOOGLE_API_KEY:
-    raise RuntimeError("GOOGLE_API_KEY가 설정되어야 합니다(환경변수 또는 tetris_secrets.json).")
+    raise RuntimeError("GOOGLE_API_KEY가 설정되어야 합니다.")
 
 # === 모델/온도 환경변수 ===
 chain1_llm = ChatGoogleGenerativeAI(
@@ -243,15 +243,14 @@ _chain3_example  = _escape_braces(_read_text(C3_EXAMPLE_TXT))
 _chain3_query    = _escape_braces(_read_text(C3_QUERY_TXT))
 
 chain3_prompt = ChatPromptTemplate.from_messages([
-    ("system", _chain3_system),      # 시스템: 체인3 전역 규칙
-    ("human",  _chain3_role),        # 휴먼: 역할 설명
-    ("human",  _chain3_env),         # 휴먼: 환경 정의
-    ("human",  _chain3_func),        # 휴먼: 기능/규칙
-    ("human",  _chain3_outfmt),      # 휴먼: 출력 포맷
-    ("human",  _chain3_example),     # 휴먼: 예시
-    ("human",  "{chain2_out}"),      # 휴먼: 체인2 출력(instruction JSON)
-    ("human",  _chain3_query),       # 휴먼: 체인3 쿼리
-    MessagesPlaceholder(variable_name="chain3_image"),  # 휴먼: 체인3 레퍼런스 이미지
+    ("system", _chain3_system),
+    ("human",  _chain3_role),
+    ("human",  _chain3_env),
+    ("human",  _chain3_func),
+    ("human",  _chain3_outfmt),
+    ("human",  _chain3_example),
+    ("human",  "{chain2_out}"),
+    ("human",  _chain3_query),
 ])
 
 
