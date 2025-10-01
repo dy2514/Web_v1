@@ -524,6 +524,7 @@ _pipeline = (
     # --- chain3 ---
     .assign(_t3_start=RunnableLambda(lambda _: perf_counter()))
     .assign(chain3_run_time=RunnableLambda(lambda d: perf_counter() - d["_t3_start"]))
+    .assign(chain3_out=(chain3_prompt | chain3_llm | StrOutputParser()))
     #.assign(_tap3=RunnableLambda(_tap_print_chain3))
     .assign(_save3=RunnableLambda(_tap_save_chain3))  # 상태 저장 추가
 
