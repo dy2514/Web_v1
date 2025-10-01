@@ -38,6 +38,66 @@ function getCurrentStepMessage(step) {
     return messages[step] || "분석을 시작하고 있습니다";
 }
 
+// 다음 단계로 이동
+function moveToNextStep(completedStep) {
+    console.log(`✅ ${completedStep}단계 완료 - 다음 단계로 이동`);
+    
+    // 다음 단계 계산
+    const nextStep = completedStep + 1;
+    
+    // 3단계 완료 후 분석 완료 처리
+    if (completedStep >= 3) {
+        console.log('📊 3단계 완료 - 분석 완료 처리');
+        currentStep = 5;  // 완료 상태
+        
+        // 100% 및 완료 메시지 표시
+        updateProgress(100, 5);
+        document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
+        
+        // 모든 단계 아이콘을 성공 상태로 업데이트
+        updateAllStepIconsToSuccess();
+        
+        // 분석 결과 적용 버튼 활성화
+        showResultButton();
+        
+        // 상세 패널이 열려있다면 동기화
+        if (detailPanelOpen) {
+            refreshDetailTimeline();
+            syncDetailProgressCard();
+        }
+        
+        return;
+    }
+    
+    // 현재 단계 업데이트
+    currentStep = nextStep;
+    
+    // 진행률 및 메시지 업데이트
+    let progress;
+    switch(nextStep) {
+        case 2:
+            progress = 50;
+            break;
+        case 3:
+            progress = 75;
+            break;
+        default:
+            progress = progressValue;
+    }
+    
+    console.log(`📊 다음 단계로 이동: ${nextStep}단계 (${progress}%)`);
+    
+    // UI 업데이트
+    updateProgress(progress, nextStep);
+    document.getElementById('progressText').innerHTML = getAnimatedMessage(nextStep);
+    
+    // 상세 패널이 열려있다면 타임라인 및 메시지 동기화
+    if (detailPanelOpen) {
+        refreshDetailTimeline();
+        syncDetailProgressCard();
+    }
+}
+
 // 점 애니메이션이 적용된 메시지 생성
 function getAnimatedMessage(step) {
     const baseMessage = getCurrentStepMessage(step);
@@ -176,29 +236,13 @@ function updateProgress(percentage, serverStep = null) {
     if (typeof percentage === 'number') {
         progressValue = Math.max(progressValue || 0, percentage);
         
-        // 현재 진행률에서 95%까지의 애니메이션 처리 (3단계에서만)
-        if (progressValue > 75 && progressValue < 95 && serverStep === 3) {
-            animateProgressTo95();
-        } else if (progressValue >= 95 && progressValue < 100) {
-            animateCompletionProgress();
-        } else if (progressValue >= 100) {
-            // 100% 도달 시 즉시 업데이트
-            document.getElementById('progressPercentage').textContent = '100%';
-            updateProgressBar(100);
-            
-            if (detailPanelOpen) {
-                const dp = document.getElementById('detailProgressPercentage');
-                if (dp) dp.textContent = '100%';
-            }
-        } else {
-            // 일반적인 진행률 업데이트
-            document.getElementById('progressPercentage').textContent = progressValue + '%';
-            updateProgressBar(progressValue);
-            
-            if (detailPanelOpen) {
-                const dp = document.getElementById('detailProgressPercentage');
-                if (dp) dp.textContent = progressValue + '%';
-            }
+        // 일반적인 진행률 업데이트
+        document.getElementById('progressPercentage').textContent = progressValue + '%';
+        updateProgressBar(progressValue);
+        
+        if (detailPanelOpen) {
+            const dp = document.getElementById('detailProgressPercentage');
+            if (dp) dp.textContent = progressValue + '%';
         }
     }
     
@@ -305,10 +349,10 @@ async function handleStatusData(statusData) {
                         progress = 50;
                         break;
                     case 3:
-                        progress = 75; // 3단계에서 75%부터 시작
+                        progress = 75;
                         break;
                     case 5:
-                        progress = 95; // 분석 완료 시 95%에서 애니메이션 시작
+                        progress = 100;
                         break;
                     default:
                         progress = 0;
@@ -344,17 +388,20 @@ async function handleStatusData(statusData) {
 
                 // 가공된 결과 우선 표시
                 if (pr.chain1_out && !shownSteps[1]) {
-                    displayProcessedStepResult(1, pr.chain1_out);
+                    await displayProcessedStepResult(1, pr.chain1_out);
                     shownSteps[1] = true;
                 }
                 if (pr.chain2_out && !shownSteps[2]) {
-                    displayProcessedStepResult(2, pr.chain2_out);
+                    await displayProcessedStepResult(2, pr.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (pr.chain3_out && pr.chain4_out && !shownSteps[3]) {
-                    pr.chain3_out = safeJsonParse(pr.chain3_out)
-                    pr.chain3_out.placement_code = pr.chain4_out;
-                    displayProcessedStepResult(3, pr.chain3_out);
+                if (pr.chain3_out && !shownSteps[3]) {
+                    // 3단계 결과가 있으면 바로 표시
+                    pr.chain3_out = safeJsonParse(pr.chain3_out);
+                    if (pr.chain4_out) {
+                        pr.chain3_out.placement_code = pr.chain4_out;
+                    }
+                    await displayProcessedStepResult(3, pr.chain3_out);
                     shownSteps[3] = true;
                 }
 
@@ -367,9 +414,12 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, ar.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (ar.chain3_out && ar.chain4_out && !shownSteps[3]) {
-                    ar.chain3_out = safeJsonParse(ar.chain3_out)
-                    ar.chain3_out.placement_code = ar.chain4_out;
+                if (ar.chain3_out && !shownSteps[3]) {
+                    // 3단계 결과가 있으면 바로 표시
+                    ar.chain3_out = safeJsonParse(ar.chain3_out);
+                    if (ar.chain4_out) {
+                        ar.chain3_out.placement_code = ar.chain4_out;
+                    }
                     await displayStepResult(3, ar.chain3_out);
                     shownSteps[3] = true;
                 }
@@ -383,9 +433,12 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, statusData.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (statusData.chain3_out && statusData.chain4_out && !shownSteps[3]) {
-                    statusData.chain3_out = safeJsonParse(statusData.chain3_out)
-                    statusData.chain3_out.placement_code = statusData.chain4_out;
+                if (statusData.chain3_out && !shownSteps[3]) {
+                    // 3단계 결과가 있으면 바로 표시
+                    statusData.chain3_out = safeJsonParse(statusData.chain3_out);
+                    if (statusData.chain4_out) {
+                        statusData.chain3_out.placement_code = statusData.chain4_out;
+                    }
                     await displayStepResult(3, statusData.chain3_out);
                     shownSteps[3] = true;
                 }
@@ -397,7 +450,7 @@ async function handleStatusData(statusData) {
             const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
             if (currentStep >= 5 && hasStep4Output) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
-                updateProgress(95, 5); // 95%에서 애니메이션 시작
+                updateProgress(100, 5); // 100% 즉시 표시
                 document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                 showResultButton(); // 분석 완료 시 버튼 활성화
                 // 모든 단계 아이콘을 성공 상태로 업데이트
@@ -413,7 +466,7 @@ async function handleStatusData(statusData) {
                 if (doneWaitCount >= 5) {
                     console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
-                    updateProgress(95, 5); // 95%에서 애니메이션 시작
+                    updateProgress(100, 5); // 100% 즉시 표시
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
@@ -832,7 +885,8 @@ function updateStepIcon(stepNumber) {
     // 기존 클래스 제거
     iconElement.classList.remove('info', 'warning', 'success', 'error');
     
-    if (currentStep > stepNumber) {
+    // 분석 완료 시 (currentStep >= 5) 모든 아이콘을 성공으로 표시
+    if (currentStep >= 5 || currentStep > stepNumber) {
         // 완료된 단계 - 성공 아이콘 (초록색 체크)
         iconElement.classList.add('success');
         iconElement.innerHTML = `
@@ -893,41 +947,51 @@ async function updateStepResults(resultData) {
         await displayStepResult(2, resultData.chain2_out);
     }
     
-    // 3단계: 시트 동작 계획 결과
-    if (resultData.chain3_out && resultData.chain4_out) {
+    // 3단계: 시트 동작 계획 결과 (chain4_out 없이도 표시)
+    if (resultData.chain3_out) {
         console.log('3단계 결과 발견:', resultData.chain3_out);
-        console.log('4단계 결과 발견:', resultData.chain4_out);
-        resultData.chain3_out.placement_code = resultData.chain4_out;
+        resultData.chain3_out = safeJsonParse(resultData.chain3_out);
+        if (resultData.chain4_out) {
+            console.log('4단계 결과 발견:', resultData.chain4_out);
+            resultData.chain3_out.placement_code = resultData.chain4_out;
+        }
         await displayStepResult(3, resultData.chain3_out);
     }
 }
 
+// 가공된 결과를 화면에 표시 (displayStepResult와 동일하게 처리)
+async function displayProcessedStepResult(stepNumber, resultData) {
+    console.log(`🎯 displayProcessedStepResult 호출됨: 단계 ${stepNumber}, 데이터:`, resultData);
+    // displayStepResult와 동일하게 처리
+    await displayStepResult(stepNumber, resultData);
+}
+
 // 가공된 단계별 분석 결과 업데이트
-function updateProcessedStepResults(processedResults) {
+async function updateProcessedStepResults(processedResults) {
     console.log('updateProcessedStepResults 호출됨:', processedResults);
     
     // 1단계: 사용자 입력 분석 결과
     if (processedResults.chain1_out) {
         console.log('가공된 1단계 결과 발견:', processedResults.chain1_out);
-        displayProcessedStepResult(1, processedResults.chain1_out);
+        await displayProcessedStepResult(1, processedResults.chain1_out);
     }
     
     // 2단계: 최적 배치 생성 결과
     if (processedResults.chain2_out) {
         console.log('가공된 2단계 결과 발견:', processedResults.chain2_out);
-        displayProcessedStepResult(2, processedResults.chain2_out);
+        await displayProcessedStepResult(2, processedResults.chain2_out);
     }
     
     // 3단계: 시트 동작 계획 결과
     if (processedResults.chain3_out) {
         console.log('가공된 3단계 결과 발견:', processedResults.chain3_out);
-        displayProcessedStepResult(3, processedResults.chain3_out);
+        await displayProcessedStepResult(3, processedResults.chain3_out);
     }
     
     // 4단계: 최적 배치 생성 결과
     if (processedResults.chain4_out) {
         console.log('가공된 4단계 결과 발견:', processedResults.chain4_out);
-        displayProcessedStepResult(4, processedResults.chain4_out);
+        await displayProcessedStepResult(4, processedResults.chain4_out);
     }
 }
 
@@ -1014,6 +1078,9 @@ async function displayStepResult(stepNumber, resultData) {
     showStepCompletionText(stepNumber, resultData);
     
     console.log(`가공된 단계 ${stepNumber} 결과 표시 완료`);
+    
+    // 현재 단계 완료 후 다음 단계로 진행
+    moveToNextStep(stepNumber);
 }
 
 // 단계별 완료 텍스트 표시
@@ -1223,9 +1290,15 @@ async function formatStepResult(stepNumber, resultData) {
                     <img src="/static/images/options/option2.png" alt="시트 동작 계획" class="analysis-image"></div>
                     <p>📋 작업 순서</p>
                     <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
-                    <p>🎯 최적 배치 코드: ${chain3Data.placement_code}</p>
-                    <p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                 `;
+                
+                // placement_code가 있을 때만 표시
+                if (chain3Data.placement_code) {
+                    formattedResult += `
+                        <p>🎯 최적 배치 코드: ${chain3Data.placement_code}</p>
+                        <p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
+                    `;
+                }
                 break;
                 
             default:
@@ -1316,6 +1389,7 @@ function initializeAccordions() {
 
 // 초기 아이콘 상태 설정
 function initializeStepIcons() {
+    // 1단계는 진행 중으로, 나머지는 대기 중으로 설정
     for (let i = 1; i <= 4; i++) {
         updateStepIcon(i);
     }
@@ -1363,13 +1437,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('[진입] Progress 페이지 진입');
     
     // 클라이언트 측 상태 강제 초기화
-    currentStep = 0;
-    progressValue = 0;
+    currentStep = 1;  // 1단계부터 시작
+    progressValue = 25;  // 25%부터 시작
     doneWaitCount = 0;
 
-    // 초기 상태 설정
-    updateProgress(0);
+    // 초기 상태 설정 (25%로 시작)
+    updateProgress(25, 1);
     // updateStepDisplay();
+    
+    // 초기 메시지 설정
+    document.getElementById('progressText').innerHTML = getAnimatedMessage(1);
     
     // 초기에는 버튼 비활성화
     disableResultButton();
