@@ -395,7 +395,7 @@ async function handleStatusData(statusData) {
                     await displayProcessedStepResult(2, pr.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (pr.chain3_out && !shownSteps[3]) {
+                if (pr.chain4_out && pr.chain3_out && !shownSteps[3]) {
                     // 3단계 결과가 있으면 바로 표시
                     pr.chain3_out = safeJsonParse(pr.chain3_out);
                     if (pr.chain4_out) {
@@ -414,7 +414,7 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, ar.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (ar.chain3_out && !shownSteps[3]) {
+                if (ar.chain4_out && ar.chain3_out && !shownSteps[3]) {
                     // 3단계 결과가 있으면 바로 표시
                     ar.chain3_out = safeJsonParse(ar.chain3_out);
                     if (ar.chain4_out) {
@@ -433,7 +433,7 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, statusData.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (statusData.chain3_out && !shownSteps[3]) {
+                if (statusData.chain4_out && statusData.chain3_out && !shownSteps[3]) {
                     // 3단계 결과가 있으면 바로 표시
                     statusData.chain3_out = safeJsonParse(statusData.chain3_out);
                     if (statusData.chain4_out) {
