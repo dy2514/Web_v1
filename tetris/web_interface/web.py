@@ -34,10 +34,11 @@ app = Flask(__name__,
 app.config['SECRET_KEY'] = config['web']['SECRET_KEY']
 
 # Blueprint 등록 - 단순화된 import
-from control import control_bp
+from control import control_bp, api_bp
 from user import user_bp
 
 app.register_blueprint(control_bp)
+app.register_blueprint(api_bp)
 app.register_blueprint(user_bp)
 
 # 네트워크 접근 제어 미들웨어

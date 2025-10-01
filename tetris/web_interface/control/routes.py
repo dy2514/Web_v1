@@ -45,7 +45,7 @@ analysis_abort_controllers = {}  # 분석 AbortController 관리
 
 
 # Blueprint import
-from . import control_bp
+from . import control_bp, api_bp
 
 # 서버 URL 생성 함수
 def _server_url():
@@ -160,7 +160,7 @@ def desktop_control():
                          mobile_url="http://192.168.1.100:5002/mobile/input")
 
 
-@control_bp.route('/api/status')
+@api_bp.route('/status')
 def get_status():
     """시스템 상태 조회 API (폴링용)"""
     status_data = get_global_status().copy()
@@ -206,7 +206,7 @@ def get_status():
         'data': status_data
     })
 
-@control_bp.route('/api/status_stream')
+@api_bp.route('/status_stream')
 def status_stream():
     """전역 상태 SSE 스트림 (모바일용)"""
     def generate():
@@ -317,7 +317,7 @@ def status_stream():
         }
     )
 
-@control_bp.route('/api/progress_stream')
+@api_bp.route('/progress_stream')
 def progress_stream():
     """진행 상태 SSE 스트림 (하이브리드 방식)"""
     session_id = request.args.get('session_id')
@@ -365,7 +365,7 @@ def progress_stream():
         }
     )
 
-@control_bp.route('/api/start_processing', methods=['POST'])
+@api_bp.route('/start_processing', methods=['POST'])
 def start_processing():
     """AI 처리 시작 (HTTP API + SSE 하이브리드)"""
     try:
@@ -413,7 +413,7 @@ def start_processing():
         logger.error(f"처리 시작 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@control_bp.route('/api/reset', methods=['POST'])
+@api_bp.route('/reset', methods=['POST'])
 def reset_system():
     """시스템 초기화 및 분석 중지"""
     try:
@@ -477,7 +477,7 @@ def reset_system():
         }), 500
 
 # 새로운 HTTP API 엔드포인트들
-@control_bp.route('/api/join_session', methods=['POST'])
+@api_bp.route('/join_session', methods=['POST'])
 def join_session():
     """세션 참여 (HTTP API)"""
     try:
@@ -501,7 +501,7 @@ def join_session():
         logger.error(f"세션 참여 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@control_bp.route('/api/sessions', methods=['GET'])
+@api_bp.route('/sessions', methods=['GET'])
 def get_sessions():
     """활성 세션 목록 조회 (HTTP API)"""
     try:
@@ -514,7 +514,7 @@ def get_sessions():
         logger.error(f"세션 목록 조회 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@control_bp.route('/api/session/<session_id>/progress', methods=['GET'])
+@api_bp.route('/session/<session_id>/progress', methods=['GET'])
 def get_session_progress_api(session_id):
     """특정 세션의 진행 상태 조회 (HTTP API)"""
     try:
@@ -530,7 +530,7 @@ def get_session_progress_api(session_id):
         logger.error(f"세션 진행 상태 조회 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@control_bp.route('/api/trigger_hardware', methods=['POST'])
+@api_bp.route('/trigger_hardware', methods=['POST'])
 def trigger_hardware():
     """하드웨어 제어 (HTTP API) - 배치 코드 처리"""
     try:
@@ -672,7 +672,7 @@ def qr_png():
         return jsonify({'error': 'QR 코드 생성 실패'}), 500
 
 
-@control_bp.route('/api/step_analysis', methods=['POST'])
+@api_bp.route('/step_analysis', methods=['POST'])
 def start_step_analysis():
     """단계별 AI 분석 시작"""
     try:
