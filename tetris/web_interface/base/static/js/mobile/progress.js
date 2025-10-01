@@ -45,8 +45,18 @@ function moveToNextStep(completedStep) {
     // 다음 단계 계산
     const nextStep = completedStep + 1;
     
+    // 이미 더 높은 단계에 있다면 후퇴하지 않음
+    if (nextStep <= currentStep && completedStep < 3) {
+        return;
+    }
+    
     // 3단계 완료 후 분석 완료 처리
     if (completedStep >= 3) {
+        // 이미 완료 상태라면 중복 처리 방지
+        if (currentStep >= 5) {
+            return;
+        }
+        
         console.log('📊 3단계 완료 - 분석 완료 처리');
         currentStep = 5;  // 완료 상태
         
@@ -1279,9 +1289,13 @@ async function formatStepResult(stepNumber, resultData) {
                 for (let seq in chain3Data.task_sequence) {
                     let taskSequenceDataArray = chain3Data.task_sequence[seq];
                     let tabletaskSequenceData = '';
-                    taskSequenceDataArray.forEach((data, index) => {
-                        tabletaskSequenceData += `${data}${index !== taskSequenceDataArray.length - 1 ? ' → ' : ''}`;
-                    });
+                    if (taskSequenceDataArray instanceof Array) {
+                        taskSequenceDataArray.forEach((data, index) => {
+                            tabletaskSequenceData += `${data}${index !== taskSequenceDataArray.length - 1 ? ' → ' : ''}`;
+                        });
+                    } else {
+                        tabletaskSequenceData += `${taskSequenceDataArray}`;
+                    }
                     taskSequenceTableRows += `<li>${tabletaskSequenceData}</li>`;
                 }
 
