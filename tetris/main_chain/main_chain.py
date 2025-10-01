@@ -3,12 +3,14 @@
 import os, json, re
 from pathlib import Path
 from typing import List, Dict, Union
+from time import perf_counter
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import HumanMessage
-from time import perf_counter
+
 
 # [경로/키] __file__ 기준 상대경로와 GOOGLE_API_KEY 확보
 ROOT = Path(__file__).resolve().parent                        # .../AIRL_ATM/SW/tetris/main_chain
@@ -24,12 +26,12 @@ SECRETS_JSON = config['ai']['SECRETS_JSON']
 #[Chain1 경로]
 CHAIN1_PROMPT_TXT = ROOT / "chain1_prompt" / "chain1_prompt.txt"
 
-# [Chain2 경로] __file__ 기준: ./chain2_prompt/{chain2_prompt.txt, chain2_option.txt}
+# [Chain2 경로]
 CHAIN2_PROMPT_DIR = ROOT / "chain2_prompt"
 CHAIN2_PROMPT_TXT = CHAIN2_PROMPT_DIR / "chain2_prompt.txt"
 CHAIN2_OPTION_TXT = CHAIN2_PROMPT_DIR / "chain2_option.txt"
 
-# [Chain3 경로] __file__ 기준: ./chain3_prompt/<파일>
+# [Chain3 경로]
 CHAIN3_DIR              = ROOT / "chain3_prompt"
 C3_SYSTEM_TXT           = CHAIN3_DIR / "chain3_system.txt"
 C3_QUERY_TXT            = CHAIN3_DIR / "chain3_query.txt"
@@ -38,7 +40,6 @@ C3_ENV_TXT              = CHAIN3_DIR / "chain3_prompt_environment.txt"
 C3_FUNC_TXT             = CHAIN3_DIR /  "chain3_prompt_function.txt"
 C3_OUTFMT_TXT           = CHAIN3_DIR / "chain3_prompt_output_format.txt"
 C3_EXAMPLE_TXT          = CHAIN3_DIR / "chain3_prompt_example.txt"
-C3_IMAGE_PNG            = CHAIN3_DIR / "chain3_prompt_image.png"
 
 def _read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8")
@@ -47,7 +48,6 @@ def _escape_braces(s: str) -> str:
     s = s.replace("{{","__O__").replace("}}","__C__").replace("{","{{").replace("}","}}")
     return s.replace("__O__","{{").replace("__C__","}}")
 
-# === 리소스 존재 fail-fast ===
 def _require_exists(p: Path, label: str):
     if not p.exists():
         raise FileNotFoundError(f"{label} 누락: {p}")
@@ -141,8 +141,6 @@ def _inject_people_value(inputs: dict) -> str:
     )
 
 # chain 2
-# user_input(List[HumanMessage])에서 이미지 메시지 추출 → chain2_image에 전달
-
 _chain2_system = _escape_braces(_read_text(CHAIN2_PROMPT_TXT))
 _chain2_option = _escape_braces(_read_text(CHAIN2_OPTION_TXT))
 chain2_prompt = ChatPromptTemplate.from_messages([
@@ -366,40 +364,6 @@ def _extract_json_str_for_chain4(text: str) -> str:
 
 _chain4_converter = chain4()
 
-def _run_chain3_with_retry(inputs: dict) -> str:
-    """Chain3 실행 시 빈 응답에 대한 재시도 로직"""
-    max_retries = 3
-    
-    for attempt in range(max_retries):
-        try:
-            # Chain3 실행
-            result = (chain3_prompt | chain3_llm | StrOutputParser()).invoke(inputs)
-            
-            # 빈 응답 체크
-            if result and result.strip():
-                print(f"[성공] Chain3 실행 성공 (시도 {attempt + 1})")
-                return result
-            else:
-                print(f"[경고] Chain3 빈 응답 (시도 {attempt + 1}/{max_retries})")
-                if attempt < max_retries - 1:
-                    print(f"[재시도] Chain3 재시도 중... ({attempt + 2}/{max_retries})")
-                    continue
-                else:
-                    print("[폴백] Chain3 최대 재시도 초과, 기본 응답 사용")
-                    return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
-                    
-        except Exception as e:
-            print(f"[오류] Chain3 실행 실패 (시도 {attempt + 1}): {e}")
-            if attempt < max_retries - 1:
-                print(f"[재시도] Chain3 재시도 중... ({attempt + 2}/{max_retries})")
-                continue
-            else:
-                print("[폴백] Chain3 최대 재시도 초과, 기본 응답 사용")
-                return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
-    
-    # 최종 폴백
-    return '{"task_sequence": {"1": "unchanged", "2": "unchanged", "3": "unchanged", "4": "unchanged"}}'
-
 def _run_chain4_transform(inputs: dict) -> dict:
     raw = inputs.get("chain3_out", "")
     json_str = _extract_json_str_for_chain4(raw)
@@ -415,6 +379,7 @@ def _run_chain4_transform(inputs: dict) -> dict:
 
 
 # ---------------------- 탭 프린터 (즉시 터미널 출력) ----------------------
+'''
 def _tap_print_chain1(d):
     print("\n=====================chain1_out =====================")
     print(d.get("chain1_out", ""))
@@ -437,6 +402,7 @@ def _tap_print_chain4(d):
     print("\n=====================chain4_out =====================")
     print(d.get("chain4_out", ""))
     return ""
+'''
 
 # ---------------------- 상태 저장 함수들 (진행률 콜백 포함) ----------------------
 def _tap_save_chain1(d):
@@ -543,7 +509,7 @@ _pipeline = (
     .assign(chain1_out_raw=(chain1_prompt | chain1_llm | StrOutputParser()))
     .assign(chain1_out=RunnableLambda(_inject_people_value))
     .assign(chain1_run_time=RunnableLambda(lambda d: perf_counter() - d["_t1_start"]))
-    .assign(_tap1=RunnableLambda(_tap_print_chain1))
+    #.assign(_tap1=RunnableLambda(_tap_print_chain1))
     .assign(_save1=RunnableLambda(_tap_save_chain1))  # 상태 저장 추가
 
     # --- chain2 ---
@@ -552,19 +518,18 @@ _pipeline = (
     .assign(chain2_out_raw=(chain2_prompt | chain2_llm | StrOutputParser()))
     .assign(chain2_out=RunnableLambda(_inject_instruction_value))
     .assign(chain2_run_time=RunnableLambda(lambda d: perf_counter() - d["_t2_start"]))
-    .assign(_tap2=RunnableLambda(_tap_print_chain2))
+    #.assign(_tap2=RunnableLambda(_tap_print_chain2))
     .assign(_save2=RunnableLambda(_tap_save_chain2))  # 상태 저장 추가
 
     # --- chain3 ---
     .assign(_t3_start=RunnableLambda(lambda _: perf_counter()))
-    .assign(chain3_out=RunnableLambda(lambda d: _run_chain3_with_retry(d)))
     .assign(chain3_run_time=RunnableLambda(lambda d: perf_counter() - d["_t3_start"]))
-    .assign(_tap3=RunnableLambda(_tap_print_chain3))
+    #.assign(_tap3=RunnableLambda(_tap_print_chain3))
     .assign(_save3=RunnableLambda(_tap_save_chain3))  # 상태 저장 추가
 
     # --- chain4 (변환) ---
     .assign(chain4_out=RunnableLambda(lambda d: _run_chain4_transform(d)["chain4_out"]))
-    .assign(_tap4=RunnableLambda(_tap_print_chain4))
+    #.assign(_tap4=RunnableLambda(_tap_print_chain4))
     .assign(_save4=RunnableLambda(_tap_save_chain4))  # 상태 저장 추가
 )
 
