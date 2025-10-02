@@ -219,7 +219,7 @@ function showLoadingState() {
     const startButton = document.querySelector('.start-button');
     if (startButton) {
         const originalText = startButton.innerHTML;
-        startButton.innerHTML = '<span class="loading-spinner"></span> 시작 중...';
+        startButton.innerHTML = '<span class="loading-spinner"></span> <span class="button-text">시작 중...</span>';
         startButton.disabled = true;
         
         // 스피너 스타일 추가
