@@ -43,171 +43,29 @@
 
         <div class="divider" aria-hidden="true"></div>
 
-        <div class="section-head" style="margin-top:0">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 7l9-4 9 4-9 4-9-4zm0 4l9 4 9-4v7l-9 4-9-4v-7z" fill="#9ca3af"/>
-            </svg>
-            <h3 class="section-title">어떤 짐을 가지고 가시나요?</h3>
+        <div id="photoBoxContainer" style="display: none;">
+            <div class="section-head" style="margin-top:0">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 7l9-4 9 4-9 4-9-4zm0 4l9 4 9-4v7l-9 4-9-4v-7z" fill="#9ca3af"/>
+                </svg>
+                <h3 class="section-title">어떤 짐을 가지고 가시나요?</h3>
+            </div>
+    
+            <div class="photo-box" aria-label="사진 촬영 영역">
+                <img id="photo-preview" alt="업로드된 사진 미리보기">
+                <input id="photo" type="file" accept="image/*" capture="environment">
+                <label id="btnPhotoIn" for="photo">
+                    <img src="/static/images/add_photo_alternate.svg" alt="사진 추가 아이콘" class="photo-icon">
+                    <p>사진 등록하기</p>
+                </label>
+            </div>
         </div>
 
-        <div class="photo-box" aria-label="사진 촬영 영역">
-            <img id="photo-preview" alt="업로드된 사진 미리보기">
-            <input id="photo" type="file" accept="image/*" capture="environment">
-            <label id="btnPhotoIn" for="photo">
-                <img src="/static/images/add_photo_alternate.svg" alt="사진 추가 아이콘" class="photo-icon">
-                <p>사진 등록하기</p>
-            </label>
-        </div>
-
-        <button id="submit" class="cta" disabled>최적 배치 시작</button>
+        <button id="submit" class="cta" disabled style="display: none;">최적 배치 시작</button>
         <p id="note" class="sr-only" aria-live="polite"></p>
-        
-        <!-- 진행률 표시 영역 -->
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-header">
-                <h3 class="progress-title">AI 분석 진행 중</h3>
-                <p class="progress-subtitle">최적의 차량 배치를 설계하고 있습니다</p>
-            </div>
-            
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBarFill"></div>
-            </div>
-            
-            <div class="progress-percentage" id="progressPercentage">0%</div>
-            
-            <div class="progress-steps">
-                <!-- 1단계: 사용자 입력 분석 -->
-                <div class="progress-step" id="step1">
-                    <div class="step-icon pending">1</div>
-                    <div class="step-text">사용자 입력 분석 중</div>
-                    <div class="step-toggle" style="display: none;">▼</div>
-                </div>
-                <div class="progress-step-detail" id="step1-detail">
-                    <div class="step-detail-content" id="step1-data">
-                        <p>이미지를 분석하고 있습니다...</p>
-                    </div>
-                </div>
-                
-                <!-- 2단계: 최적 배치 생성 -->
-                <div class="progress-step" id="step2">
-                    <div class="step-icon pending">2</div>
-                    <div class="step-text">최적 배치 생성</div>
-                    <div class="step-toggle" style="display: none;">▼</div>
-                </div>
-                <div class="progress-step-detail" id="step2-detail">
-                    <div class="step-detail-content" id="step2-data">
-                        <p>짐을 인식하고 분류하고 있습니다...</p>
-                    </div>
-                </div>
-                
-                <!-- 3단계: 시트 동작 계획 -->
-                <div class="progress-step" id="step3">
-                    <div class="step-icon pending">3</div>
-                    <div class="step-text">시트 동작 계획</div>
-                    <div class="step-toggle" style="display: none;">▼</div>
-                </div>
-                <div class="progress-step-detail" id="step3-detail">
-                    <div class="step-detail-content" id="step3-data">
-                        <p>차량 공간을 계산하고 있습니다...</p>
-                    </div>
-                </div>
-                
-                <!-- 4단계: 최적 배치 생성 -->
-                <div class="progress-step" id="step4">
-                    <div class="step-icon pending">4</div>
-                    <div class="step-text">최적 배치 생성</div>
-                    <div class="step-toggle" style="display: none;">▼</div>
-                </div>
-                <div class="progress-step-detail" id="step4-detail">
-                    <div class="step-detail-content" id="step4-data">
-                        <p>최적의 배치를 생성하고 있습니다...</p>
-                    </div>
-                </div>
-                
-                <!-- 5단계: 결과 검증 및 완료 -->
-                <div class="progress-step" id="step5">
-                    <div class="step-icon pending">5</div>
-                    <div class="step-text">결과 검증 및 완료</div>
-                    <div class="step-toggle" style="display: none;">▼</div>
-                </div>
-                <div class="progress-step-detail" id="step5-detail">
-                    <div class="step-detail-content" id="step5-data">
-                        <p>결과를 검증하고 있습니다...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 분석 결과 확인 버튼 -->
-            <button class="result-check-button" id="resultCheckButton" onclick="showResultFromButton()">
-                📊 분석 결과 확인
-            </button>
-        </div>
-        
-        <!-- 결과 표시 영역 -->
-        <div class="result-container" id="resultContainer">
-            <div class="result-header">
-                <h3 class="result-title">🎉 최적 배치 완료!</h3>
-                <p class="result-subtitle">AI가 분석한 최적의 차량 배치 결과입니다</p>
-            </div>
-            
-            <div class="result-content">
-                <div class="result-image">
-                    <img id="resultImage" alt="최적 배치 결과" style="display: none;">
-                </div>
-                
-                <div class="result-info">
-                    <h4>📊 분석 결과</h4>
-                    <div class="result-stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalItems">0</div>
-                            <div class="stat-label">총 짐 개수</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="utilizationRate">0%</div>
-                            <div class="stat-label">공간 활용률</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="arrangementTime">0분</div>
-                            <div class="stat-label">예상 배치 시간</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="efficiencyScore">0점</div>
-                            <div class="stat-label">효율성 점수</div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
     </main>
 
     <div id="notice" class="notice" role="status" aria-live="polite"></div>
-    
-    <!-- 실패 다이얼로그 -->
-    <div class="failure-dialog" id="failureDialog">
-        <div class="failure-content">
-            <div class="failure-icon">❌</div>
-            <h3 class="failure-title">분석 실패</h3>
-            <p class="failure-message" id="failureMessage">분석 중 오류가 발생했습니다.</p>
-            <div class="failure-buttons">
-                <button class="failure-btn secondary" onclick="hideFailureDialog()">닫기</button>
-                <button class="failure-btn primary" onclick="retryAnalysis()">다시 시도</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 확인 다이얼로그 -->
-    <div class="confirmation-dialog" id="confirmationDialog">
-        <div class="dialog-content">
-            <div class="dialog-icon">🎉</div>
-            <h3 class="dialog-title">🎉 분석 완료!</h3>
-            <p class="dialog-message">최적 배치 결과를 확인하시겠습니까?</p>
-            <div class="dialog-buttons">
-                <button class="dialog-btn secondary" onclick="hideConfirmationDialog()">나중에</button>
-                <button class="dialog-btn primary" onclick="confirmResult()">네</button>
-            </div>
-        </div>
-    </div>
 
     <!-- 하단 시트 (사진 촬영 선택) -->
     <div class="sheet-overlay" id="sheetOverlay" aria-hidden="true"></div>
@@ -234,8 +92,6 @@
         </div>
     </div>
 
-    <!-- WebSocket 제거됨 - HTTP + SSE만 사용 -->
-    
     <script src="/static/js/mobile/input.js"></script>
 </body>
 </html>
