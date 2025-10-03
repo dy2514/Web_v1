@@ -400,28 +400,8 @@ async function handleStatusData(statusData) {
             // 이번 이벤트 payload에 포함된 단계별 결과를 아코디언에 반영
             try {
                 const ar = statusData.analysis_result || {};
-                const pr = statusData.processed_results || {};
 
-                // 가공된 결과 우선 표시
-                if (pr.chain1_out && !shownSteps[1]) {
-                    await displayProcessedStepResult(1, pr.chain1_out);
-                    shownSteps[1] = true;
-                }
-                if (pr.chain2_out && !shownSteps[2]) {
-                    await displayProcessedStepResult(2, pr.chain2_out);
-                    shownSteps[2] = true;
-                }
-                if (pr.chain4_out && pr.chain3_out && !shownSteps[3]) {
-                    // 3단계 결과가 있으면 바로 표시
-                    pr.chain3_out = safeJsonParse(pr.chain3_out);
-                    if (pr.chain4_out) {
-                        pr.chain3_out.placement_code = pr.chain4_out;
-                    }
-                    await displayProcessedStepResult(3, pr.chain3_out);
-                    shownSteps[3] = true;
-                }
-
-                // 원본 결과 표시 (가공된 결과가 없을 때)
+                // 원본 결과 표시
                 if (ar.chain1_out && !shownSteps[1]) {
                     await displayStepResult(1, ar.chain1_out);
                     shownSteps[1] = true;
@@ -496,7 +476,7 @@ async function handleStatusData(statusData) {
             // 상태에 따른 처리
             const status = statusData.status || statusData.system?.status;
             if (status === 'done') {
-                const hasFinal = !!(statusData.chain4_out || statusData.analysis_result?.chain4_out || statusData.processed_results?.chain4_out);
+                const hasFinal = !!(statusData.chain4_out || statusData.analysis_result?.chain4_out);
                 if (hasFinal) {
                     console.log('분석 완료! (최종 출력 확인)');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
@@ -558,51 +538,6 @@ function applyAnalysisResult() {
     // currentPlacementCode = placementCode;
     showHardwareConfirmModal();
 }
-
-// 배치 코드 추출 함수
-// function extractPlacementCode() {
-//     // 여러 소스에서 배치 코드 찾기
-//     let placementCode = null;
-    
-//     // 1. sessionStorage에서 최신 분석 결과 확인
-//     const analysisDataStr = sessionStorage.getItem('analysisData');
-//     if (analysisDataStr) {
-//         try {
-//             const analysisData = JSON.parse(analysisDataStr);
-//             if (analysisData.placement_code) {
-//                 placementCode = analysisData.placement_code;
-//             }
-//         } catch (e) {
-//             console.warn('세션 데이터 파싱 오류:', e);
-//         }
-//     }
-    
-//     // 2. 전역 변수에서 확인 (SSE로 받은 데이터)
-//     if (!placementCode && window.latestAnalysisResult) {
-//         const result = window.latestAnalysisResult;
-//         if (result.chain4_out) {
-//             placementCode = result.chain4_out;
-//         } else if (result.processed_results && result.processed_results.chain4_out) {
-//             placementCode = result.processed_results.chain4_out.placement_code;
-//         }
-//     }
-    
-//     // 3. DOM에서 직접 찾기
-//     if (!placementCode) {
-//         const step4Result = document.getElementById('step4ResultContent');
-//         if (step4Result) {
-//             const text = step4Result.textContent || step4Result.innerText;
-//             // 16자리 숫자 패턴 찾기
-//             const match = text.match(/\b\d{16}\b/);
-//             if (match) {
-//                 placementCode = match[0];
-//             }
-//         }
-//     }
-    
-//     console.log('추출된 배치 코드:', placementCode);
-//     return placementCode;
-// }
 
 // 하드웨어 확인 모달 표시
 function showHardwareConfirmModal() {
@@ -1186,20 +1121,20 @@ async function formatStepResult(stepNumber, resultData) {
                 })();
 
                 // chain2의 optionNo 저장
-                optionNo = chain2Data.option_no;
+                optionNo = chain2Data.option_no ? chain2Data.option_no : -1;
 
                 formattedResult = `
                     <p>🪑 좌석 배치 지시사항</p>
                 `;
-                let seatsTableRows = '';
-                for (let seat in chain2Data.instruction.seats) {
-                    let seatDataArray = chain2Data.instruction.seats[seat];
-                    let tableSeatData = '';
-                    seatDataArray.forEach(data => {
-                        tableSeatData += `<td>${data}</td>`;
-                    });
-                    seatsTableRows += `<tr>${tableSeatData}</tr>`;
-                }
+                // let seatsTableRows = '';
+                // for (let seat in chain2Data.instruction.seats) {
+                //     let seatDataArray = chain2Data.instruction.seats[seat];
+                //     let tableSeatData = '';
+                //     seatDataArray.forEach(data => {
+                //         tableSeatData += `<td>${data}</td>`;
+                //     });
+                //     seatsTableRows += `<tr>${tableSeatData}</tr>`;
+                // }
 
                 formattedResult += `<div class="image-container">
                     <img src="/static/images/options/${chain2OptionImgNamePrefix}${optionNo}.${chain2OptionImgNameExtension}" alt="최적 배치 생성" class="analysis-image">
@@ -1431,7 +1366,7 @@ async function startSSE() {
                 
                 await handleStatusData(payload);
                 const status = payload.status || payload.system?.status;
-                const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out || payload.processed_results?.chain4_out);
+                const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out);
                 if (status === 'done' && hasFinal) {
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     showResultButton(); // 분석 완료 시 버튼 활성화

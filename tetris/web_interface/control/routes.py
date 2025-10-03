@@ -129,7 +129,6 @@ def stop_all_analysis():
     state_manager.set('current_step', 0)
     state_manager.set('system.status', 'idle')
     state_manager.set('analysis_result', {})
-    state_manager.set('processed_results', {})
     state_manager.set('step_times', {})
     state_manager.set('total_elapsed', 0)
     
@@ -446,7 +445,6 @@ def reset_system():
         state_manager.set('processing.started_at', None)
         state_manager.set('processing.completed_at', None)
         state_manager.set('analysis_result', {})
-        state_manager.set('processed_results', {})
         state_manager.set('system.status', 'idle')
         
         # 4. 업로드 관련 데이터 초기화
@@ -699,7 +697,6 @@ def start_step_analysis():
             message='분석을 시작합니다...',
             current_step=0,
             analysis_result={},
-            processed_results={},
             **{
                 'processing.progress': 0,
                 'processing.current_scenario': scenario,
