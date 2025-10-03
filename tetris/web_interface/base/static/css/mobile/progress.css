@@ -723,6 +723,7 @@ html, body {
     background: #f8fbff;
     color: #203a59;
     font-weight: 700;
+    width: 180px;
 }
 .detail-toggle-btn {
     display: inline-block;
