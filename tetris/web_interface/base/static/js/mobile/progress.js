@@ -1528,12 +1528,6 @@ async function startSSE() {
     }
 }
 
-// 홈으로 이동
-function goToHome() {
-    // 홈 화면으로 이동
-    window.location.href = '/mobile/home';
-}
-
 // 분석 중지 함수 (재사용)
 function stopAnalysisOnExit() {
     console.log('[이탈] Progress 페이지 이탈 감지 - 분석 중지 요청');
