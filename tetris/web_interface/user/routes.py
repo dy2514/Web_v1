@@ -200,7 +200,7 @@ def upload_file():
                 image_data = f.read()
                 image_data_url = 'data:{};base64,'.format(mime) + base64.b64encode(image_data).decode('utf-8')
             
-            logger.info(f"[성공] 이미지 데이터 처리 완료 - MIME: {mime}, 크기: {len(image_data)} bytes")
+            logger.info(f"[성공] 이미지 최적 배치 생성 완료 - MIME: {mime}, 크기: {len(image_data)} bytes")
             
         except Exception as process_error:
             logger.error(f"[에러] 이미지 처리 실패: {process_error}", exc_info=True)
