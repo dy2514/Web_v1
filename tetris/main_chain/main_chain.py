@@ -440,7 +440,7 @@ def _tap_save_chain2(d):
     try:
         from web_interface.base.state_manager import state_manager
         analysis_result = state_manager.get('analysis_result', {})
-        analysis_result['chain2_out'] = d.get("chain2_out", "")
+        analysis_result['chain2_out'] = d.get("chain2_out_raw", "")
         state_manager.set('analysis_result', analysis_result)
         
         # 진행률 콜백 호출
