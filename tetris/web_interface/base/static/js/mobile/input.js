@@ -5,6 +5,7 @@ const btnPhotoIn = document.querySelector('#btnPhotoIn');
 
 let previewURL = null;
 let currentScenario = null;
+let imagePath = null;
 
 /* 탑승 인원 선택 */
 const chips = document.querySelectorAll('.chip');
@@ -93,6 +94,7 @@ photo.addEventListener('change', async () => {
         const d = await r.json();
         if (!d.success) { alert('업로드 실패'); return; }
         currentScenario = d.data.scenario;
+        imagePath = `/uploads/${d.data?.filename}`
         btnPhotoIn.style.display = 'none';
         showNotice('사진이 업로드 되었습니다!');
         closePhotoSheet();
@@ -186,6 +188,7 @@ submit.addEventListener('click', async () => {
     const analysisData = {
         scenario: currentScenario,
         people_count: seatSelection || 4,
+        image_path: imagePath,
         image_data_url: imageDataUrl
     };
 

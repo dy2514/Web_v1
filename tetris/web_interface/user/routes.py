@@ -71,7 +71,6 @@ def mobile_home():
         # 업로드 관련 데이터 초기화
         state_manager.set('upload.uploaded_file', None)
         state_manager.set('upload.image_path', None)
-        state_manager.set('upload.image_data_url', None)
         state_manager.set('upload.people_count', 0)
         state_manager.set('upload.scenario', None)
         
@@ -218,7 +217,6 @@ def upload_file():
                 uploaded_file=True,
                 people_count=int(people_count),
                 image_path=filepath,
-                image_data_url=image_data_url,
                 scenario=scenario
             )
             logger.info(f"[성공] 상태 업데이트 완료 - 시나리오: {scenario}, 인원수: {people_count}")

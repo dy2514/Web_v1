@@ -204,7 +204,6 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         state_manager.set('processing.status', 'running')
         state_manager.set('processing.current_scenario', scenario)
         state_manager.set('upload.scenario', scenario)
-        state_manager.set('upload.image_data_url', image_data_url)
         state_manager.set('upload.people_count', people_count)
         state_manager.set('analysis_result', {})
         state_manager.set('notifications', [])

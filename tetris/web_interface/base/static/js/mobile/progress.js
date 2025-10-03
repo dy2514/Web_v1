@@ -1215,21 +1215,21 @@ async function formatStepResult(stepNumber, resultData) {
                 })();
                 console.log(`🔧 1단계 파싱 완료:`, chain1Data);
 
-                // state.json에서 직접 image_data_url 가져오기
-                let imageDataUrl = '';
+                // state.json에서 직접 image_path 가져오기
+                let imagePath = '';
                 try {
                     const response = await fetch('/desktop/api/status');
                     const statusData = await response.json();
                     if (statusData.success && statusData.data) {
-                        imageDataUrl = statusData.data.upload?.image_data_url || 
-                                    statusData.data.image_data_url;
+                        imagePath = statusData.data.upload?.image_path || 
+                                    statusData.data.image_path;
                     }
                 } catch (error) {
                     console.warn('이미지 데이터 URL을 가져올 수 없습니다:', error);
                 }
 
                 formattedResult = `
-                    <div class="image-container"><img src="${imageDataUrl}" alt="짐 상세 정보" class="analysis-image"></div>
+                    <div class="image-container"><img src="${imagePath}" alt="짐 상세 정보" class="analysis-image"></div>
                     <p>👥 인원 수: ${chain1Data.people || 0}명</p>
                     <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
                     <p>📋 짐 상세 정보</p>
@@ -1338,6 +1338,7 @@ async function startAnalysis() {
         const analysisDataStr = sessionStorage.getItem('analysisData');
         let analysisData = {
             people_count: 4,
+            image_path: 'default_image_path',
             image_data_url: 'default_image',
             scenario: newScenario  // 새로운 시나리오 사용
         };
@@ -1351,6 +1352,7 @@ async function startAnalysis() {
             console.log('세션에서 분석 데이터 가져옴 (새로운 시나리오 적용):', {
                 scenario: analysisData.scenario,
                 people_count: analysisData.people_count,
+                image_path: analysisData.image_path,
                 image_data_url: analysisData.image_data_url.substring(0, 50) + '...'
             });
         } else {
@@ -1366,6 +1368,7 @@ async function startAnalysis() {
             },
             body: JSON.stringify({
                 people_count: analysisData.people_count,
+                image_path: analysisData.image_path,
                 image_data_url: analysisData.image_data_url,
                 scenario: analysisData.scenario
             })

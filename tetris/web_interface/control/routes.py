@@ -136,7 +136,6 @@ def stop_all_analysis():
     # 업로드 관련 데이터 초기화
     state_manager.set('upload.uploaded_file', None)
     state_manager.set('upload.image_path', None)
-    state_manager.set('upload.image_data_url', None)
     state_manager.set('upload.people_count', 0)
     state_manager.set('upload.scenario', None)
     
@@ -453,7 +452,6 @@ def reset_system():
         # 4. 업로드 관련 데이터 초기화
         state_manager.set('upload.uploaded_file', None)
         state_manager.set('upload.image_path', None)
-        state_manager.set('upload.image_data_url', None)
         state_manager.set('upload.people_count', 0)
         state_manager.set('upload.scenario', None)
         
@@ -679,6 +677,7 @@ def start_step_analysis():
         data = request.get_json()
         people_count = data.get('people_count', 0)
         image_data_url = data.get('image_data_url', '')
+        image_path = data.get('image_path', '')
         # 항상 새로운 시나리오 생성 (잔여 데이터로 인한 오표시 방지)
         scenario = f"items_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
@@ -705,7 +704,7 @@ def start_step_analysis():
                 'processing.progress': 0,
                 'processing.current_scenario': scenario,
                 'upload.scenario': scenario,
-                'upload.image_data_url': image_data_url,  # 이미지 데이터 URL 저장
+                'upload.image_path': image_path,  # 이미지 path 저장
                 'upload.people_count': people_count,      # 인원 수 저장
                 'processing.sent_steps': {}
             }
