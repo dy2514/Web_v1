@@ -7,6 +7,12 @@ let detailPanelOpen = false;
 let stepResultsOriginalParent = null;
 let stepResultsNextSibling = null;
 let shownSteps = { 1: false, 2: false, 3: false, 4: false };
+let optionNo = -1;
+// option 이미지 파일 명 prefix, 확장자
+let chain2OptionImgNamePrefix = "option";
+let chain3OptionImgNamePrefix = "option";
+let chain2OptionImgNameExtension = "png";
+let chain3OptionImgNameExtension = "png";
 
 // 하드웨어 제어 관련 변수
 let currentPlacementCode = null;
@@ -1084,39 +1090,11 @@ async function displayStepResult(stepNumber, resultData) {
     accordionItemButton.disabled = false;
     accordionItemSpan.style.color = '#000000';
 
-    // 단계별 완료 텍스트 표시
-    showStepCompletionText(stepNumber, resultData);
     
     console.log(`가공된 단계 ${stepNumber} 결과 표시 완료`);
     
     // 현재 단계 완료 후 다음 단계로 진행
     moveToNextStep(stepNumber);
-}
-
-// 단계별 완료 텍스트 표시
-function showStepCompletionText(stepNumber, processedData) {
-    const stepResultsContainer = document.getElementById('stepResults');
-    if (!stepResultsContainer) return;
-    
-    // 기존 완료 텍스트 제거 (중복 방지)
-    const existingText = document.getElementById(`step${stepNumber}CompletionText`);
-    if (existingText) {
-        existingText.remove();
-    }
-    
-    // 완료 텍스트 생성
-    const completionText = createStepCompletionText(stepNumber, processedData);
-    
-    // 완료 텍스트를 해당 단계 결과 아래에 삽입
-    const resultElement = document.getElementById(`step${stepNumber}Result`);
-    if (resultElement) {
-        resultElement.insertAdjacentHTML('afterend', completionText);
-    } else {
-        // 결과 요소가 없으면 컨테이너에 직접 추가
-        stepResultsContainer.insertAdjacentHTML('beforeend', completionText);
-    }
-    
-    console.log(`단계 ${stepNumber} 완료 텍스트 표시 완료`);
 }
 
 // 결과 블록 접기/펼치기 토글 초기화
@@ -1145,59 +1123,6 @@ function initResultToggle(stepNumber) {
         }
     };
     title.addEventListener('click', title._toggleHandler);
-}
-
-// 단계별 완료 텍스트 생성
-function createStepCompletionText(stepNumber, processedData) {
-    let title = '';
-    let content = '';
-    
-    switch(stepNumber) {
-        case 1: // 사용자 입력 분석
-            title = '1단계: 사용자 입력 분석 완료';
-            content = `
-                <p><span class="highlight">${processedData.people_count || 0}명</span></p>
-                <p>🧳 총 짐 개수: <span class="highlight">${processedData.total_luggage || 0}개</span></p>
-                <p>이미지에서 <span class="highlight">${processedData.people_count || 0}명의 인원</span>과 <span class="highlight">${processedData.total_luggage || 0}개의 짐</span>을 성공적으로 인식했습니다.</p>
-            `;
-            break;
-            
-        case 2: // 최적 배치 생성
-            title = '2단계: 최적 배치 생성 완료';
-            content = `
-                <p>🪑 좌석 배치 지시사항 생성 완료</p>
-                <p>각 짐의 특성에 맞는 <span class="highlight">좌석 배치 지시사항</span>을 성공적으로 생성했습니다.</p>
-            `;
-            break;
-            
-        case 3: // 시트 동작 계획
-            title = '3단계: 시트 동작 계획 완료';
-            content = `
-                <p>🚗 차량 환경 분석 완료</p>
-                <p>차량의 <span class="highlight">공간 구조</span>와 <span class="highlight">작업 순서</span>를 성공적으로 계산했습니다.</p>
-            `;
-            break;
-            
-        case 4: // 최적 배치 생성
-            title = '4단계: 최적 배치 생성 완료';
-            content = `
-                <p>🎯 최적 배치 코드 생성 완료</p>
-                <p><span class="highlight">${processedData.code_length || 0}자리 배치 코드</span>를 성공적으로 생성했습니다.</p>
-                <p>코드: <span class="highlight">${processedData.placement_code || ''}</span></p>
-            `;
-            break;
-            
-        default:
-            title = `${stepNumber}단계: 분석 완료`;
-            content = `<p>분석이 성공적으로 완료되었습니다.</p>`;
-    }
-    
-    return `
-        <div class="step-completion-text" id="step${stepNumber}CompletionText">
-            <h4>${title}</h4>
-            ${content}
-        </div>
-    `;
 }
 
 // 단계별 결과 데이터 포맷팅
@@ -1259,6 +1184,10 @@ async function formatStepResult(stepNumber, resultData) {
                     const parsed = safeJsonParse(resultData);
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
+
+                // chain2의 optionNo 저장
+                optionNo = chain2Data.option_no;
+
                 formattedResult = `
                     <p>🪑 좌석 배치 지시사항</p>
                 `;
@@ -1273,7 +1202,7 @@ async function formatStepResult(stepNumber, resultData) {
                 }
 
                 formattedResult += `<div class="image-container">
-                    <img src="/static/images/options/option1.png" alt="최적 배치 생성" class="analysis-image">
+                    <img src="/static/images/options/${chain2OptionImgNamePrefix}${optionNo}.${chain2OptionImgNameExtension}" alt="최적 배치 생성" class="analysis-image">
                 </div>`;
                 break;
                 
@@ -1301,7 +1230,7 @@ async function formatStepResult(stepNumber, resultData) {
 
                 formattedResult = `
                     <div class="image-container">
-                    <img src="/static/images/options/option2.png" alt="시트 동작 계획" class="analysis-image"></div>
+                    <img src="/static/images/options/${chain3OptionImgNamePrefix}${optionNo}.${chain3OptionImgNameExtension}" alt="시트 동작 계획" class="analysis-image"></div>
                     <p>📋 작업 순서</p>
                     <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
                 `;
