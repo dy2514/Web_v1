@@ -42,7 +42,6 @@ const sheet = document.getElementById('photoSheet');
 const sheetOverlay = document.getElementById('sheetOverlay');
 const sheetNoIssue = document.getElementById('sheetNoIssue');
 const sheetGallery = document.getElementById('sheetGallery');
-const sheetCamera = document.getElementById('sheetCamera');
 
 function fadeIn(el, display) {
     if (!el) return;
@@ -151,16 +150,7 @@ if (sheetGallery) {
         // 갤러리에서 선택 (capture 속성 제거)
         const photoInput = document.getElementById('photo');
         photoInput.removeAttribute('capture');
-        photoInput.click();
-    });
-}
-
-if (sheetCamera) {
-    sheetCamera.addEventListener('click', () => {
-        closePhotoSheet();
-        // 카메라로 촬영 (capture 속성 추가)
-        const photoInput = document.getElementById('photo');
-        photoInput.setAttribute('capture', 'environment');
+        // photoInput.setAttribute('capture', 'environment');
         photoInput.click();
     });
 }

@@ -30,7 +30,8 @@
 
 html, body {
     margin: 0;
-    background: #fff;
+    padding: 10px 20px;
+    background: #f8f9fa;
     color: var(--black);
     font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -46,6 +47,39 @@ html, body {
 /* 메인 콘텐츠 영역 */
 .krds-main {
     padding: 0 1rem;
+}
+
+/* AI 처리 진행률 아이콘 스타일 */
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 50%;
+}
+
+.status-icon.info {
+    background-color: #0B78CB;
+}
+
+.status-icon.warning {
+    background-color: #3B82F6;
+    animation: spin 1s linear infinite;
+}
+
+.status-icon.success {
+    background-color: #228738;
+}
+
+.status-icon.error {
+    background-color: #DC2626;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Flex 레이아웃 개선 */
@@ -108,7 +142,7 @@ html, body {
 .krds-header {
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     color: white;
-    padding: 2rem;
+    padding: 1.2rem;
     border-radius: 12px;
     margin-bottom: 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -116,12 +150,99 @@ html, body {
 
 .krds-header__content {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 80px;
+    position: relative;
+}
+
+/* 왼쪽 섹션: 제목 + QR 코드 */
+.krds-header__left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    position: absolute;
+    left: 2rem;
+    top: 50%;  /* 이 값을 조절하여 세로 위치 변경 */
+    transform: translateY(-50%);
+}
+
+.krds-header__title {
+    flex: 0 0 auto;
+}
+
+/* 오른쪽 섹션: 모든 상태와 버튼들 */
+.status-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-end;
+    width: 100%;
+}
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.status-item .status-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.status-text {
+    font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 0.9rem;
+}
+
+.status-label {
+    font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.status-icon {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+.system-control-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.system-control-buttons .krds-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    min-width: 40px;
 }
 
 .krds-header__title h1 {
     margin: 0;
+    font-family: "HyundaiSansHeadKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     font-size: 2.5rem;
     font-weight: 700;
 }
@@ -129,7 +250,8 @@ html, body {
 .krds-header__title p {
     margin: 0.5rem 0 0 0;
     opacity: 0.9;
-    font-size: 1.1rem;
+    font-family: "HyundaiSansHeadKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 1.4rem;
 }
 
 .krds-header__status {
@@ -183,39 +305,211 @@ html, body {
     margin-bottom: -25px;
 }
 
-/* QR 코드 섹션 */
-.qr-section {
-    text-align: center;
-    padding: 1rem;
-    gap: 3px;
-}
-
-.qr-code-container {
-    width: 7vw;
-    height: 7vw;
-    margin: 0 auto 1rem;
-    border: 2px dashed #d1d5db;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f9fafb;
-}
-
 .qr-code-loading {
     color: #6b7280;
     font-size: 0.9rem;
 }
 
-.qr-code-container img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 4px;
+/* 상태 표시 섹션 */
+.status-section {
+    padding: 1rem 0;
 }
 
-/* 상태 테이블 */
-.status-section {
-    padding: 1rem 0 1rem 0;
+/* 상태 아이템들 컨테이너 */
+.status-items {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+/* 개별 상태 아이템 */
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    flex-direction: row;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 상태 아이콘 */
+.status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.status-icon .material-icons {
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.status-item:hover .status-icon {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.status-item:hover .status-icon .material-icons {
+    color: white;
+}
+
+/* 상태 콘텐츠 */
+.status-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* QR 코드 섹션 */
+.qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.qr-section:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-container {
+    width: 80px;
+    height: 80px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0);
+    transition: all 0.3s ease;
+    flex-direction: column;
+}
+
+.qr-code-container:hover {
+    margin-top: 120px;
+    color: #000000;
+    width: 280px;
+    height: 280px;
+    transform: scale(1.05);
+    border: none;
+}
+
+.qr-code-container:hover .krds-text {
+    font-size: 1.4rem;
+    color: #000000 !important;
+}
+
+.qr-code-container img {
+    max-width: 70%;
+    max-height: 70%;
+}
+
+.system-control-buttons .krds-btn {
+    background: rgba(26, 170, 236, 0.5);
+    border: 1px solid rgba(26, 170, 236, 0.6);
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+}
+
+.system-control-buttons .krds-btn:hover {
+    background: rgba(26, 170, 236, 0.6);
+    border-color: rgba(26, 170, 236, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.system-control-buttons .krds-btn--danger {
+    background: rgba(239, 68, 68, 0.6);
+    border-color: rgba(239, 68, 68, 0.7);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.system-control-buttons .krds-btn--danger:hover {
+    background: rgba(239, 68, 68, 0.7);
+    border-color: rgba(239, 68, 68, 0.9);
+}
+
+.system-control-buttons .krds-icon {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 헤더 레이아웃 개선 */
+.krds-header__content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.krds-header__left {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.krds-header__right {
+    grid-column: 2;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+
+/* 연결 상태 표시 */
+.connection-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.connection-status:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 상태 인디케이터 개선 */
+.krds-status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #10b981;
+    animation: pulse 2s infinite;
+}
+
+.krds-text--status {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 0;
 }
 
 .krds-table {
@@ -278,6 +572,48 @@ html, body {
 .krds-badge--danger {
     background-color: #fee2e2;
     color: #991b1b;
+}
+
+.krds-badge--warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.krds-badge--info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* 상태 인디케이터 스타일 */
+.status-indicator {
+    display: inline-block; 
+    width: 12px; 
+    height: 12px; 
+    border-radius: 50%; 
+    background-color: #10b981; 
+    margin-right: 3px;
+}
+
+.status-indicator.connected,
+.status-indicator.uploaded,
+.status-indicator.completed {
+    background-color: #10b981;
+}
+
+.status-indicator.active,
+.status-indicator.processing {
+    background-color: #f59e0b;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.error,
+.status-indicator.disconnected {
+    background-color: #ef4444;
+}
+
+.status-indicator.waiting,
+.status-indicator.inactive {
+    background-color: #6b7280;
 }
 
 /* 통계 섹션 */
@@ -391,6 +727,206 @@ html, body {
     margin-bottom: 2rem;
 }
 
+/* 전체 진행률 섹션 */
+.overall-progress-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+}
+
+.current-step-status {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.current-step-status.processing {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: #3b82f6;
+    color: #1e40af;
+}
+
+.current-step-status.completed {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+    color: #065f46;
+}
+
+.current-step-status.waiting {
+    background: rgba(107, 114, 128, 0.1);
+    border-left-color: #6b7280;
+    color: #374151;
+}
+
+
+.overall-progress-bar {
+    width: 100%;
+    height: 16px;
+    background-color: #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.overall-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.overall-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+.progress-percentage {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+/* 수평 진행률 컨테이너 */
+.horizontal-progress-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.progress-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 1rem 0;
+}
+
+.progress-track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #e5e7eb;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.progress-track::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 3px;
+    background-color: #10b981;
+    transform: translateY(-50%);
+    z-index: 2;
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+/* 진행률 단계 */
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+    flex: 1;
+}
+
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    border: 3px solid #e5e7eb;
+    position: relative;
+}
+
+.progress-step.active .step-circle {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    animation: pulse 2s infinite;
+}
+
+.progress-step.completed .step-circle {
+    background-color: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.progress-step.completed .step-circle::after {
+    content: '✓';
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 0.75rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.step-status {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.progress-step.active .step-status {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.progress-step.completed .step-status {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* 진행률 트랙 업데이트 */
+.progress-track.completed-1::after { width: 25%; }
+.progress-track.completed-2::after { width: 50%; }
+.progress-track.completed-3::after { width: 75%; }
+.progress-track.completed-4::after { width: 100%; }
+
 .krds-step-wrap {
     display: flex;
     justify-content: space-between;
@@ -444,8 +980,8 @@ html, body {
 }
 
 .step-number {
-    font-size: 0.75rem;
-    color: #6b7280;
+    font-size: 1.75rem;
+    color: #000000;
     font-weight: 500;
 }
 
@@ -490,6 +1026,7 @@ html, body {
     align-items: center;
     gap: 1rem;
     transition: background-color 0.2s ease;
+    justify-content: space-between;
 }
 
 .btn-accordion:hover {
@@ -539,6 +1076,31 @@ html, body {
     color: #065f46;
 }
 
+/* 아코디언 콘텐츠 영역 */
+.accordion-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+/* 아코디언 상태 표시 영역 */
+.accordion-status {
+    margin-left: auto;
+    margin-right: 1rem;
+}
+
+/* 아코디언 화살표 스타일 */
+.accordion-arrow {
+    font-size: 0.8rem;
+    color: #6b7280;
+    transition: transform 0.3s ease;
+}
+
+.btn-accordion[aria-expanded="true"] .accordion-arrow {
+    transform: rotate(180deg);
+}
+
 .accordion-collapse {
     max-height: 0;
     overflow: hidden;
@@ -547,6 +1109,9 @@ html, body {
 
 .accordion-collapse.show {
     max-height: 500px;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
 }
 
 .accordion-body {
@@ -557,6 +1122,10 @@ html, body {
 
 .step-detail-content {
     margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    min-height: 60px;
 }
 
 .step-progress-section {
@@ -564,6 +1133,13 @@ html, body {
     align-items: center;
     gap: 1rem;
     margin: 1rem 0;
+}
+
+/* 아코디언 내용 가시성 보장 */
+
+.accordion-body .krds-text--small {
+    color: #6b7280 !important;
+    font-size: 12px !important;
 }
 
 .krds-progress {
@@ -603,6 +1179,31 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    margin-right: 1rem;
+}
+
+/* 버튼 툴팁 스타일 */
+.system-control-buttons .krds-btn {
+    position: relative;
+}
+
+.system-control-buttons .krds-btn:hover::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .system-control-buttons .krds-button-group {
@@ -612,6 +1213,7 @@ html, body {
 
 .system-control-buttons .krds-btn {
     width: 100%;
+    height: 100%;
     justify-content: center;
 }
 
@@ -637,6 +1239,15 @@ html, body {
     background-color: #e5e7eb;
 }
 
+.krds-btn--primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.krds-btn--primary:hover {
+    background-color: #2563eb;
+}
+
 .krds-btn--danger {
     background-color: #ef4444;
     color: white;
@@ -649,61 +1260,6 @@ html, body {
 .krds-btn--lg {
     padding: 1rem 2rem;
     font-size: 1.1rem;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .krds-container {
-        padding: 1rem;
-    }
-    
-    .krds-main {
-        padding: 0 0.5rem;
-    }
-    
-    .krds-header__content {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .krds-header__title h1 {
-        font-size: 2rem;
-    }
-    
-    .krds-grid--12 {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .krds-row {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .krds-col--4,
-    .krds-col--6 {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-    
-    .card-row {
-        flex-direction: column;
-    }
-    
-    .krds-step-wrap {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .krds-step-wrap::before {
-        display: none;
-    }
-    
-    .arduino-status-table,
-    .raspberry-status-table {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 /* 접근성 개선 */
@@ -862,4 +1418,346 @@ html, body {
 .step-detail-info.has-result .step-result-content {
     background-color: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 아코디언 분석 결과에 표시되는 이미지 */
+.analysis-image {
+    height: 200px;
+}
+
+/* 진행률 제목과 버튼 섹션 */
+.progress-title-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.progress-title-section .krds-title {
+    margin: 0;
+}
+
+.progress-title-section .krds-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
+    white-space: nowrap;
+    height: 30px;
+}
+
+.progress-title-section .krds-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+}
+
+.progress-title-section .krds-btn .material-icons {
+    font-size: 0.9rem;
+}
+
+/* 팝업 모달 스타일 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.modal-title .material-icons {
+    font-size: 1.8rem;
+    color: #3b82f6;
+}
+
+.modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(107, 114, 128, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.modal-close-btn:hover {
+    background: rgba(107, 114, 128, 0.2);
+    color: #374151;
+    transform: scale(1.05);
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: calc(80vh - 120px);
+    overflow-y: auto;
+}
+
+.modal-body .krds-accordion {
+    border: none;
+    box-shadow: none;
+}
+
+.modal-body .accordion-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.modal-body .accordion-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 모달 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 모달 스크롤바 스타일 */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ========================================
+   최신 로그 표시 영역
+   ======================================== */
+.recent-logs-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--color-white);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logs-header h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+}
+
+.logs-header .krds-btn {
+    height: 30px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.logs-header .krds-btn .material-icons {
+    font-size: 18px;
+}
+
+.logs-container {
+    min-height: 200px;
+}
+
+.logs-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--color-text-secondary);
+}
+
+.logs-loading .loading-spinner {
+    margin-bottom: 1rem;
+}
+
+.logs-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.log-item {
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+    transition: all 0.2s ease;
+}
+
+.log-item:hover {
+    background: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.log-filename {
+    font-family: "HyundaiSansHeadKRM", sans-serif;
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 0.9rem;
+}
+
+.log-timestamp {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    background: var(--color-white);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.log-content {
+    font-family: "Courier New", monospace;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+    background: var(--color-white);
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 로그 내용 스크롤바 스타일링 */
+.log-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.log-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.log-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.log-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.log-actions .krds-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.log-actions .material-icons {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.logs-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--color-error);
+    background: var(--bg-error-light);
+    border-radius: 8px;
+    border: 1px solid var(--color-error-light);
+}
+
+.logs-error .material-icons {
+    margin-right: 0.5rem;
+}
+
+.material-icons {
+    font-size: 20px;
 }

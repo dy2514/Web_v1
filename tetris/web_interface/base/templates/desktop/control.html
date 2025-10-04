@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TETRIS - 데스크탑 관제 (현대차 브랜딩)</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+    
     <!-- KRDS UI/UX 라이브러리 -->
     <link href="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.css" type="text/css" rel="stylesheet" />
     
@@ -17,39 +20,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop/control.css') }}">
-    
-    <style>
-        /* 임시 스타일 - 문제 해결용 */
-        body { 
-            background-color: #f8f9fa; 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px 40px;
-        }
-        .test-content { 
-            background: white;
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-            margin-bottom: 20px;
-        }
-        .test-content h1 { 
-            color: #1e3a8a; 
-            margin-bottom: 10px; 
-        }
-        .test-content p { 
-            color: #6b7280; 
-            margin-bottom: 15px; 
-        }
-        .status-indicator { 
-            display: inline-block; 
-            width: 12px; 
-            height: 12px; 
-            border-radius: 50%; 
-            background-color: #10b981; 
-            margin-right: 8px; 
-        }
-    </style>
 </head>
 <body>
     <!-- 메인 컨테이너 -->
@@ -59,32 +29,34 @@
 
         <!-- 메인 콘텐츠 영역 -->
         <main class="krds-main">
-            <!-- 상단 카드 섹션 (모바일 + 하드웨어 + 시스템 제어) -->
-            <div class="krds-grid krds-grid--12" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                
-                <!-- 모바일 접속 현황 카드 (4열) -->
-                <div class="krds-col krds-col--4" style="flex: 3;">
-                    {% include 'desktop/components/mobile-status-card.html' %}
-                </div>
-                
-                <!-- 하드웨어 동작 현황 카드 (4열) -->
-                <div class="krds-col krds-col--4" style="flex: 3;">
-                    {% include 'desktop/components/hardware-status-card.html' %}
-                </div>
-                
-                <!-- 시스템 제어 버튼들 (4열) -->
-                <div class="krds-col krds-col--4" style="flex: 1;">
-                    {% include 'desktop/components/system-control-card.html' %}
-                </div>
-            </div>
-            
             <!-- AI 처리 단계별 진행 상황 (전체 12열) -->
             <div class="krds-grid krds-grid--12">
                 <div class="krds-col krds-col--12">
                     {% include 'desktop/components/ai-progress-card.html' %}
                 </div>
             </div>
+            
         </main>
+    </div>
+
+    <!-- 세부 정보 팝업 모달 -->
+    <div id="detailsModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <span class="material-icons">psychology</span>
+                    AI 처리 세부 현황
+                </h3>
+                <button type="button" id="closeModalBtn" class="modal-close-btn">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="krds-accordion type-line" role="region" aria-label="AI 처리 세부 현황" aria-live="polite">
+                    {% include 'desktop/components/ai-step-accordion.html' %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- KRDS UI/UX JavaScript -->
@@ -97,6 +69,7 @@
     <script src="{{ url_for('static', filename='js/performance-optimizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/error-handler.js') }}"></script>
     <script src="{{ url_for('static', filename='js/unified-communication-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/common/progress-core.js') }}"></script>
     
     <!-- 메인 컨트롤 스크립트 -->
     <script src="{{ url_for('static', filename='js/desktop/control.js') }}"></script>

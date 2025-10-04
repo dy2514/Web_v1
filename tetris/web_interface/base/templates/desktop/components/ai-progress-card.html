@@ -14,45 +14,85 @@
     <div class="krds-card__body">
         <!-- AI 처리 단계 표시기 -->
         <div class="step-indicator-container">
-            <h3 class="krds-title krds-title--md">TETRIS AI 처리 진행률</h3>
-            <ol class="krds-step-wrap">
-                <li id="stepIndicator1" class="active">
-                    <span>
-                        <i class="step" aria-hidden="true"></i>
-                        <span class="step-number">1단계</span>
-                        <span class="step-tit">사용자 입력 분석</span>
-                    </span>
-                </li>
-                <li id="stepIndicator2">
-                    <span>
-                        <i class="step" aria-hidden="true"></i>
-                        <span class="step-number">2단계</span>
-                        <span class="step-tit">데이터 처리</span>
-                    </span>
-                </li>
-                <li id="stepIndicator3">
-                    <span>
-                        <i class="step" aria-hidden="true"></i>
-                        <span class="step-number">3단계</span>
-                        <span class="step-tit">최적 배치 생성</span>
-                    </span>
-                </li>
-                <li id="stepIndicator4">
-                    <span>
-                        <i class="step" aria-hidden="true"></i>
-                        <span class="step-number">4단계</span>
-                        <span class="step-tit">하드웨어 구동</span>
-                    </span>
-                </li>
-            </ol>
-            <div class="step-status-text" id="aiProgressStatus" role="status" aria-live="polite" aria-atomic="true">시스템 준비됨</div>
+            <div class="progress-title-section">
+                <h3 class="krds-title krds-title--md">TETRIS AI 처리 진행률</h3>
+                <button type="button" id="showDetailsBtn" class="krds-btn krds-btn--secondary krds-btn--sm">
+                    <span class="material-icons">visibility</span>
+                    세부 정보 보기
+                </button>
+            </div>
+            
+            <!-- 전체 진행률 표시 -->
+            <div class="overall-progress-section">
+                <div class="current-step-status" id="currentStepStatus">시스템 대기 중</div>
+                <div class="overall-progress-bar">
+                    <div class="overall-progress-fill" id="overallProgressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-percentage" id="overallProgressPercentage">0%</div>
+            </div>
+            
+            <!-- 수평 진행률 표시기 -->
+            <div class="horizontal-progress-container">
+                <div class="progress-track">
+                    <!-- 1단계: 사용자 입력 분석 -->
+                    <div class="progress-step" id="stepProgress1">
+                        <div class="step-circle" id="stepIcon1">
+                            <span class="step-number">1</span>
+                        </div>
+                        <div class="step-label">사용자 입력 분석</div>
+                        <div class="step-status" id="stepStatus1">대기중</div>
+                    </div>
+                    
+                    <!-- 2단계: 최적 배치 생성 -->
+                    <div class="progress-step" id="stepProgress2">
+                        <div class="step-circle" id="stepIcon2">
+                            <span class="step-number">2</span>
+                        </div>
+                        <div class="step-label">최적 배치 생성</div>
+                        <div class="step-status" id="stepStatus2">대기중</div>
+                    </div>
+                    
+                    <!-- 3단계: 시트 동작 계획 -->
+                    <div class="progress-step" id="stepProgress3">
+                        <div class="step-circle" id="stepIcon3">
+                            <span class="step-number">3</span>
+                        </div>
+                        <div class="step-label">시트 동작 계획</div>
+                        <div class="step-status" id="stepStatus3">대기중</div>
+                    </div>
+                    
+                    <!-- 4단계: 하드웨어 구동 -->
+                    <div class="progress-step" id="stepProgress4">
+                        <div class="step-circle" id="stepIcon4">
+                            <span class="step-number">4</span>
+                        </div>
+                        <div class="step-label">하드웨어 구동</div>
+                        <div class="step-status" id="stepStatus4">대기중</div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <!-- 처리 세부 현황 아코디언 -->
-        <div class="ai-details-section">
-            <h3 class="krds-title krds-title--md">처리 세부 현황</h3>
-            <div class="krds-accordion type-line" role="region" aria-label="AI 처리 세부 현황" aria-live="polite">
-                {% include 'desktop/components/ai-step-accordion.html' %}
+        <!-- 최신 로그 표시 영역 -->
+        <div class="recent-logs-section">
+            <div class="logs-header">
+                <h3 class="krds-title krds-title--md">최신 분석 로그</h3>
+                <button type="button" id="refreshLogsBtn" class="krds-btn krds-btn--secondary krds-btn--sm">
+                    <span class="material-icons">refresh</span>
+                </button>
+            </div>
+            <div class="logs-container" id="recentLogsContainer">
+                <div class="logs-loading" id="logsLoading">
+                    <div class="krds-spinner"></div>
+                    <span class="krds-text">로그를 불러오는 중...</span>
+                </div>
+                <div class="logs-content" id="logsContent" style="display: none;">
+                    <!-- 로그 항목들이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <div class="logs-error" id="logsError" style="display: none;">
+                    <span class="material-icons krds-icon krds-icon--sm" style="color: #dc3545;">error</span>
+                    <span class="krds-text">로그를 불러올 수 없습니다.</span>
+                </div>
             </div>
         </div>
     </div>

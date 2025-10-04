@@ -360,10 +360,6 @@ html, body {
   animation: pulse 2s infinite;
 }
 
-.status-text {
-  font-size: 0.75rem;
-}
-
 /* 상태별 색상 시스템 */
 .mobile-status-badge[data-status="connected"] {
   background: rgba(16, 185, 129, 0.1);
@@ -599,51 +595,6 @@ html, body {
 
 .system-status-value {
   font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-/* ========================================
-   기존 상태 그리드 (호환성 유지)
-   ======================================== */
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
-}
-
-.status-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: var(--space-4);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  transition: all var(--transition-fast);
-}
-
-.status-item:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--color-primary);
-}
-
-.status-item-icon {
-  font-size: var(--text-2xl);
-  margin-bottom: var(--space-2);
-}
-
-.status-item-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-secondary);
-  margin: 0 0 var(--space-1) 0;
-}
-
-.status-item-value {
-  font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
   margin: 0;
@@ -1084,96 +1035,6 @@ html, body {
   font-family: var(--font-family-mono);
 }
 
-/* ========================================
-   실시간 로그 & 알림
-   ======================================== */
-.logs-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.logs-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-2);
-}
-
-.logs-title {
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.logs-controls {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.logs-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  background: var(--bg-secondary);
-}
-
-.log-entry {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-light);
-  transition: background-color var(--transition-fast);
-}
-
-.log-entry:last-child {
-  border-bottom: none;
-}
-
-.log-entry:hover {
-  background: var(--bg-tertiary);
-}
-
-.log-entry.info {
-  border-left: 3px solid var(--color-info);
-}
-
-.log-entry.success {
-  border-left: 3px solid var(--color-success);
-}
-
-.log-entry.warning {
-  border-left: 3px solid var(--color-warning);
-}
-
-.log-entry.error {
-  border-left: 3px solid var(--color-error);
-}
-
-.log-timestamp {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
-  font-family: var(--font-family-mono);
-  min-width: 80px;
-  flex-shrink: 0;
-}
-
-.log-message {
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  flex: 1;
-  line-height: var(--leading-normal);
-}
-
-.log-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
 
 /* ========================================
    데스크탑 전용 최적화

@@ -254,7 +254,7 @@ class StateManager:
         # analysis_result가 있으면 추가
         if 'analysis_result' in self.state:
             status['analysis_result'] = self.state['analysis_result']
-            print(f"[DEBUG] get_system_status에서 analysis_result 추가: {list(self.state['analysis_result'].keys()) if isinstance(self.state['analysis_result'], dict) else 'Not a dict'}")
+            # print(f"[DEBUG] get_system_status에서 analysis_result 추가: {list(self.state['analysis_result'].keys()) if isinstance(self.state['analysis_result'], dict) else 'Not a dict'}")
         
         return status
     

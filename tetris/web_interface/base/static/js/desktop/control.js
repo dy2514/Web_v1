@@ -1,6 +1,6 @@
 /**
  * 데스크탑 관제 화면 JavaScript
- * Phase 2.3: 기본 UI 상호작용 및 시뮬레이션
+ * SSE 연동 및 실제 API 호출 기반 구현
  */
 
 class ControlController {
@@ -8,419 +8,688 @@ class ControlController {
         this.currentStep = 0;
         this.isProcessing = false;
         this.hardwareConnected = false;
+        this.sessionId = null;
+        this.eventSource = null;
         
         // DOM 요소들
-        this.waitingSection = document.getElementById('waitingSection');
-        this.monitoringSection = document.getElementById('monitoringSection');
-        this.stepIndicator = document.getElementById('stepIndicator');
-        this.connectionStatus = document.getElementById('connectionStatus');
-        this.overallProgress = document.getElementById('overallProgress');
-        this.progressText = document.getElementById('progressText');
+        this.mobileConnectionStatus = document.getElementById('mobileConnectionStatus');
+        this.imageUploadStatus = document.getElementById('imageUploadStatus');
+        this.executionTriggerStatus = document.getElementById('executionTriggerStatus');
         
-        // 하드웨어 제어 요소들
-        this.startHwBtn = document.getElementById('startHwBtn');
-        this.stopHwBtn = document.getElementById('stopHwBtn');
-        this.resetBtn = document.getElementById('resetBtn');
-        this.hwStatus = document.getElementById('hwStatus');
+        // 하드웨어 상태 요소들
+        this.cpuStatus = document.getElementById('cpuStatus');
+        this.memoryStatus = document.getElementById('memoryStatus');
+        this.sessionStatus = document.getElementById('sessionStatus');
+        this.networkStatus = document.getElementById('networkStatus');
+        this.port1Status = document.getElementById('port1Status');
+        this.port2Status = document.getElementById('port2Status');
+        this.port3Status = document.getElementById('port3Status');
+        this.port4Status = document.getElementById('port4Status');
         
         this.init();
     }
 
     init() {
         this.bindEvents();
-        this.setupWebSocket();
-        this.startSimulation();
-        this.updateConnectionStatus();
+        this.setupSSE();
+        this.initializeSession();
+        this.updateSystemStatus();
+        this.loadQRCode();
         
-        // AI 분석 시작 (모바일 연결 시뮬레이션 후)
-        setTimeout(() => {
-            if (window.startAIAnalysis) {
-                window.startAIAnalysis();
-            }
-        }, 5000);
+        console.log('🚀 데스크탑 관제 화면 초기화 완료');
     }
     
     bindEvents() {
-        // 하드웨어 제어 버튼 이벤트
-        this.startHwBtn.addEventListener('click', () => {
-            this.startHardware();
-        });
+        // 시스템 제어 버튼 이벤트 (전역 함수로 호출됨)
+        window.refreshStatus = () => this.refreshSystemStatus();
+        window.resetSystem = () => this.resetSystem();
         
-        this.stopHwBtn.addEventListener('click', () => {
-            this.stopHardware();
-        });
+        // 아코디언 클릭 이벤트 추가
+        this.setupAccordionEvents();
         
-        this.resetBtn.addEventListener('click', () => {
-            this.resetSystem();
-        });
+        // 팝업 모달 이벤트 추가
+        this.setupModalEvents();
         
         // QR 코드 새로고침 (5분마다)
         setInterval(() => {
             this.refreshQRCode();
         }, 300000);
     }
-
-    setupWebSocket() {
-        if (window.wsManager) {
-            // WebSocket 이벤트 핸들러 등록
-            window.wsManager.on('upload_complete', (data) => {
-                this.handleUploadComplete(data);
+    
+    
+    // 아코디언 이벤트 설정
+    setupAccordionEvents() {
+        const accordionButtons = document.querySelectorAll('.btn-accordion');
+        accordionButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (button.querySelector('.accordion-step-status.completed')) {
+                    // 분석 완료된 경우에만 아코디언 토글
+                    this.toggleAccordion(button);
+                }
             });
-            
-            window.wsManager.on('chain_progress', (data) => {
-                this.handleChainProgress(data);
-            });
-            
-            window.wsManager.on('chain_complete', (data) => {
-                this.handleChainComplete(data);
-            });
-            
-            window.wsManager.on('hardware_start', (data) => {
-                this.handleHardwareStart(data);
-            });
-            
-            window.wsManager.on('hardware_progress', (data) => {
-                this.handleHardwareProgress(data);
-            });
-            
-            window.wsManager.on('hardware_complete', (data) => {
-                this.handleHardwareComplete(data);
+        });
+    }
+    
+    setupModalEvents() {
+        // 세부 정보 보기 버튼 이벤트
+        const showDetailsBtn = document.getElementById('showDetailsBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modal = document.getElementById('detailsModal');
+        
+        if (showDetailsBtn) {
+            showDetailsBtn.addEventListener('click', () => {
+                this.openModal();
             });
         }
+        
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                this.closeModal();
+            });
+        }
+        
+        // 모달 배경 클릭 시 닫기
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeModal();
+                }
+            });
+        }
+        
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && modal.style.display !== 'none') {
+                this.closeModal();
+            }
+        });
     }
-
-    handleUploadComplete(data) {
-        console.log('업로드 완료:', data);
-        this.simulateMobileConnection();
-    }
-
-    handleChainProgress(data) {
-        console.log('체인 진행상황:', data);
-        if (data.step !== undefined) {
-            this.updateStepIndicator(data.step - 1);
-            this.updateOverallProgress(data.progress);
+    
+    openModal() {
+        const modal = document.getElementById('detailsModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+            console.log('📋 세부 정보 팝업 열림');
         }
     }
-
-    handleChainComplete(data) {
-        console.log('체인 완료:', data);
-        this.completeAIChain();
-    }
-
-    handleHardwareStart(data) {
-        console.log('하드웨어 시작:', data);
-        this.startHwBtn.disabled = true;
-        this.stopHwBtn.disabled = false;
-        this.hwStatus.textContent = '실행 중...';
-    }
-
-    handleHardwareProgress(data) {
-        console.log('하드웨어 진행상황:', data);
-        if (data.progress !== undefined) {
-            this.hwStatus.textContent = `실행 중... ${Math.round(data.progress)}%`;
+    
+    closeModal() {
+        const modal = document.getElementById('detailsModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // 배경 스크롤 복원
+            console.log('📋 세부 정보 팝업 닫힘');
         }
     }
-
-    handleHardwareComplete(data) {
-        console.log('하드웨어 완료:', data);
-        this.completeHardwareExecution();
+    
+    // 아코디언 토글 기능
+    toggleAccordion(button) {
+        const targetId = button.getAttribute('aria-controls');
+        const targetCollapse = document.getElementById(targetId);
+        
+        // 현재 상태 확인 (show 클래스 기준으로 판단)
+        const isCurrentlyExpanded = targetCollapse && targetCollapse.classList.contains('show');
+        console.log('🔍 아코디언 상태 확인:', {
+            targetId,
+            isCurrentlyExpanded,
+            ariaExpanded: button.getAttribute('aria-expanded'),
+            hasShowClass: targetCollapse?.classList.contains('show')
+        });
+        
+        if (targetCollapse) {
+            // 다른 아코디언들 닫기
+            document.querySelectorAll('.accordion-collapse.show').forEach(collapse => {
+                if (collapse.id !== targetId) {
+                    collapse.classList.remove('show');
+                    collapse.setAttribute('aria-hidden', 'true');
+                    // KRDS/기타 스크립트가 남긴 인라인 스타일 초기화
+                    collapse.style.display = '';
+                    collapse.style.height = '';
+                    const relatedButton = document.querySelector(`[aria-controls="${collapse.id}"]`);
+                    if (relatedButton) {
+                        relatedButton.setAttribute('aria-expanded', 'false');
+                        // 화살표 회전 초기화
+                        const arrow = relatedButton.querySelector('.accordion-arrow');
+                        if (arrow) {
+                            arrow.style.transform = 'rotate(0deg)';
+                        }
+                    }
+                }
+            });
+            
+            // 현재 아코디언 토글
+            if (isCurrentlyExpanded) {
+                // 닫기
+                targetCollapse.classList.remove('show');
+                targetCollapse.setAttribute('aria-hidden', 'true');
+                targetCollapse.style.display = '';
+                targetCollapse.style.height = '';
+                button.setAttribute('aria-expanded', 'false');
+                console.log('📁 아코디언 닫기:', targetId);
+                
+                // 화살표 회전 초기화
+                const arrow = button.querySelector('.accordion-arrow');
+                if (arrow) {
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            } else {
+                // 열기
+                targetCollapse.classList.add('show');
+                targetCollapse.setAttribute('aria-hidden', 'false');
+                targetCollapse.style.display = 'block';
+                targetCollapse.style.height = 'auto';
+                targetCollapse.style.maxHeight = '500px';
+                targetCollapse.style.overflow = 'visible';
+                button.setAttribute('aria-expanded', 'true');
+                console.log('📂 아코디언 열기:', targetId);
+                
+                // 아코디언 내용 가시성 확인 및 강제 설정
+                const accordionBody = targetCollapse.querySelector('.accordion-body');
+                if (accordionBody) {
+                    accordionBody.style.display = 'block';
+                    accordionBody.style.visibility = 'visible';
+                    accordionBody.style.opacity = '1';
+                    console.log('✅ 아코디언 내용 표시:', accordionBody.innerHTML);
+                }
+                
+                // 화살표 회전
+                const arrow = button.querySelector('.accordion-arrow');
+                if (arrow) {
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
     }
     
-    startSimulation() {
-        // 시뮬레이션: 30초마다 모바일 연결 시뮬레이션
-        setTimeout(() => {
-            this.simulateMobileConnection();
-        }, 30000);
-    }
-    
-    simulateMobileConnection() {
-        // 모바일 연결 시뮬레이션
-        this.waitingSection.style.display = 'none';
-        this.monitoringSection.style.display = 'block';
-            this.updateConnectionStatus(true);
-        
-        // 업로드된 이미지 시뮬레이션
-        this.simulateImageUpload();
-        
-        // AI 체인 시작 시뮬레이션
-        setTimeout(() => {
-            this.simulateAIChain();
-        }, 2000);
-    }
-    
-    simulateImageUpload() {
-        const imagePreview = document.getElementById('imagePreview');
-        const peopleCount = document.getElementById('peopleCount');
-        const uploadTime = document.getElementById('uploadTime');
-        
-        // 시뮬레이션 데이터
-        imagePreview.innerHTML = `
-            <img src="/uploads/sample.jpg" alt="업로드된 이미지" style="max-width: 100%; height: auto;">
-        `;
-        peopleCount.textContent = '2';
-        uploadTime.textContent = new Date().toLocaleTimeString();
-    }
-    
-    simulateAIChain() {
-        this.isProcessing = true;
-        
-        // 4단계 AI 체인 시뮬레이션
-        const steps = [
-            { name: '사용자 입력 분석', duration: 30000 },
-            { name: '데이터 처리', duration: 45000 },
-            { name: '최적화 생성', duration: 30000 },
-            { name: '하드웨어 구동', duration: 15000 }
-        ];
-        
-        let currentStep = 0;
-        
-        const processStep = () => {
-            if (currentStep >= steps.length) {
-                this.completeAIChain();
-                return;
+    // 세션 초기화
+    async initializeSession() {
+        try {
+            this.sessionId = this.generateSessionId();
+            console.log(`📱 세션 초기화: ${this.sessionId}`);
+            
+            const joinSessionUrl = window.CONFIG?.ENDPOINTS?.DESKTOP?.JOIN_SESSION || '/desktop/api/join_session';
+            const response = await fetch(joinSessionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: this.sessionId,
+                    type: 'desktop'
+                })
+            });
+            
+            // 응답 상태 확인
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            this.updateStepIndicator(currentStep);
-            this.updateOverallProgress((currentStep + 1) / steps.length * 100);
-            
-            // 단계별 진행상황 카드 업데이트
-            this.updateStepCard(currentStep);
-            
-            setTimeout(() => {
-                currentStep++;
-                processStep();
-            }, steps[currentStep].duration);
+            const result = await response.json();
+            if (result.success) {
+                console.log('✅ 세션 등록 완료');
+                this.updateSessionStatus('connected');
+            } else {
+                console.error('❌ 세션 등록 실패:', result.error);
+            }
+        } catch (error) {
+            console.error('세션 초기화 오류:', error);
+        }
+    }
+    
+    // SSE 연결 설정
+    setupSSE() {
+        if (this.eventSource) {
+            this.eventSource.close();
+        }
+        
+        // 데스크탑용 SSE 엔드포인트 사용
+        const statusStreamUrl = window.CONFIG?.ENDPOINTS?.DESKTOP?.STATUS_STREAM || '/api/status_stream';
+        this.eventSource = new EventSource(statusStreamUrl);
+        
+        this.eventSource.onmessage = async (event) => {
+            try {
+                // 빈 메시지나 유효하지 않은 데이터 체크
+                if (!event.data || event.data.trim() === '') {
+                    console.log('📡 SSE 빈 메시지 수신, 무시');
+                    return;
+                }
+                
+                const data = JSON.parse(event.data);
+                console.log('📡 SSE 메시지 수신:', data);
+                console.log('📡 SSE 메시지 타입:', typeof data, 'keys:', Object.keys(data));
+                
+                // 실시간 업데이트 강화
+                await this.handleSSEMessage(data);
+                
+                // UI 즉시 업데이트 확인
+                console.log('📡 SSE 메시지 처리 완료');
+            } catch (error) {
+                console.error('SSE 메시지 파싱 오류:', error, '데이터:', event.data);
+            }
         };
         
-        processStep();
-    }
-    
-    updateStepIndicator(stepIndex) {
-        const steps = this.stepIndicator.querySelectorAll('.step-item');
-        
-        steps.forEach((step, index) => {
-            step.classList.remove('done', 'active');
+        this.eventSource.onerror = (error) => {
+            console.error('SSE 연결 오류:', error);
+            console.log('SSE 오류 또는 종료:', error);
+            console.log('SSE 연결 상태:', this.eventSource.readyState);
             
-            if (index < stepIndex) {
-                step.classList.add('done');
-            } else if (index === stepIndex) {
-                step.classList.add('active');
+            // 연결 상태 확인
+            if (this.eventSource.readyState === EventSource.CLOSED) {
+                console.log('SSE 연결이 종료되었습니다. 재연결을 시도합니다...');
+                // 재연결 시도 전에 기존 연결 정리
+                try {
+                    this.eventSource.close();
+                } catch (closeError) {
+                    console.warn('SSE 연결 종료 중 오류:', closeError);
+                }
+                setTimeout(() => {
+                    console.log('🔄 SSE 재연결 시도...');
+                    // 재연결 시도 시에도 CONFIG 미초기화 대비
+                    this.setupSSE();
+                }, 3000);
+            } else if (this.eventSource.readyState === EventSource.CONNECTING) {
+                console.log('SSE 연결 중...');
+            } else if (this.eventSource.readyState === EventSource.OPEN) {
+                console.log('SSE 연결이 열려있습니다.');
             }
-        });
+        };
         
-        this.currentStep = stepIndex;
+        console.log('✅ SSE 연결 설정 완료');
     }
     
-    updateOverallProgress(percentage) {
-        this.overallProgress.style.width = `${percentage}%`;
-        this.progressText.textContent = `${Math.round(percentage)}%`;
-    }
-    
-    updateStepCard(stepIndex) {
-        const stepCards = document.querySelectorAll('.step-card');
-        const stepStatuses = document.querySelectorAll('.step-status');
-        const stepProgresses = document.querySelectorAll('.step-progress .progress-fill');
-        const stepPercents = document.querySelectorAll('.progress-percent');
-        
-        if (stepCards[stepIndex]) {
-            // 이전 단계 완료 표시
-            if (stepIndex > 0) {
-                stepCards[stepIndex - 1].classList.add('completed');
-                stepStatuses[stepIndex - 1].textContent = '완료';
-                stepProgresses[stepIndex - 1].style.width = '100%';
-                stepPercents[stepIndex - 1].textContent = '100%';
-            }
-            
-            // 현재 단계 활성화
-            stepCards[stepIndex].classList.add('running');
-            stepStatuses[stepIndex].textContent = '실행중';
-            
-            // 진행률 애니메이션
-            this.animateProgress(stepProgresses[stepIndex], stepPercents[stepIndex]);
-        }
-    }
-    
-    animateProgress(progressBar, progressText) {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 10;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-            }
-            
-            progressBar.style.width = `${progress}%`;
-            progressText.textContent = `${Math.round(progress)}%`;
-        }, 500);
-    }
-    
-    completeAIChain() {
-        this.isProcessing = false;
-        this.updateOverallProgress(100);
-        
-        // 모든 단계 완료 표시
-        const stepCards = document.querySelectorAll('.step-card');
-        const stepStatuses = document.querySelectorAll('.step-status');
-        const stepProgresses = document.querySelectorAll('.step-progress .progress-fill');
-        const stepPercents = document.querySelectorAll('.progress-percent');
-        
-        stepCards.forEach(card => {
-            card.classList.remove('running');
-            card.classList.add('completed');
-        });
-        
-        stepStatuses.forEach(status => {
-            status.textContent = '완료';
-        });
-        
-        stepProgresses.forEach(progress => {
-            progress.style.width = '100%';
-        });
-        
-        stepPercents.forEach(percent => {
-            percent.textContent = '100%';
-        });
-        
-        // 하드웨어 제어 버튼 활성화
-        this.startHwBtn.disabled = false;
-        this.hwStatus.textContent = '실행 준비 완료';
-        
-        // 하드웨어 연결 시뮬레이션
-        setTimeout(() => {
-            this.hardwareConnected = true;
-            this.updateConnectionStatus(true);
-        }, 1000);
-    }
-    
-    startHardware() {
-        if (!this.hardwareConnected) {
-            alert('하드웨어가 연결되지 않았습니다.');
+    // SSE 메시지 처리
+    async handleSSEMessage(data) {
+        if (data.event === 'connected') {
+            console.log('✅ SSE 연결 확인');
             return;
         }
         
-        this.startHwBtn.disabled = true;
-        this.stopHwBtn.disabled = false;
-        this.hwStatus.textContent = '실행 중...';
+        console.log('📡 SSE 메시지 처리 시작:', data);
         
-        // 하드웨어 실행 시뮬레이션
-        this.simulateHardwareExecution();
+        // AI 처리 상태 업데이트 - 모든 관련 데이터 확인
+        if (data.current_step !== undefined || data.progress !== undefined || data.status) {
+            console.log('🎯 AI 진행률 업데이트 트리거:', {
+                current_step: data.current_step,
+                progress: data.progress,
+                status: data.status
+            });
+            await this.updateAIProgress(data);
+            
+            // 분석 시작 시 첫 번째 단계 표시
+            if (data.current_step === 0 && data.status === 'running') {
+                console.log('🎯 1단계 분석 시작 - 상태 업데이트');
+                if (window.updateAIProgress) {
+                    window.updateAIProgress(1, 25, 'running', '사용자 입력 분석 중입니다...');
+                }
+                if (window.updateAccordionStatus) {
+                    window.updateAccordionStatus(1, 'active');
+                }
+            }
+        }
+        
+        // 분석 결과가 있는 경우 즉시 표시
+        if (data.analysis_result || data.chain1_out || data.chain2_out || data.chain3_out || data.chain4_out) {
+            console.log('🎯 분석 결과 업데이트 트리거:', data);
+            if (window.handleAIStatusData) {
+                await window.handleAIStatusData(data);
+            }
+        }
+        
+        // 하드웨어 제어 상태 업데이트
+        if (data.event && data.event.startsWith('hardware_')) {
+            this.updateHardwareStatus(data);
+        }
+        
+        // 시스템 상태 업데이트 (모든 SSE 메시지에 대해)
+        this.updateSystemStatus(data);
+        
+        console.log('📡 SSE 메시지 처리 완료');
     }
     
-    stopHardware() {
-        this.startHwBtn.disabled = false;
-        this.stopHwBtn.disabled = true;
-        this.hwStatus.textContent = '중지됨';
+    // AI 진행률 업데이트
+    async updateAIProgress(data) {
+        console.log('🎯 updateAIProgress 호출됨:', data);
+        
+        const step = data.current_step || data.processing?.current_step;
+        const progress = data.progress || data.processing?.progress;
+        const message = data.message || data.processing?.message;
+        const status = data.status || data.system?.status || 'running';
+        
+        console.log('🎯 추출된 값들:', { step, progress, message, status });
+        
+        if (step !== undefined && step !== null) {
+            console.log('🎯 단계 업데이트:', step);
+            this.currentStep = step;
+            
+            // AI 진행률 표시 함수 호출 (control-ai.js의 함수)
+            if (window.updateAIProgress) {
+                console.log('🎯 window.updateAIProgress 호출');
+                window.updateAIProgress(step, progress || 0, status, message);
+            }
+            if (window.updateStepIndicator) {
+                console.log('🎯 window.updateStepIndicator 호출');
+                window.updateStepIndicator(step);
+            }
+        }
+        
+        // 진행률만 있는 경우에도 업데이트
+        if (progress !== undefined && progress !== null) {
+            console.log('🎯 진행률만 업데이트:', progress);
+            if (window.updateAIProgress && this.currentStep) {
+                window.updateAIProgress(this.currentStep, progress, status, message);
+            }
+        }
+        
+        // 단계별 결과 처리
+        if (window.handleAIStatusData) {
+            console.log('🎯 window.handleAIStatusData 호출');
+            await window.handleAIStatusData(data);
+        }
+        
+        console.log('🎯 updateAIProgress 완료');
     }
     
-    simulateHardwareExecution() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                this.completeHardwareExecution();
+    // 하드웨어 상태 업데이트
+    updateHardwareStatus(data) {
+        console.log('🔧 하드웨어 상태 업데이트:', data);
+        
+        switch (data.event) {
+            case 'hardware_start':
+                this.updateHardwareConnectionStatus('connecting');
+                break;
+            case 'hardware_progress':
+                this.updateHardwareConnectionStatus('connected');
+                break;
+            case 'hardware_complete':
+                this.updateHardwareConnectionStatus('connected');
+                this.hardwareConnected = true;
+                break;
+            case 'hardware_error':
+                this.updateHardwareConnectionStatus('error');
+                break;
+        }
+    }
+    
+    
+    // 시스템 상태 업데이트
+    updateSystemStatus(data = {}) {
+        try {
+            // 모바일 연결 상태 업데이트 - SSE 메시지에서 모바일 세션 감지
+            if (this.mobileConnectionStatus) {
+                // 모바일에서 분석이 시작되었거나 진행 중인 경우 "접속중"으로 표시
+                if (data.current_step !== undefined || data.progress !== undefined || data.status === 'running' || data.upload?.uploaded_file) {
+                    this.updateStatusBadge(this.mobileConnectionStatus, 'connected', '접속중');
+                } else if (data.system?.status === 'idle' || data.status === 'idle') {
+                    this.updateStatusBadge(this.mobileConnectionStatus, 'disconnected', '대기중');
+                }
             }
             
-            this.hwStatus.textContent = `실행 중... ${Math.round(progress)}%`;
-        }, 1000);
+            // 이미지 업로드 상태 업데이트
+            if (data.upload?.uploaded_file && this.imageUploadStatus) {
+                this.updateStatusBadge(this.imageUploadStatus, 'uploaded', '업로드됨');
+            }
+            
+            // AI 처리 상태 업데이트
+            if (data.system?.status === 'running' && this.executionTriggerStatus) {
+                this.updateStatusBadge(this.executionTriggerStatus, 'active', '실행중');
+                this.isProcessing = true;
+            } else if (data.system?.status === 'done' && this.executionTriggerStatus) {
+                this.updateStatusBadge(this.executionTriggerStatus, 'completed', '완료');
+                this.isProcessing = false;
+            }
+            
+            // 하드웨어 연결 상태 시뮬레이션
+            this.updateHardwareStatusIndicators();
+            
+            // 시스템 리소스 상태 업데이트
+            this.updateSystemResourceStatus(data);
+        } catch (error) {
+            console.error('시스템 상태 업데이트 오류:', error);
+        }
     }
     
-    completeHardwareExecution() {
-        this.startHwBtn.disabled = true;
-        this.stopHwBtn.disabled = true;
-        this.hwStatus.textContent = '실행 완료';
+    // 상태 배지 업데이트
+    updateStatusBadge(element, status, text) {
+        if (!element) {
+            console.warn('상태 배지 요소가 존재하지 않습니다:', element);
+            return;
+        }
         
-        // 결과 표시
-        this.showExecutionResult();
+        element.className = `krds-badge krds-badge--${this.getStatusColor(status)}`;
+        element.setAttribute('data-status', status);
+        
+        const statusTextElement = element.querySelector('.status-text');
+        if (statusTextElement) {
+            statusTextElement.textContent = text;
+        } else {
+            console.warn('상태 텍스트 요소를 찾을 수 없습니다:', element);
+        }
+        
+        const indicator = element.querySelector('.status-indicator');
+        if (indicator) {
+            indicator.className = `status-indicator ${status}`;
+        }
     }
     
-    showExecutionResult() {
-        const hardwareResult = document.getElementById('hardwareResult');
-        hardwareResult.innerHTML = `
-            <div class="result-content">
-                <h5>하드웨어 실행 완료</h5>
-                <p>좌석 배치가 성공적으로 완료되었습니다.</p>
-                <div class="code-display">16자리 제어 코드: 1234567890ABCDEF</div>
-            </div>
-        `;
-        hardwareResult.style.display = 'block';
+    // 상태에 따른 색상 반환
+    getStatusColor(status) {
+        const colorMap = {
+            'connected': 'success',
+            'uploaded': 'success',
+            'active': 'warning',
+            'completed': 'success',
+            'error': 'danger',
+            'disconnected': 'secondary',
+            'waiting': 'secondary'
+        };
+        return colorMap[status] || 'secondary';
     }
     
-    resetSystem() {
-        if (confirm('시스템을 리셋하시겠습니까?')) {
-            // 모든 상태 초기화
-            this.currentStep = 0;
-            this.isProcessing = false;
-            this.hardwareConnected = false;
-            
-            // UI 초기화
-            this.waitingSection.style.display = 'block';
-            this.monitoringSection.style.display = 'none';
-            
-            // 단계 인디케이터 초기화
-            this.updateStepIndicator(-1);
-            this.updateOverallProgress(0);
-            
-            // 하드웨어 상태 초기화
-            this.startHwBtn.disabled = true;
-            this.stopHwBtn.disabled = true;
-            this.hwStatus.textContent = '대기중';
-            
-            // 단계 카드 초기화
-            const stepCards = document.querySelectorAll('.step-card');
-            const stepStatuses = document.querySelectorAll('.step-status');
-            const stepProgresses = document.querySelectorAll('.step-progress .progress-fill');
-            const stepPercents = document.querySelectorAll('.progress-percent');
-            
-            stepCards.forEach(card => {
-                card.classList.remove('running', 'completed');
+    // 하드웨어 상태 표시기 업데이트
+    updateHardwareStatusIndicators() {
+        // 시뮬레이션된 하드웨어 연결 상태
+        const ports = [this.port1Status, this.port2Status, this.port3Status, this.port4Status];
+        ports.forEach((port, index) => {
+            if (port) {
+                const isConnected = Math.random() > 0.3; // 70% 확률로 연결됨
+                const status = isConnected ? 'connected' : 'disconnected';
+                const text = isConnected ? '연결됨' : '끊김';
+                this.updateStatusBadge(port, status, text);
+            } else {
+                console.warn(`포트 ${index + 1} 상태 요소를 찾을 수 없습니다`);
+            }
+        });
+    }
+    
+    // 시스템 리소스 상태 업데이트
+    updateSystemResourceStatus(data) {
+        // CPU 상태 시뮬레이션
+        if (this.cpuStatus) {
+            const cpuUsage = Math.random() * 100;
+            const cpuStatus = cpuUsage > 80 ? 'error' : cpuUsage > 60 ? 'warning' : 'success';
+            this.updateStatusBadge(this.cpuStatus, cpuStatus, `${Math.round(cpuUsage)}%`);
+        }
+        
+        // 메모리 상태 시뮬레이션
+        if (this.memoryStatus) {
+            const memoryUsage = Math.random() * 100;
+            const memoryStatus = memoryUsage > 85 ? 'error' : memoryUsage > 70 ? 'warning' : 'success';
+            this.updateStatusBadge(this.memoryStatus, memoryStatus, `${Math.round(memoryUsage)}%`);
+        }
+        
+        // 세션 상태
+        if (this.sessionStatus) {
+            this.updateStatusBadge(this.sessionStatus, 'connected', '활성');
+        }
+        
+        // 네트워크 상태
+        if (this.networkStatus) {
+            this.updateStatusBadge(this.networkStatus, 'connected', '정상');
+        }
+    }
+    
+    // 하드웨어 연결 상태 업데이트
+    updateHardwareConnectionStatus(status) {
+        console.log(`🔧 하드웨어 연결 상태: ${status}`);
+        // 하드웨어 관련 UI 업데이트 로직 추가
+    }
+    
+    // 세션 상태 업데이트
+    updateSessionStatus(status) {
+        console.log(`📱 세션 상태: ${status}`);
+        // 세션 관련 UI 업데이트 로직 추가
+    }
+
+    // 세션 ID 생성
+    generateSessionId() {
+        return 'desktop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // 시스템 상태 새로고침
+    async refreshSystemStatus() {
+        console.log('🔄 시스템 상태 새로고침');
+        try {
+            // SSE를 통해 실시간으로 상태를 받고 있으므로 별도 폴링 불필요
+            console.log('✅ SSE를 통한 실시간 상태 업데이트 중');
+        } catch (error) {
+            console.error('❌ 시스템 상태 새로고침 실패:', error);
+        }
+    }
+    
+    // 시스템 초기화
+    async resetSystem() {
+        if (!confirm('시스템을 초기화하시겠습니까?')) {
+            return;
+        }
+        
+        console.log('🔄 시스템 초기화 시작');
+        try {
+            const resetUrl = window.CONFIG?.ENDPOINTS?.DESKTOP?.RESET || '/desktop/api/reset';
+            const response = await fetch(resetUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             });
             
-            stepStatuses.forEach(status => {
-                status.textContent = '대기중';
+            const result = await response.json();
+            if (result.success) {
+                console.log('✅ 시스템 초기화 완료');
+                this.resetUI();
+            } else {
+                console.error('❌ 시스템 초기화 실패:', result.error);
+                alert('시스템 초기화에 실패했습니다: ' + result.error);
+            }
+        } catch (error) {
+            console.error('시스템 초기화 오류:', error);
+            alert('시스템 초기화 중 오류가 발생했습니다.');
+        }
+    }
+    
+    // UI 초기화
+    resetUI() {
+        // AI 진행률 초기화
+        this.currentStep = 0;
+        this.progressValue = 0;
+        this.isProcessing = false;
+        
+        // AI 관련 UI 초기화 (0%로 초기화)
+        if (window.updateAIProgress) {
+            window.updateAIProgress(this.currentStep, this.progressValue, 'waiting', '시스템 준비됨');
+        }
+        if (window.updateStepIndicator) {
+            window.updateStepIndicator(this.currentStep);
+        }
+        
+        // 상태 배지 초기화
+        this.updateStatusBadge(this.imageUploadStatus, 'waiting', '대기중');
+        this.updateStatusBadge(this.executionTriggerStatus, 'inactive', '비활성');
+        
+        // 하드웨어 상태 초기화
+        this.hardwareConnected = false;
+        
+        console.log('✅ UI 초기화 완료');
+    }
+    
+    // QR 코드 로드
+    loadQRCode() {
+        const qrImage = document.getElementById('qrCodeImage');
+        if (qrImage) {
+            // CONFIG에서 QR 코드 경로 가져오기
+            const qrPath = window.CONFIG?.ENDPOINTS?.DESKTOP?.QR_PNG || '/desktop/qr.png';
+            qrImage.src = qrPath;
+            console.log('📱 QR 코드 로드:', qrPath);
+            
+            // 이미지 로드 성공/실패 이벤트 처리
+            qrImage.onload = () => {
+                console.log('✅ QR 코드 로드 성공');
+            };
+            
+            qrImage.onerror = () => {
+                console.error('❌ QR 코드 로드 실패:', qrPath);
+                // 기본 이미지나 대체 텍스트 표시
+                qrImage.alt = 'QR 코드를 불러올 수 없습니다';
+                qrImage.style.display = 'none';
+                const container = document.getElementById('qrCodeContainer');
+                if (container && !container.querySelector('.qr-error')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'qr-error';
+                    errorDiv.textContent = 'QR 코드를 불러올 수 없습니다';
+                    errorDiv.style.cssText = 'text-align: center; color: #dc3545; padding: 20px;';
+                    container.appendChild(errorDiv);
+                }
+            };
+        }
+    }
+    
+    // QR 코드 새로고침
+    refreshQRCode() {
+        const qrImage = document.getElementById('qrCodeImage');
+        if (qrImage) {
+            // CONFIG에서 QR 코드 경로 가져오기
+            const qrPath = window.CONFIG?.ENDPOINTS?.DESKTOP?.QR_PNG || '/desktop/qr.png';
+            qrImage.src = qrPath + '?t=' + Date.now();
+            console.log('🔄 QR 코드 새로고침:', qrPath);
+        }
+    }
+    
+    // 하드웨어 제어 실행
+    async triggerHardwareControl() {
+        if (!this.isProcessing) {
+            alert('먼저 AI 분석을 완료해주세요.');
+            return;
+        }
+        
+        console.log('🔧 하드웨어 제어 실행');
+        try {
+            const triggerHardwareUrl = window.CONFIG?.ENDPOINTS?.DESKTOP?.TRIGGER_HARDWARE || '/desktop/api/trigger_hardware';
+            const response = await fetch(triggerHardwareUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: this.sessionId,
+                    command: 'execute'
+                })
             });
             
-            stepProgresses.forEach(progress => {
-                progress.style.width = '0%';
-            });
-            
-            stepPercents.forEach(percent => {
-                percent.textContent = '0%';
-            });
-            
-            // 결과 숨기기
-            const results = document.querySelectorAll('.step-result');
-            results.forEach(result => {
-                result.style.display = 'none';
-            });
-            
-            // 새로운 시뮬레이션 시작
-            setTimeout(() => {
-                this.startSimulation();
-            }, 5000);
+            const result = await response.json();
+            if (result.success) {
+                console.log('✅ 하드웨어 제어 시작');
+                this.updateStatusBadge(this.executionTriggerStatus, 'active', '실행중');
+            } else {
+                console.error('❌ 하드웨어 제어 실패:', result.error);
+                alert('하드웨어 제어에 실패했습니다: ' + result.error);
+            }
+        } catch (error) {
+            console.error('하드웨어 제어 오류:', error);
+            alert('하드웨어 제어 중 오류가 발생했습니다.');
         }
     }
 
-    updateConnectionStatus(connected) {
-        const indicator = this.connectionStatus.querySelector('.status-indicator');
-        const text = this.connectionStatus.querySelector('span:last-child');
-        
-        if (connected) {
-            indicator.classList.remove('offline');
-            indicator.classList.add('online');
-            text.textContent = '모바일 기기 연결됨';
-        } else {
-            indicator.classList.remove('online');
-            indicator.classList.add('offline');
-            text.textContent = '모바일 기기 연결 대기중';
-        }
-    }
-    
-    refreshQRCode() {
-        // QR 코드 새로고침 (실제 구현에서는 서버에서 새로 생성)
-        console.log('QR 코드 새로고침');
-    }
 }
 
 // 전역 변수로 인스턴스 생성
@@ -430,151 +699,41 @@ let controlController;
 document.addEventListener('DOMContentLoaded', () => {
     controlController = new ControlController();
     
-    // WebSocket 매니저 초기화
-    new ControlWebSocketManager();
+        // AI 분석 스트림은 control-ai.js에서 처리
+    
+    console.log('🎯 데스크탑 관제 화면 로딩 완료');
 });
 
-// WebSocket 연동 구현 (Phase 4)
-class ControlWebSocketManager {
-    constructor() {
-        this.setupWebSocket();
-    }
-    
-    setupWebSocket() {
-        if (window.wsManager) {
-            // WebSocket 이벤트 핸들러 등록
-            window.wsManager.on('upload_complete', (data) => {
-                this.handleUploadComplete(data);
-            });
-            
-            window.wsManager.on('chain_progress', (data) => {
-                this.handleChainProgress(data);
-            });
-            
-            window.wsManager.on('chain_complete', (data) => {
-                this.handleChainComplete(data);
-            });
-            
-            window.wsManager.on('hardware_start', (data) => {
-                this.handleHardwareStart(data);
-            });
-            
-            window.wsManager.on('hardware_progress', (data) => {
-                this.handleHardwareProgress(data);
-            });
-            
-            window.wsManager.on('hardware_complete', (data) => {
-                this.handleHardwareComplete(data);
-            });
-            
-            window.wsManager.on('status_update', (data) => {
-                this.handleStatusUpdate(data);
-            });
+// 페이지 언로드 시 SSE 연결 정리
+window.addEventListener('beforeunload', () => {
+    if (controlController && controlController.eventSource) {
+        try {
+            controlController.eventSource.close();
+            console.log('✅ SSE 연결 정리 완료');
+        } catch (error) {
+            console.warn('SSE 연결 정리 중 오류:', error);
         }
     }
-    
-    handleUploadComplete(data) {
-        console.log('업로드 완료:', data);
-        if (controlController) {
-            controlController.updateConnectionStatus(true);
-            controlController.showNotification('파일 업로드 완료', 'success');
-        }
-    }
-    
-    handleChainProgress(data) {
-        console.log('체인 진행:', data);
-        if (controlController) {
-            controlController.updateStepProgress(data.chain_id, data.progress);
-            controlController.updateOverallProgress(data.total_progress);
-        }
-    }
-    
-    handleChainComplete(data) {
-        console.log('체인 완료:', data);
-        if (controlController) {
-            controlController.completeStep(data.chain_id);
-            if (data.all_chains_completed) {
-                controlController.showNotification('AI 처리 완료', 'success');
-            }
-        }
-    }
-    
-    handleHardwareStart(data) {
-        console.log('하드웨어 시작:', data);
-        if (controlController) {
-            controlController.updateHardwareStatus('running');
-            controlController.showNotification('하드웨어 실행 시작', 'info');
-        }
-    }
-    
-    handleHardwareProgress(data) {
-        console.log('하드웨어 진행:', data);
-        if (controlController) {
-            controlController.updateHardwareProgress(data.progress, data.step);
-        }
-    }
-    
-    handleHardwareComplete(data) {
-        console.log('하드웨어 완료:', data);
-        if (controlController) {
-            controlController.updateHardwareStatus('completed');
-            controlController.showNotification('하드웨어 실행 완료', 'success');
-        }
-    }
-    
-    handleStatusUpdate(data) {
-        console.log('상태 업데이트:', data);
-        if (controlController) {
-            controlController.updateSystemStatus(data);
-        }
-    }
-    
-    emit(event, data) {
-        // Phase 4에서 구현 예정
-        console.log('Control WebSocket 이벤트:', event, data);
-    }
-    
-    // 예상 이벤트들
-    handleUploadComplete(data) {
-        // Phase 4에서 구현 예정
-        console.log('파일 업로드 완료:', data);
-    }
-    
-    handleChainStart(data) {
-        // Phase 4에서 구현 예정
-        console.log('AI 체인 시작:', data);
-    }
-    
-    handleChainProgress(data) {
-        // Phase 4에서 구현 예정
-        console.log('AI 체인 진행상황:', data);
-    }
-    
-    handleChainComplete(data) {
-        // Phase 4에서 구현 예정
-        console.log('AI 체인 완료:', data);
-    }
-    
-    handleHardwareStart(data) {
-        // Phase 4에서 구현 예정
-        console.log('하드웨어 시작:', data);
-    }
-    
-    handleHardwareProgress(data) {
-        // Phase 4에서 구현 예정
-        console.log('하드웨어 진행상황:', data);
-    }
-    
-    handleHardwareComplete(data) {
-        // Phase 4에서 구현 예정
-        console.log('하드웨어 완료:', data);
-    }
-    
-    handleSensorUpdate(data) {
-        // Phase 4에서 구현 예정
-        console.log('센서 데이터 업데이트:', data);
-    }
-}
+});
 
-// 전역 WebSocket 매니저 인스턴스
-window.controlWsManager = new ControlWebSocketManager();
+// 페이지 숨김 시 SSE 연결 정리 (모바일 브라우저 대응)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && controlController && controlController.eventSource) {
+        try {
+            controlController.eventSource.close();
+            console.log('✅ 페이지 숨김으로 인한 SSE 연결 정리');
+        } catch (error) {
+            console.warn('SSE 연결 정리 중 오류:', error);
+        }
+    }
+});
+
+// 전역 함수들 (HTML에서 호출)
+window.triggerHardwareControl = () => {
+    if (controlController) {
+        controlController.triggerHardwareControl();
+    }
+};
+
+// 전역 인스턴스 노출
+window.controlController = controlController;

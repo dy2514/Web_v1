@@ -177,7 +177,7 @@ def get_connection_info() -> Dict[str, str]:
         'local_ip': local_ip,
         'port': port,
         'desktop_url': f"http://{local_ip}:{port}/desktop/control",
-        'mobile_url': f"http://{local_ip}:{port}/mobile/input"
+        'mobile_url': f"http://{local_ip}:{port}/mobile/home"
     }
 
 def generate_qr_data(local_ip: str = None, port: int = None) -> str:

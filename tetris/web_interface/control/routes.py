@@ -235,7 +235,7 @@ def status_stream():
             if 'processing' in data and 'progress' in data['processing']:
                 data['progress'] = data['processing']['progress']
             if 'system' in data and 'status' in data['system']:
-                data['status'] = data['system']['status']
+                data['status'] = data['processing']['status']
             if data.get('system', {}).get('status') == 'done':
                 data['status'] = 'done'
 
@@ -614,12 +614,16 @@ def trigger_hardware():
                     'progress': 50
                 })
             
-            # 제어 완료 알림
+            # 제어 완료 알림 + 단계 5 반영
             update_progress_stream(session_id, {
                 'event': 'hardware_complete',
                 'message': '하드웨어 제어가 완료되었습니다.',
-                'progress': 100
+                'progress': 100,
+                'current_step': 5
             })
+
+            # 전역 상태에도 단계 5로 반영 (모바일/상태 스트림용)
+            update_status(current_step=5)
             
         except Exception as hardware_error:
             logger.error(f"하드웨어 제어 실행 오류: {hardware_error}")
@@ -667,6 +671,67 @@ def qr_png():
         logger.error(f"QR 코드 생성 오류: {e}")
         return jsonify({'error': 'QR 코드 생성 실패'}), 500
 
+
+@api_bp.route('/logs/recent', methods=['GET'])
+def get_recent_logs():
+    """최신 로그 3개 조회 API"""
+    try:
+        import os
+        import glob
+        from datetime import datetime
+        
+        # log_data 디렉토리 경로
+        log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'tetris_IO', 'log_data')
+        
+        # 로그 파일 목록 가져오기 (최신순 정렬)
+        log_files = glob.glob(os.path.join(log_dir, 'items_*.txt'))
+        log_files.sort(key=os.path.getmtime, reverse=True)
+        
+        # 최신 3개 파일만 선택
+        recent_logs = []
+        for i, log_file in enumerate(log_files[:3]):
+            try:
+                # 파일명에서 타임스탬프 추출
+                filename = os.path.basename(log_file)
+                timestamp_str = filename.replace('items_', '').replace('.txt', '')
+                
+                # 타임스탬프 파싱
+                try:
+                    timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
+                    formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    formatted_time = timestamp_str
+                
+                # 파일 내용 읽기 (처음 30줄 또는 전체 내용 중 적은 것)
+                with open(log_file, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                    # 30줄 또는 전체 내용 중 적은 것 선택
+                    content_lines = lines[: len(lines)]
+                    content = ''.join(content_lines).strip()
+                
+                recent_logs.append({
+                    'filename': filename,
+                    'timestamp': formatted_time,
+                    'content': content,
+                    'file_path': log_file
+                })
+                
+            except Exception as e:
+                logger.warning(f"로그 파일 읽기 실패: {log_file} - {e}")
+                continue
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'logs': recent_logs,
+                'count': len(recent_logs),
+                'log_directory': log_dir
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"최신 로그 조회 오류: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @api_bp.route('/step_analysis', methods=['POST'])
 def start_step_analysis():
@@ -784,7 +849,7 @@ def start_step_analysis():
                 # 분석 완료 후 상태 업데이트
                 update_status(
                     progress=100,
-                    status='done',
+                    status='completed',
                     message='분석이 완료되었습니다!',
                     uploaded_file=True,
                     people_count=people_count,
@@ -793,6 +858,12 @@ def start_step_analysis():
                     total_elapsed=result.get('total_elapsed'),
                     step_times=result.get('step_times')
                 )
+                # processing.status를 completed로 설정 (완료 타임스탬프 포함)
+                try:
+                    from web_interface.base.state_manager import state_manager
+                    state_manager.set_processing_status('completed', 100)
+                except Exception as _e:
+                    logger.warning(f"processing.status 완료 설정 실패: {_e}")
                 
                 logger.info(f"[완료] 단계별 분석 완료: {result['out_path']}")
                 
