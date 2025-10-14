@@ -4,8 +4,8 @@
     - 진행률 표시기
     - 아코디언 형태의 세부 현황
 -->
-<div class="krds-card">
-    <div class="krds-card__header">
+<div class="control-card">
+    <div class="control-card__header">
         <div class="krds-card__title">
             <span class="material-icons krds-icon krds-icon--lg" aria-hidden="true">psychology</span>
             <h2 class="krds-title krds-title--lg">AI 처리 단계별 진행 상황</h2>
@@ -28,13 +28,22 @@
                 <div class="horizontal-progress-container">
                     <!-- 전체 진행률 표시 -->
             <div class="overall-progress-section">
-                <!-- <div class="current-step-status" id="currentStepStatus">시스템 대기 중</div> -->
+                <!-- <div class="current-step-status" id="currentStepStatus">분석 시작 대기 중</div> -->
                 <div class="overall-progress-bar">
                     <div class="overall-progress-fill" id="overallProgressFill" style="width: 0%"></div>
                 </div>
                 <div class="progress-percentage" id="overallProgressPercentage">0%</div>
             </div>
                     <div class="progress-track">
+                        <!-- 0단계: 분석 시작 -->
+                        <div class="progress-step" id="stepProgress0">
+                            <div class="step-circle" id="stepIcon0">
+                                <span class="material-icons" style="font-size: 16px;">hourglass_empty</span>
+                            </div>
+                            <div class="step-label">분석 시작</div>
+                            <div class="step-status" id="stepStatus0">대기중</div>
+                        </div>
+                        
                         <!-- 1단계: 사용자 입력 분석 -->
                         <div class="progress-step" id="stepProgress1">
                             <div class="step-circle" id="stepIcon1">
@@ -60,6 +69,15 @@
                             </div>
                             <div class="step-label">시트 동작 계획</div>
                             <div class="step-status" id="stepStatus3">대기중</div>
+                        </div>
+
+                        <!-- 4단계: 최적 배치 코드 생성 -->
+                        <div class="progress-step" id="stepProgress4">
+                            <div class="step-circle" id="stepIcon4">
+                                <span class="step-number">4</span>
+                            </div>
+                            <div class="step-label">최적 배치 코드 생성</div>
+                            <div class="step-status" id="stepStatus4">대기중</div>
                         </div>
                     </div>
                 </div>

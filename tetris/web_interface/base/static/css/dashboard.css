@@ -1137,14 +1137,6 @@ html, body {
 }
 
 /* KRDS 표준 단계 표시기 컨테이너 */
-.step-indicator-container {
-  margin-bottom: var(--space-6);
-  padding: var(--space-5);
-  background: var(--bg-tertiary);
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
-}
-
 .step-title {
   font-size: 1.125rem;
   font-weight: 600;

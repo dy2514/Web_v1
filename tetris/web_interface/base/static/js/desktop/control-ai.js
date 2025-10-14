@@ -169,18 +169,17 @@ function getCurrentStepMessage(step) {
     }
     // fallback
     const messages = {
-        0: "분석 대기중입니다...",
+        0: "분석 시작 대기중입니다...",
         1: "사용자 입력 분석 중입니다...",
         2: "최적 배치 생성 중입니다...",
         3: "시트 동작 계획 중입니다...",
-        4: "하드웨어 구동 중입니다..."
+        4: "최적 배치 코드 생성 중입니다..."
     };
     return messages[step] || "분석을 시작하고 있습니다...";
 }
 
 // AI 처리 단계 업데이트
 function updateAIProgress(step, progress, status, message) {
-    if (step == 5) { step = 4; }
     console.log(`🎯 updateAIProgress 호출: 단계=${step}, 진행률=${progress}%, 상태=${status}`);
     
     // 단계별 진행률 업데이트
@@ -279,7 +278,13 @@ function updateAIProgress(step, progress, status, message) {
     }
     
     if (overallProgressFill) {
-        overallProgressFill.style.width = `${progress}%`;
+        if (progress === 25) {
+            overallProgressFill.style.width = `${27}%`;
+        } else if (progress === 75) {
+            overallProgressFill.style.width = `${73}%`;
+        } else {
+            overallProgressFill.style.width = `${progress}%`;
+        }
         
         // 분석 중일 때 로딩 애니메이션 활성화
         if (status === 'running' || status === 'active') {
@@ -313,14 +318,12 @@ function updateAIProgress(step, progress, status, message) {
     }
 }
 
-// 단계별 인디케이터 업데이트 (3단계로 변경)
+// 단계별 인디케이터 업데이트 (0-4단계까지)
 function updateStepIndicator(step) {
-    if (step == 5) { step = 4; }
-    else if (step == 6) { step = 5; }
     console.log(`🎯 updateStepIndicator 호출: 단계=${step}`);
     
-    // AI 처리 단계 (1-3단계) 업데이트
-    for (let i = 1; i <= 3; i++) {
+    // AI 처리 단계 (0-4단계) 업데이트
+    for (let i = 0; i <= 4; i++) {
         const stepProgress = document.getElementById(`stepProgress${i}`);
         const stepIcon = document.getElementById(`stepIcon${i}`);
         const stepStatus = document.getElementById(`stepStatus${i}`);
@@ -331,36 +334,51 @@ function updateStepIndicator(step) {
             if (i < step) {
                 stepProgress.classList.add('completed');
                 if (stepIcon) {
-                    stepIcon.innerHTML = '<span class="step-number">✓</span>';
+                    // 0단계는 특수 아이콘 처리
+                    if (i === 0) {
+                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">check_circle</span>';
+                    } else {
+                        stepIcon.innerHTML = '<span class="step-number">&nbsp;</span>';
+                    }
                 }
                 if (stepStatus) {
                     stepStatus.textContent = '완료';
                 }
                 // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function') {
+                if (typeof updateStepIcon === 'function' && i >= 1) {
                     updateStepIcon(i);
                 }
             } else if (i === step) {
                 stepProgress.classList.add('active');
                 if (stepIcon) {
-                    stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
+                    // 0단계는 특수 아이콘 처리
+                    if (i === 0) {
+                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">sync</span>';
+                    } else {
+                        stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
+                    }
                 }
                 if (stepStatus) {
                     stepStatus.textContent = '진행중';
                 }
                 // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function') {
+                if (typeof updateStepIcon === 'function' && i >= 1) {
                     updateStepIcon(i);
                 }
             } else {
                 if (stepIcon) {
-                    stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
+                    // 0단계는 특수 아이콘 처리
+                    if (i === 0) {
+                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">hourglass_empty</span>';
+                    } else {
+                        stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
+                    }
                 }
                 if (stepStatus) {
                     stepStatus.textContent = '대기중';
                 }
                 // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function') {
+                if (typeof updateStepIcon === 'function' && i >= 1) {
                     updateStepIcon(i);
                 }
             }
@@ -468,9 +486,9 @@ function updateAccordionStatus(step, status) {
     }
 }
 
-// 1단계 이후(2, 3단계) 세부 현황을 '대기중'으로 초기화
+// 1단계 이후(2, 3, 4단계) 세부 현황을 '대기중'으로 초기화
 function resetStepsAfter2ToWaiting() {
-    for (let i = 2; i <= 3; i++) {
+    for (let i = 2; i <= 4; i++) {
         const statusEl = document.getElementById(`step${i}AccordionStatus`);
         if (statusEl) {
             statusEl.textContent = '대기중';
@@ -495,18 +513,20 @@ function resetStepsAfter2ToWaiting() {
             detailInfo.classList.remove('has-result');
         }
 
-        // 상단 진행 카드(원형 아이콘/텍스트)도 대기 상태로 동기화
-        const stepProgress = document.getElementById(`stepProgress${i}`);
-        if (stepProgress) {
-            stepProgress.classList.remove('active', 'completed');
-        }
-        const stepIcon = document.getElementById(`stepIcon${i}`);
-        if (stepIcon) {
-            stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
-        }
-        const stepStatus = document.getElementById(`stepStatus${i}`);
-        if (stepStatus) {
-            stepStatus.textContent = '대기중';
+        // 상단 진행 카드(원형 아이콘/텍스트)도 대기 상태로 동기화 (1-3단계만)
+        if (i <= 3) {
+            const stepProgress = document.getElementById(`stepProgress${i}`);
+            if (stepProgress) {
+                stepProgress.classList.remove('active', 'completed');
+            }
+            const stepIcon = document.getElementById(`stepIcon${i}`);
+            if (stepIcon) {
+                stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
+            }
+            const stepStatus = document.getElementById(`stepStatus${i}`);
+            if (stepStatus) {
+                stepStatus.textContent = '대기중';
+            }
         }
 
         // 좌측 상태 아이콘도 공통 함수로 동기화
@@ -526,8 +546,22 @@ function resetAllSteps() {
     // shownSteps 플래그 리셋
     shownSteps = { 1: false, 2: false, 3: false, 4: false };
     
-    // 모든 단계를 대기중으로 초기화
-    for (let i = 1; i <= 3; i++) {
+    // 0단계 초기화
+    const stepProgress0 = document.getElementById(`stepProgress0`);
+    if (stepProgress0) {
+        stepProgress0.classList.remove('active', 'completed');
+    }
+    const stepIcon0 = document.getElementById(`stepIcon0`);
+    if (stepIcon0) {
+        stepIcon0.innerHTML = '<span class="material-icons" style="font-size: 16px;">hourglass_empty</span>';
+    }
+    const stepStatus0 = document.getElementById(`stepStatus0`);
+    if (stepStatus0) {
+        stepStatus0.textContent = '대기중';
+    }
+    
+    // 모든 단계를 대기중으로 초기화 (1-4단계)
+    for (let i = 1; i <= 4; i++) {
         const statusEl = document.getElementById(`step${i}AccordionStatus`);
         if (statusEl) {
             statusEl.textContent = '대기중';
@@ -591,7 +625,7 @@ function resetAllSteps() {
         overallProgressPercentage.textContent = '0%';
     }
     if (currentStepStatus) {
-        currentStepStatus.textContent = '분석 대기중입니다...';
+        currentStepStatus.textContent = '분석 시작 대기중입니다...';
         currentStepStatus.className = 'current-step-status waiting';
     }
     
@@ -676,9 +710,8 @@ async function handleAIStatusData(statusData) {
                 case 3:
                     progress = 75;
                     break;
-                case 4: case 5:
+                case 4:
                     progress = 100;
-                    break;
                     break;
                 default:    
                     progress = 0;
@@ -721,12 +754,19 @@ async function handleAIStatusData(statusData) {
             // 단계별 결과 처리
             await handleStepResults(statusData);
             
-            // 완료 처리 (mobile/progress와 동일한 로직)
-            if (currentStep >= 5) {
-                console.log('✅ AI 처리 완료 (최종 출력 확인)');
-                updateAIProgress(currentStep, 100, 'completed', '하드웨어 구동이 완료되었습니다!');
-                updateStepIndicator(5);
+            // 완료 처리 (4단계까지 완료되면 AI 처리 완료)
+            if (currentStep >= 4) {
+                console.log('✅ AI 처리 완료 (최적 배치 코드 생성 완료)');
+                updateAIProgress(currentStep, 100, 'completed', '최적 배치 코드 생성이 완료되었습니다!');
                 
+                // 4단계 완료 시 모든 단계 완료 표시
+                for (let i = 1; i <= 4; i++) {
+                    const statusEl = document.getElementById(`step${i}AccordionStatus`);
+                    if (statusEl && statusEl.textContent !== '완료') {
+                        statusEl.textContent = '완료';
+                        statusEl.className = 'accordion-step-status completed';
+                    }
+                }
                 // current_step이 5일 때 하드웨어 구동 완료 상태로 변경
                 if (currentStep === 6) {
                     updateHardwareStatus('completed', '구동 완료');
@@ -754,14 +794,15 @@ async function handleStepResults(statusData) {
             await displayStepResult(2, ar.chain2_out);
             shownSteps[2] = true;
         }
-        if (ar.chain4_out && ar.chain3_out && !shownSteps[3]) {
-            // 3단계 결과가 있으면 바로 표시
-            ar.chain3_out = safeJsonParse(ar.chain3_out);
-            if (ar.chain4_out) {
-                ar.chain3_out.placement_code = ar.chain4_out;
-            }
+        if (ar.chain3_out && !shownSteps[3]) {
+            // 3단계 결과만 표시 (placement_code 제외)
             await displayStepResult(3, ar.chain3_out);
             shownSteps[3] = true;
+        }
+        if (ar.chain4_out && !shownSteps[4]) {
+            // 4단계: 최적 배치 코드 생성 결과 표시
+            await displayStepResult(4, ar.chain4_out);
+            shownSteps[4] = true;
         }
 
         // 루트에 실린 경우도 대응
@@ -773,17 +814,14 @@ async function handleStepResults(statusData) {
             await displayStepResult(2, statusData.chain2_out);
             shownSteps[2] = true;
         }
-        if (statusData.chain4_out && statusData.chain3_out && !shownSteps[3]) {
-            // 3단계 결과가 있으면 바로 표시
-            statusData.chain3_out = safeJsonParse(statusData.chain3_out);
-            if (statusData.chain4_out) {
-                statusData.chain3_out.placement_code = statusData.chain4_out;
-            }
+        if (statusData.chain3_out && !shownSteps[3]) {
+            // 3단계 결과만 표시 (placement_code 제외)
             await displayStepResult(3, statusData.chain3_out);
             shownSteps[3] = true;
         }
-        if (statusData.current_step == 5 && !shownSteps[4]) {
-            await displayStepResult(4, null);
+        if (statusData.chain4_out && !shownSteps[4]) {
+            // 4단계: 최적 배치 코드 생성 결과 표시
+            await displayStepResult(4, statusData.chain4_out);
             shownSteps[4] = true;
         }
 
@@ -839,7 +877,10 @@ function updateStepIcon(stepNumber) {
     }
     iconElement.classList.remove('info', 'warning', 'success', 'error');
 
-    if (currentStep >= 4 || currentStep > stepNumber) {
+    // 4단계가 완료되었는지 또는 현재 단계보다 이전 단계인지 확인
+    const isCompleted = currentStep > stepNumber || (currentStep === 4 && stepNumber <= 4);
+    
+    if (isCompleted) {
         iconElement.classList.add('success');
         iconElement.innerHTML = `
 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1008,16 +1049,30 @@ async function formatStepResult(stepNumber, resultData) {
                         </div>
                         <p>📋 작업 순서</p>
                         <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
-                        ${chain3Data.placement_code ? `<p>🎯 최적 배치 코드: ${chain3Data.placement_code}</p><p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>` : ''}
                     </div>
                 </div>`;
                 break;
             }
 
             case 4: {
+                // 4단계: 최적 배치 코드 생성
+                const placementCode = (typeof resultData === 'string') ? resultData : '';
+                
+                // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
+                const optionNo = window.currentOptionNo || 1;
+                
                 formattedResult = `
-                <div class="analysis-result-container">
-                    <p>🎉 하드웨어 구동이 완료되었습니다!</p>
+                <div class="analysis-result-wrapper">
+                    <div class="analysis-result-container">
+                        <p>🎯 최적 배치 코드</p>
+                        <div class="placement-code-display" style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 10px 0;">
+                            <h3 style="font-size: 24px; font-weight: bold; text-align: center; font-family: monospace; letter-spacing: 4px;">${placementCode}</h3>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/images/options/option${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
+                        </div>
+                        <p style="color: #666; font-size: 14px;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
+                    </div>
                 </div>`;
                 break;
             }
@@ -1147,18 +1202,14 @@ async function checkCurrentStatusAndUpdateHardware() {
                 }
                 
                 // 3단계 결과 표시
-                if (analysisResult.chain4_out && analysisResult.chain3_out && !shownSteps[3]) {
-                    let chain3Data = safeJsonParse(analysisResult.chain3_out);
-                    if (analysisResult.chain4_out) {
-                        chain3Data.placement_code = analysisResult.chain4_out;
-                    }
-                    await displayStepResult(3, chain3Data);
+                if (analysisResult.chain3_out && !shownSteps[3]) {
+                    await displayStepResult(3, analysisResult.chain3_out);
                     shownSteps[3] = true;
                 }
                 
-                // 4단계 완료 시
-                if (currentStepValue >= 4 && !shownSteps[4]) {
-                    await displayStepResult(4, null);
+                // 4단계 결과 표시
+                if (analysisResult.chain4_out && !shownSteps[4]) {
+                    await displayStepResult(4, analysisResult.chain4_out);
                     shownSteps[4] = true;
                 }
             }
@@ -1200,7 +1251,7 @@ function updateCompletedStepsStatus(analysisResult, currentStep) {
     
     console.log('🔧 단계별 결과:', stepResults);
     
-    for (let step = 1; step <= 3; step++) {
+    for (let step = 1; step <= 4; step++) {
         const stepResult = stepResults[step];
         const statusElement = document.getElementById(`step${step}AccordionStatus`);
         
@@ -1238,28 +1289,30 @@ function updateCompletedStepsStatus(analysisResult, currentStep) {
                 console.log(`🔧 ${step}단계 진행률 텍스트 100%로 설정`);
             }
             
-            // 상단 진행 카드도 완료 상태로 업데이트
-            const stepProgress = document.getElementById(`stepProgress${step}`);
-            if (stepProgress) {
-                stepProgress.classList.add('completed');
-                console.log(`🔧 ${step}단계 상단 카드 완료 상태로 설정`);
-            }
-            
-            const stepIcon = document.getElementById(`stepIcon${step}`);
-            if (stepIcon) {
-                stepIcon.innerHTML = '<span class="step-number">✓</span>';
-                console.log(`🔧 ${step}단계 아이콘 체크마크로 변경`);
+            // 상단 진행 카드도 완료 상태로 업데이트 (1-3단계만)
+            if (step <= 3) {
+                const stepProgress = document.getElementById(`stepProgress${step}`);
+                if (stepProgress) {
+                    stepProgress.classList.add('completed');
+                    console.log(`🔧 ${step}단계 상단 카드 완료 상태로 설정`);
+                }
+                
+                const stepIcon = document.getElementById(`stepIcon${step}`);
+                if (stepIcon) {
+                    stepIcon.innerHTML = '<span class="step-number">&nbsp;</span>';
+                    console.log(`🔧 ${step}단계 아이콘 체크마크로 변경`);
+                }
+                
+                const stepStatus = document.getElementById(`stepStatus${step}`);
+                if (stepStatus) {
+                    stepStatus.textContent = '완료';
+                    console.log(`🔧 ${step}단계 상태 텍스트 완료로 변경`);
+                }
             }
             
             // 세부 현황 모달의 아이콘도 업데이트
             if (typeof updateStepIcon === 'function') {
                 updateStepIcon(step);
-            }
-            
-            const stepStatus = document.getElementById(`stepStatus${step}`);
-            if (stepStatus) {
-                stepStatus.textContent = '완료';
-                console.log(`🔧 ${step}단계 상태 텍스트 완료로 변경`);
             }
         } else if (step < currentStep && statusElement) {
             // current_step보다 작은 단계들은 완료로 처리
@@ -1318,8 +1371,8 @@ function forceUpdateHardwareStatus() {
         })
         .catch(error => {
             console.error('🔧 상태 확인 오류:', error);
-            // 오류 시에도 하드웨어 구동 완료 상태로 설정 (테스트용)
-            updateHardwareStatus('completed', '구동 완료');
+            // 오류 시 대기중 상태로 설정
+            updateHardwareStatus('waiting', '대기중');
         });
 }
 
@@ -1340,7 +1393,7 @@ function testHardwareStatusChange() {
     
     setTimeout(() => {
         console.log('🧪 3단계: 구동 완료 상태');
-        updateHardwareStatus('completed', '구동 완료');
+        updateHardwareStatus('completed', '완료');
     }, 4000);
     
     setTimeout(() => {

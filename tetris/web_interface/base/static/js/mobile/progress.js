@@ -303,7 +303,7 @@ function updateStepDisplay() {
         if (i < currentStep) {
             // 완료된 단계
             icon.className = 'step-icon completed';
-            icon.textContent = '✓';
+            icon.textContent = ' ';
             title.style.color = '#28a745';
             description.textContent = '완료되었습니다';
         } else if (i === currentStep) {
@@ -311,7 +311,7 @@ function updateStepDisplay() {
             if (currentStep === 5) {
                 // 5단계는 완료 상태로 표시
                 icon.className = 'step-icon completed';
-                icon.textContent = '✓';
+                icon.textContent = ' ';
                 title.style.color = '#28a745';
                 description.textContent = '분석이 완료되었습니다!';
             } else {

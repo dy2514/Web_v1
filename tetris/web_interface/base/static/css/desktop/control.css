@@ -125,13 +125,6 @@ html, body {
     flex-direction: column;
 }
 
-/* 카드 높이 통일 */
-.krds-card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
 .krds-card__body {
     flex: 1;
     display: flex;
@@ -139,13 +132,13 @@ html, body {
 }
 
 /* 헤더 스타일 */
-.krds-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+.control-header {
     color: white;
-    padding: 1.2rem;
-    border-radius: 12px;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 20px;
+    background: rgb(29 73 201);
+    padding: 1.2rem;
+    border-radius: 8px;
 }
 
 .krds-header__content {
@@ -273,25 +266,15 @@ html, body {
     50% { opacity: 0.5; }
 }
 
-/* 카드 스타일 */
-.krds-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    margin-bottom: 2rem;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
 .krds-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
-.krds-card__header {
+.control-card__header {
     padding: 1.5rem;
     border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    background: #f8fafc;
 }
 
 .krds-card__title {
@@ -744,8 +727,7 @@ html, body {
     width: 12px; 
     height: 12px; 
     border-radius: 50%; 
-    background-color: #10b981; 
-    margin-right: 3px;
+    background-color: #10b981;
 }
 
 .status-indicator.connected,
@@ -878,7 +860,10 @@ html, body {
 
 /* 단계 표시기 */
 .step-indicator-container {
-    margin-bottom: 2rem;
+    padding: 1.5rem;
+    /* background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-light); */
 }
 
 /* 전체 진행률 섹션 */
@@ -962,7 +947,6 @@ html, body {
 .progress-and-hardware-container {
     display: flex;
     gap: 2rem;
-    align-items: center;
     margin: 1rem 0;
 }
 
@@ -982,14 +966,15 @@ html, body {
     align-items: center;
     position: relative;
     padding: 1rem 0;
+    margin: 0 0.5rem; /* 양쪽에 약간의 여백 추가 */
 }
 
 .progress-track::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
+    left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
+    right: 12.5px; /* 마지막 아이콘의 중심에서 끝 */
     height: 3px;
     background-color: #e5e7eb;
     transform: translateY(-50%);
@@ -1000,7 +985,7 @@ html, body {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
+    left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
     height: 3px;
     background-color: #10b981;
     transform: translateY(-50%);
@@ -1017,6 +1002,7 @@ html, body {
     position: relative;
     z-index: 3;
     flex: 1;
+    max-width: 120px;
 }
 
 .step-circle {
@@ -1033,6 +1019,27 @@ html, body {
     color: #6b7280;
     border: 3px solid #e5e7eb;
     position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.step-circle .material-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 0단계 active 상태의 회전 애니메이션 */
+.progress-step.active .step-circle .material-icons {
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .progress-step.active .step-circle {
@@ -1048,7 +1055,7 @@ html, body {
     border-color: #10b981;
 }
 
-.progress-step.completed .step-circle::after {
+.progress-step.completed:not(#stepProgress0) .step-circle::after {
     content: '✓';
     position: absolute;
     font-size: 1.5rem;
@@ -1083,16 +1090,84 @@ html, body {
     font-weight: 600;
 }
 
-/* 진행률 트랙 업데이트 (3단계로 변경) */
-.progress-track.completed-1::after { width: 33%; }
-.progress-track.completed-2::after { width: 66%; }
-.progress-track.completed-3::after { width: 100%; }
+/* 진행률 트랙 업데이트 (0-4단계 5단계 시스템) - 정확한 정렬을 위한 수정 */
+.progress-track.completed-0::after { width: 0%; }
+.progress-track.completed-1::after { width: 25%; }
+.progress-track.completed-2::after { width: 50%; }
+.progress-track.completed-3::after { width: 75%; }
+.progress-track.completed-4::after { width: 100%; }
+
+/* 프로그래스 바와 단계별 아이콘 정확한 정렬을 위한 추가 스타일 */
+.progress-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 1rem 0;
+    margin: 0 0.5rem;
+}
+
+.progress-track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
+    right: 12.5px; /* 마지막 아이콘의 중심에서 끝 */
+    height: 3px;
+    background-color: #e5e7eb;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.progress-track::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
+    height: 3px;
+    background-color: #10b981;
+    transform: translateY(-50%);
+    z-index: 2;
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+/* 단계별 아이콘 위치 조정 */
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+    flex: 1;
+    max-width: 120px;
+}
+
+/* 단계별 아이콘 원형 스타일 개선 */
+.step-circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    border: 3px solid #e5e7eb;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
 
 /* 하드웨어 구동 섹션 스타일 */
 .hardware-operation-section {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     background: white;
     border-radius: 12px;
     padding: 2rem;
@@ -1126,7 +1201,7 @@ html, body {
 /* 하드웨어 상태별 스타일 */
 .hardware-operation-section.waiting .hardware-icon svg {
     opacity: 0.6;
-    transform: scale(1);
+    transform: scale(1.2);
 }
 
 .hardware-operation-section.waiting .hardware-icon svg rect,
@@ -1208,7 +1283,7 @@ html, body {
 .hardware-status {
     font-size: 0.9rem;
     font-weight: 500;
-    padding: 0.25rem 0.75rem;
+    padding: 0.4rem 1rem;
     border-radius: 9999px;
     transition: all 0.3s ease;
 }
@@ -1642,7 +1717,17 @@ html, body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.krds-card {
+/* 카드 스타일 */
+.control-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     animation: fadeIn 0.5s ease;
 }
 
@@ -1827,7 +1912,7 @@ html, body {
 .analysis-result-json-container {
     flex: 1;
     background: #3f516f;
-    padding: 1rem;
+    padding: 2rem;
     overflow-x: auto;
     max-height: 1000px;
     min-height: 100px;
@@ -1858,7 +1943,7 @@ html, body {
 .analysis-result-container {
     flex: 1;
     background: white;
-    padding: 1rem;
+    padding: 2rem;
     border: 1px solid #e5e7eb;
     max-height: 500px;
     min-height: 100px;
@@ -1873,7 +1958,7 @@ html, body {
 .analysis-result-container p, .analysis-result-container li {
     margin: 0.5rem 0;
     color: #374151;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     line-height: 1.6;
 }
 
@@ -2053,7 +2138,6 @@ html, body {
    최신 로그 표시 영역
    ======================================== */
 .recent-logs-section {
-    margin-top: 2rem;
     padding: 1.5rem;
     background: var(--color-white);
     border-radius: 12px;
@@ -2083,10 +2167,6 @@ html, body {
     font-size: 18px;
 }
 
-.logs-container {
-    min-height: 200px;
-}
-
 .logs-loading {
     display: flex;
     flex-direction: column;
@@ -2112,6 +2192,7 @@ html, body {
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
     overflow: hidden;
+    margin-bottom: 10px;
 }
 
 .log-item:hover {
