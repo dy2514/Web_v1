@@ -94,7 +94,7 @@ if __name__ == '__main__':
     print("TETRIS Web Interface - 라즈베리파이5 최적화 버전 (HTTP + SSE)")
     print("모바일 접속: http://localhost:5002/mobile/input")
     print("데스크탑 접속: http://localhost:5002/desktop/control")
-    print("상태 API: http://localhost:5002/api/status")
+    print("상태 API: http://localhost:5002/desktop/api/status")
     print("=" * 60)
     
     # 성능 모니터링 시작 (라즈베리파이5 최적화 설정)

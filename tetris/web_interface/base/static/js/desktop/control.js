@@ -29,14 +29,32 @@ class ControlController {
         this.init();
     }
 
-    init() {
+    async init() {
         this.bindEvents();
         this.setupSSE();
-        this.initializeSession();
-        this.updateSystemStatus();
+        await this.initializeSession();
+        await this.loadInitialStatus();
         this.loadQRCode();
         
         console.log('🚀 데스크탑 관제 화면 초기화 완료');
+    }
+    
+    // 초기 상태 로드
+    async loadInitialStatus() {
+        try {
+            const statusUrl = window.CONFIG?.ENDPOINTS?.DESKTOP?.STATUS || '/desktop/api/status';
+            const response = await fetch(statusUrl);
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                console.log('📊 초기 상태 로드:', result.data);
+                this.updateSystemStatus(result.data);
+            }
+        } catch (error) {
+            console.error('초기 상태 로드 오류:', error);
+            // 오류 시 기본 상태로 초기화
+            this.resetUI();
+        }
     }
     
     bindEvents() {
@@ -62,12 +80,88 @@ class ControlController {
         const accordionButtons = document.querySelectorAll('.btn-accordion');
         accordionButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                e.preventDefault();
+                // e.preventDefault();
+                e.stopPropagation();
                 if (button.querySelector('.accordion-step-status.completed')) {
                     // 분석 완료된 경우에만 아코디언 토글
                     this.toggleAccordion(button);
                 }
+            }, { capture: true }); // 캡처 단계에서 먼저 실행
+        });
+        
+        // MutationObserver로 아코디언 상태 변화 감지 및 스크롤
+        this.setupAccordionScrollObserver();
+    }
+    
+    // 아코디언 스크롤 옵저버 설정 (active 클래스는 toggleAccordion에서 관리)
+    setupAccordionScrollObserver() {
+        const accordionCollapses = document.querySelectorAll('.accordion-collapse');
+        
+        accordionCollapses.forEach(collapse => {
+            let scrollTimeout = null;
+            let lastExpandedState = false;
+            
+            const observer = new MutationObserver((mutations) => {
+                // 아코디언 버튼과 아이템 찾기
+                const button = document.querySelector(`[aria-controls="${collapse.id}"]`);
+                const accordionItem = collapse.closest('.accordion-item');
+                
+                // 버튼의 aria-expanded 속성으로 열림/닫힘 상태 확인
+                const isExpanded = button && button.getAttribute('aria-expanded') === 'true';
+                
+                // 상태가 닫힘 -> 열림으로 변경되었을 때만 스크롤
+                if (isExpanded && !lastExpandedState) {
+                    // 이전 타임아웃 취소
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    
+                    // 새로운 스크롤 예약
+                    scrollTimeout = setTimeout(() => {
+                        const accordionBody = collapse.querySelector('.accordion-body');
+                        if (accordionBody && collapse.classList.contains('show')) {
+                            // 아코디언 헤더를 기준으로 스크롤 (본문보다 헤더로 스크롤하면 더 위로 올라감)
+                            const targetElement = accordionItem || accordionBody;
+                            
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                                inline: 'nearest'
+                            });
+                            
+                            // 추가로 약간 위로 스크롤 (헤더 여유 공간)
+                            setTimeout(() => {
+                                window.scrollBy({
+                                    top: -20,
+                                    behavior: 'smooth'
+                                });
+                            }, 300);
+                        }
+                        scrollTimeout = null;
+                    }, 200); // 애니메이션이 끝난 후 스크롤
+                }
+                
+                lastExpandedState = isExpanded;
             });
+            
+            // collapse의 클래스와 스타일 속성 변화 감지
+            observer.observe(collapse, {
+                attributes: true,
+                attributeFilter: ['class', 'style', 'aria-hidden']
+            });
+            
+            // 버튼의 aria-expanded 속성도 감시
+            const button = document.querySelector(`[aria-controls="${collapse.id}"]`);
+            if (button) {
+                const buttonObserver = new MutationObserver((mutations) => {
+                    observer.takeRecords(); // collapse observer 트리거
+                });
+                
+                buttonObserver.observe(button, {
+                    attributes: true,
+                    attributeFilter: ['aria-expanded']
+                });
+            }
         });
     }
     
@@ -118,16 +212,93 @@ class ControlController {
     closeModal() {
         const modal = document.getElementById('detailsModal');
         if (modal) {
+            // 모든 스크롤 복원
+            document.querySelectorAll(".analysis-result-json-container, .analysis-result-container").forEach((item) => {
+                item.scrollTop = 0;
+                item.scrollLeft = 0;
+            });
+
+            // 모든 열려있는 아코디언 닫기
+            document.querySelectorAll('.accordion-item.active').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.querySelectorAll('.accordion-collapse.show').forEach(collapse => {
+                collapse.classList.remove('show');
+                collapse.setAttribute('aria-hidden', 'true');
+                collapse.style.display = '';
+                collapse.style.height = '';
+                
+                // 관련 버튼의 aria-expanded 업데이트 및 active 제거
+                const relatedButton = document.querySelector(`[aria-controls="${collapse.id}"]`);
+                if (relatedButton) {
+                    relatedButton.setAttribute('aria-expanded', 'false');
+                    
+                    // 화살표 회전 초기화
+                    const arrow = relatedButton.querySelector('.accordion-arrow');
+                    if (arrow) {
+                        arrow.style.transform = 'rotate(0deg)';
+                    }
+                }
+                
+                // accordion-item의 active 클래스 제거
+                const accordionItem = collapse.closest('.accordion-item');
+                if (accordionItem) {
+                    accordionItem.classList.remove('active');
+                }
+            });
+            
             modal.style.display = 'none';
-            document.body.style.overflow = ''; // 배경 스크롤 복원
-            console.log('📋 세부 정보 팝업 닫힘');
         }
+    }
+    
+    // 단계별 분석 결과 존재 여부 확인
+    checkStepHasResult(statusData, step) {
+        if (!statusData.analysis_result) return false;
+        
+        const stepResults = {
+            1: statusData.analysis_result.chain1_out,
+            2: statusData.analysis_result.chain2_out,
+            3: statusData.analysis_result.chain3_out,
+            4: statusData.analysis_result.chain4_out
+        };
+        
+        return !!(stepResults[step] && stepResults[step].trim());
+    }
+    
+    // 단계별 상세 정보 복원
+    restoreStepDetailInfo(detailInfo, step) {
+        const stepDescriptions = {
+            1: '업로드된 이미지에서 좌석과 승객 인식',
+            2: '인식된 데이터를 구조화하고 분석',
+            3: 'AI 알고리즘으로 최적 좌석 배치 생성'
+        };
+        
+        const stepLabels = {
+            1: '사용자 입력 분석 진행률',
+            2: '최적 배치 생성 진행률',
+            3: '시트 동작 계획 진행률'
+        };
+        
+        const description = stepDescriptions[step] || '분석 진행 중';
+        const label = stepLabels[step] || '진행률';
+        
+        detailInfo.innerHTML = `
+            <p class="krds-text">${description}</p>
+            <div class="step-progress-section">
+                <div class="krds-progress" role="progressbar" aria-label="${label}" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-valuetext="${label}: 100%">
+                    <div class="krds-progress__bar" id="step${step}Progress" style="width: 100%"></div>
+                </div>
+                <span class="krds-text krds-text--small" id="step${step}ProgressText">100%</span>
+            </div>
+        `;
     }
     
     // 아코디언 토글 기능
     toggleAccordion(button) {
         const targetId = button.getAttribute('aria-controls');
         const targetCollapse = document.getElementById(targetId);
+        const accordionItem = targetCollapse?.closest('.accordion-item');
         
         // 현재 상태 확인 (show 클래스 기준으로 판단)
         const isCurrentlyExpanded = targetCollapse && targetCollapse.classList.contains('show');
@@ -150,11 +321,17 @@ class ControlController {
                     const relatedButton = document.querySelector(`[aria-controls="${collapse.id}"]`);
                     if (relatedButton) {
                         relatedButton.setAttribute('aria-expanded', 'false');
+                        relatedButton.classList.remove('active');
                         // 화살표 회전 초기화
                         const arrow = relatedButton.querySelector('.accordion-arrow');
                         if (arrow) {
                             arrow.style.transform = 'rotate(0deg)';
                         }
+                    }
+                    // accordion-item의 active 클래스도 제거
+                    const otherAccordionItem = collapse.closest('.accordion-item');
+                    if (otherAccordionItem) {
+                        otherAccordionItem.classList.remove('active');
                     }
                 }
             });
@@ -167,6 +344,13 @@ class ControlController {
                 targetCollapse.style.display = '';
                 targetCollapse.style.height = '';
                 button.setAttribute('aria-expanded', 'false');
+                
+                // active 클래스 제거
+                button.classList.remove('active');
+                if (accordionItem) {
+                    accordionItem.classList.remove('active');
+                }
+                
                 console.log('📁 아코디언 닫기:', targetId);
                 
                 // 화살표 회전 초기화
@@ -183,6 +367,13 @@ class ControlController {
                 targetCollapse.style.maxHeight = '500px';
                 targetCollapse.style.overflow = 'visible';
                 button.setAttribute('aria-expanded', 'true');
+                
+                // active 클래스 추가
+                button.classList.add('active');
+                if (accordionItem) {
+                    accordionItem.classList.add('active');
+                }
+                
                 console.log('📂 아코디언 열기:', targetId);
                 
                 // 아코디언 내용 가시성 확인 및 강제 설정
@@ -191,7 +382,6 @@ class ControlController {
                     accordionBody.style.display = 'block';
                     accordionBody.style.visibility = 'visible';
                     accordionBody.style.opacity = '1';
-                    console.log('✅ 아코디언 내용 표시:', accordionBody.innerHTML);
                 }
                 
                 // 화살표 회전
@@ -199,6 +389,8 @@ class ControlController {
                 if (arrow) {
                     arrow.style.transform = 'rotate(180deg)';
                 }
+                
+                // 스크롤은 MutationObserver에서 자동 처리됨
             }
         }
     }
@@ -427,17 +619,38 @@ class ControlController {
             }
             
             // 이미지 업로드 상태 업데이트
-            if (data.upload?.uploaded_file && this.imageUploadStatus) {
-                this.updateStatusBadge(this.imageUploadStatus, 'uploaded', '업로드됨');
+            if (this.imageUploadStatus) {
+                if (data.upload?.uploaded_file === true) {
+                    console.log('📸 이미지 업로드 상태 감지 - 업로드됨');
+                    this.updateStatusBadge(this.imageUploadStatus, 'uploaded', '업로드됨');
+                } else if (data.upload?.uploaded_file === false || data.upload?.uploaded_file === null) {
+                    console.log('📸 이미지 업로드 상태 감지 - 대기중');
+                    this.updateStatusBadge(this.imageUploadStatus, 'waiting', '대기중');
+                }
             }
             
-            // AI 처리 상태 업데이트
-            if (data.system?.status === 'running' && this.executionTriggerStatus) {
-                this.updateStatusBadge(this.executionTriggerStatus, 'active', '실행중');
-                this.isProcessing = true;
-            } else if (data.system?.status === 'done' && this.executionTriggerStatus) {
-                this.updateStatusBadge(this.executionTriggerStatus, 'completed', '완료');
-                this.isProcessing = false;
+            // 실행 트리거 상태 업데이트 (개선)
+            if (this.executionTriggerStatus) {
+                const processingStatus = data.processing?.status || data.status || data.system?.status;
+                console.log('🔄 실행 트리거 상태 확인:', processingStatus);
+                
+                if (processingStatus === 'running' || processingStatus === 'processing') {
+                    console.log('🔄 실행 트리거 상태 업데이트: 실행중');
+                    this.updateStatusBadge(this.executionTriggerStatus, 'active', '실행중');
+                    this.isProcessing = true;
+                } else if (processingStatus === 'completed' || processingStatus === 'done') {
+                    console.log('🔄 실행 트리거 상태 업데이트: 완료');
+                    this.updateStatusBadge(this.executionTriggerStatus, 'completed', '완료');
+                    this.isProcessing = false;
+                } else if (processingStatus === 'idle' || processingStatus === 'waiting') {
+                    console.log('🔄 실행 트리거 상태 업데이트: 대기중');
+                    this.updateStatusBadge(this.executionTriggerStatus, 'waiting', '대기중');
+                    this.isProcessing = false;
+                } else if (processingStatus === 'error' || processingStatus === 'cancelled') {
+                    console.log('🔄 실행 트리거 상태 업데이트: 오류');
+                    this.updateStatusBadge(this.executionTriggerStatus, 'error', '오류');
+                    this.isProcessing = false;
+                }
             }
             
             // 하드웨어 연결 상태 시뮬레이션
@@ -551,6 +764,7 @@ class ControlController {
     async refreshSystemStatus() {
         console.log('🔄 시스템 상태 새로고침');
         try {
+            location.reload(true);
             // SSE를 통해 실시간으로 상태를 받고 있으므로 별도 폴링 불필요
             console.log('✅ SSE를 통한 실시간 상태 업데이트 중');
         } catch (error) {
@@ -604,8 +818,15 @@ class ControlController {
         }
         
         // 상태 배지 초기화
-        this.updateStatusBadge(this.imageUploadStatus, 'waiting', '대기중');
-        this.updateStatusBadge(this.executionTriggerStatus, 'inactive', '비활성');
+        if (this.imageUploadStatus) {
+            this.updateStatusBadge(this.imageUploadStatus, 'waiting', '대기중');
+        }
+        if (this.executionTriggerStatus) {
+            this.updateStatusBadge(this.executionTriggerStatus, 'waiting', '대기중');
+        }
+        if (this.mobileConnectionStatus) {
+            this.updateStatusBadge(this.mobileConnectionStatus, 'disconnected', '대기중');
+        }
         
         // 하드웨어 상태 초기화
         this.hardwareConnected = false;

@@ -197,6 +197,13 @@ def get_status():
     # 분석 결과를 최상위 레벨에 추가 (모바일 호환성)
     if 'analysis_result' in status_data:
         status_data['result'] = status_data['analysis_result']
+    
+    # 이미지 업로드 상태를 최상위 레벨에 추가 (데스크톱 관제 화면 호환성)
+    # uploaded_file 필드를 image_uploaded로도 제공
+    if 'uploaded_file' in status_data:
+        status_data['image_uploaded'] = status_data['uploaded_file']
+    elif 'upload' in status_data and 'uploaded_file' in status_data['upload']:
+        status_data['image_uploaded'] = status_data['upload']['uploaded_file']
 
     return jsonify({
         'success': True,
@@ -215,7 +222,9 @@ def status_stream():
         last_status = None
         last_step = None
         last_progress = None
-
+        last_upload_file_status = None  # 업로드 파일 상태 추적
+        last_processing_status = None  # 분석 상태 추적
+        
         def build_payload() -> dict:
             data = get_global_status().copy()
             # 호환성: analysis_result 중첩 평탄화 및 chain4_out 복사
@@ -234,7 +243,7 @@ def status_stream():
             # 진행률/상태를 최상위에 노출 (모바일 호환)
             if 'processing' in data and 'progress' in data['processing']:
                 data['progress'] = data['processing']['progress']
-            if 'system' in data and 'status' in data['system']:
+            if 'processing' in data and 'status' in data['processing']:
                 data['status'] = data['processing']['status']
             if data.get('system', {}).get('status') == 'done':
                 data['status'] = 'done'
@@ -245,6 +254,23 @@ def status_stream():
                 latest_notification = notifications[-1]
                 data['message'] = latest_notification.get('message', '')
             
+            # 이미지 업로드 상태를 최상위 레벨에 추가 (데스크톱 관제 화면 호환성)
+            if 'uploaded_file' in data:
+                data['image_uploaded'] = data['uploaded_file']
+            elif 'upload' in data and 'uploaded_file' in data['upload']:
+                data['image_uploaded'] = data['upload']['uploaded_file']
+                
+            # 업로드 정보를 최상위 레벨에 복사 (클라이언트 호환성)
+            if 'upload' in data:
+                upload_info = data['upload']
+                if upload_info.get('uploaded_file'):
+                    data['uploaded_file'] = True
+                if upload_info.get('image_path'):
+                    data['image_path'] = upload_info['image_path']
+                if upload_info.get('people_count') is not None:
+                    data['people_count'] = upload_info['people_count']
+                if upload_info.get('scenario'):
+                    data['scenario'] = upload_info['scenario']
             
             return data
 
@@ -264,6 +290,9 @@ def status_stream():
                 status = status_data.get('status') or status_data.get('system', {}).get('status')
                 step_val = status_data.get('current_step') or status_data.get('processing', {}).get('current_step')
                 progress_val = status_data.get('progress') or status_data.get('processing', {}).get('progress')
+                processing_status = status_data.get('processing', {}).get('status')
+                upload_file_status = status_data.get('upload', {}).get('uploaded_file')
+                
 
                 should_emit = False
                 payload = None
@@ -294,6 +323,22 @@ def status_stream():
                     should_emit = True
                     last_step = step_val
                     last_progress = progress_val
+
+                # 분석 상태 변화 시에도 전송
+                if processing_status != last_processing_status:
+                    if payload is None:
+                        payload = status_data
+                    should_emit = True
+                    last_processing_status = processing_status
+                    logger.info(f"[SSE] 분석 상태 변경 감지: {processing_status}")
+
+                # 업로드 파일 상태 변화 시에도 전송 (이미지 업로드 감지)
+                if upload_file_status != last_upload_file_status:
+                    if payload is None:
+                        payload = status_data
+                    should_emit = True
+                    last_upload_file_status = upload_file_status
+                    logger.info(f"[SSE] 파일 업로드 상태 변경 감지: {upload_file_status}")
 
                 if should_emit and payload is not None:
                     yield f"data: {json.dumps(payload)}\n\n"
@@ -342,6 +387,11 @@ def progress_stream():
                     global_status = get_global_status().copy()
                     global_status['session_id'] = session_id
                     
+                    # 이미지 업로드 상태를 최상위 레벨에 추가 (데스크톱 관제 화면 호환성)
+                    if 'uploaded_file' in global_status:
+                        global_status['image_uploaded'] = global_status['uploaded_file']
+                    elif 'upload' in global_status and 'uploaded_file' in global_status['upload']:
+                        global_status['image_uploaded'] = global_status['upload']['uploaded_file']
                     
                     yield f"data: {json.dumps(global_status)}\n\n"
                 
@@ -432,7 +482,7 @@ def reset_system():
         stop_all_analysis()
         
         # 2. 상태 초기화
-        from web_interface.base.state_manager import reset_global_status, state_manager
+        from base.state_manager import reset_global_status, state_manager
         reset_global_status()
         
         # 3. 모든 분석 관련 필드 강제 초기화

@@ -285,9 +285,25 @@ def update_status(progress=None, status: str = None, message: str = None, **kwar
         state_manager.add_notification(message)
     
     if kwargs:
+        # upload 관련 필드를 upload. 경로로 매핑
+        upload_fields = {
+            'uploaded_file': 'upload.uploaded_file',
+            'image_path': 'upload.image_path',
+            'image_data_url': 'upload.image_data_url',
+            'people_count': 'upload.people_count',
+            'scenario': 'upload.scenario'
+        }
+        
         for key, value in kwargs.items():
-            logger.info(f"update_status: {key} = {value}")
-            state_manager.set(key, value)
+            # upload 관련 필드는 upload. 경로로 저장
+            if key in upload_fields:
+                mapped_key = upload_fields[key]
+                logger.info(f"update_status: {key} -> {mapped_key} = {value}")
+                state_manager.set(mapped_key, value)
+            else:
+                # 그 외 필드는 최상위 레벨에 저장
+                logger.info(f"update_status: {key} = {value}")
+                state_manager.set(key, value)
 
 def reset_global_status():
     """전역 상태 초기화 (기존 호환성)"""

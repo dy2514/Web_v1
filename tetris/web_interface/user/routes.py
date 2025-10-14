@@ -104,6 +104,18 @@ def mobile_input():
     """모바일 입력 수집 페이지"""
     session_id = str(uuid.uuid4())
     session['session_id'] = session_id
+    
+    # 페이지 로드 시 업로드 상태 초기화
+    try:
+        from web_interface.base.state_manager import state_manager
+        state_manager.set('upload.uploaded_file', False)
+        state_manager.set('upload.image_path', None)
+        state_manager.set('upload.people_count', None)
+        state_manager.set('upload.scenario', None)
+        logger.info("[초기화] Input 페이지 로드 - 업로드 상태 초기화")
+    except Exception as e:
+        logger.warning(f"업로드 상태 초기화 실패: {e}")
+    
     update_status(status='mobile_connected', message='모바일 연결됨')
     
     # 세션 등록 (control 모듈의 함수 사용)
@@ -243,6 +255,29 @@ def upload_file():
         return handle_tetris_error(e)
     except Exception as e:
         logger.error(f"[에러] 파일 업로드 예외 발생: {e}", exc_info=True)
+        return handle_generic_error(e)
+
+@user_bp.route('/api/reset-upload', methods=['POST'])
+def reset_upload():
+    """업로드 상태 초기화 API"""
+    log_api_request('/mobile/api/reset-upload', 'POST')
+    
+    try:
+        from web_interface.base.state_manager import state_manager
+        
+        # 업로드 관련 상태 초기화
+        state_manager.set('upload.uploaded_file', False)
+        state_manager.set('upload.image_path', None)
+        state_manager.set('upload.people_count', None)
+        state_manager.set('upload.scenario', None)
+        
+        logger.info("[초기화] 업로드 상태 초기화 완료")
+        log_api_response('/mobile/api/reset-upload', 200, "Upload state reset")
+        
+        return create_success_response({}, "업로드 상태가 초기화되었습니다")
+        
+    except Exception as e:
+        logger.error(f"[에러] 업로드 상태 초기화 실패: {e}", exc_info=True)
         return handle_generic_error(e)
 
 @user_bp.route('/progress')

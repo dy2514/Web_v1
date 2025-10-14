@@ -373,6 +373,14 @@ async function handleStatusData(statusData) {
                     default:
                         progress = 0;
                 }
+                
+                // processing.status가 running이면 최소 25%로 설정
+                const processingStatus = statusData.processing?.status || statusData.status;
+                if (processingStatus === 'running' && progress < 25) {
+                    progress = 25;
+                    console.log('📊 processing.status가 running이므로 진행률을 25%로 설정');
+                }
+                
                 console.log('📊 단계별 고정 진행률 업데이트:', progress + '%', '단계:', serverStep);
                 updateProgress(progress, serverStep);
                 updateMainIcon(serverStep);
@@ -527,15 +535,6 @@ function applyAnalysisResult() {
         return;
     }
     
-    // 4단계 결과에서 배치 코드 추출
-    // const placementCode = extractPlacementCode();
-    
-    // if (!placementCode) {
-    //     alert('분석 결과에서 배치 코드를 찾을 수 없습니다. 분석이 완료된 후 다시 시도해주세요.');
-    //     return;
-    // }
-    
-    // currentPlacementCode = placementCode;
     showHardwareConfirmModal();
 }
 
@@ -560,11 +559,6 @@ function cancelHardwareControl() {
 
 // 하드웨어 제어 확인
 function confirmHardwareControl() {
-    // if (!currentPlacementCode) {
-    //     alert('배치 코드가 없습니다.');
-    //     return;
-    // }
-    
     // 확인 모달 닫기
     const confirmModal = document.getElementById('hardwareConfirmModal');
     confirmModal.style.display = 'none';
@@ -623,15 +617,6 @@ function updateHardwareProgress(progress, message) {
 // 하드웨어 제어 실행
 async function executeHardwareControl() {
     try {
-        // 1단계: 아두이노 연결
-        updateHardwareStatus('connection', 'processing');
-        updateHardwareProgress(20, '아두이노 연결 중...');
-        
-        // 2단계: 명령 전송
-        updateHardwareStatus('connection', 'completed');
-        updateHardwareStatus('command', 'processing');
-        updateHardwareProgress(50, '명령 전송 중...');
-        
         // API 호출
         const response = await fetch('/desktop/api/trigger_hardware', {
             method: 'POST',
@@ -647,10 +632,6 @@ async function executeHardwareControl() {
         const result = await response.json();
         
         if (result.success) {
-            // 성공 처리
-            updateHardwareStatus('command', 'completed');
-            updateHardwareStatus('execution', 'completed');
-            updateHardwareProgress(100, '하드웨어 제어 완료!');
             
             // 완료 버튼 표시
             document.getElementById('closeProgressBtn').style.display = 'block';
@@ -1319,7 +1300,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // 클라이언트 측 상태 강제 초기화
     currentStep = 1;  // 1단계부터 시작
-    progressValue = 25;  // 25%부터 시작
+    progressValue = 0;  // 0%부터 시작
     doneWaitCount = 0;
 
     // 초기 상태 설정 (25%로 시작)

@@ -1367,20 +1367,8 @@ html, body {
   margin: var(--krds-accordion--list-margin-y) 0;
 }
 
-.krds-accordion.type-line .accordion-item {
-  border-bottom: 1px solid var(--krds-accordion--color-divider);
-}
-
-.krds-accordion.type-line .accordion-item:last-child {
-  border-bottom: none;
-}
-
 .accordion-item {
   margin-bottom: 0;
-}
-
-.accordion-header {
-  margin: 0;
 }
 
 .btn-accordion {

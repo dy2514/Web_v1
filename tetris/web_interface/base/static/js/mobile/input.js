@@ -11,7 +11,7 @@ let imagePath = null;
 const chips = document.querySelectorAll('.chip');
 let seatSelection = null;
 chips.forEach(ch => {
-    ch.addEventListener('click', () => {
+    ch.addEventListener('click', async () => {
         chips.forEach(c => c.classList.remove('selected'));
         ch.classList.add('selected');
         seatSelection = ch.dataset.seats;
@@ -31,6 +31,14 @@ chips.forEach(ch => {
             submit.disabled = true;
             submit.classList.remove('active');
             submit.style.display = 'none';
+        }
+        
+        // 업로드 상태 초기화 API 호출
+        try {
+            await fetch('/mobile/api/reset-upload', { method: 'POST' });
+            console.log('[초기화] 탑승인원 변경 - 업로드 상태 초기화');
+        } catch (e) {
+            console.error('업로드 상태 초기화 오류:', e);
         }
     });
 });
