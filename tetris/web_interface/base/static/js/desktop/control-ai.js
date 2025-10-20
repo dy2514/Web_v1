@@ -45,7 +45,7 @@ function displayRecentLogs(logs) {
     if (logsError) logsError.style.display = 'none';
     
     // 로그 내용 표시
-    logsContent.style.display = 'block';
+    logsContent.style.display = 'flex';
     
     if (logs.length === 0) {
         logsContent.innerHTML = `
