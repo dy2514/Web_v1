@@ -68,6 +68,9 @@ class ControlController {
         // 팝업 모달 이벤트 추가
         this.setupModalEvents();
         
+        // QR 코드 모달 이벤트 추가
+        this.setupQRModalEvents();
+        
         // QR 코드 새로고침 (5분마다)
         setInterval(() => {
             this.refreshQRCode();
@@ -200,6 +203,49 @@ class ControlController {
         });
     }
     
+    setupQRModalEvents() {
+        // QR 코드 컨테이너 클릭 이벤트
+        const qrContainer = document.getElementById('qrCodeContainer');
+        const qrModal = document.getElementById('qrModal');
+        const closeQrModalBtn = document.getElementById('closeQrModalBtn');
+        const qrModalImage = document.getElementById('qrModalImage');
+        
+        if (qrContainer) {
+            qrContainer.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.openQRModal();
+            });
+        } else {
+            console.error('❌ QR 코드 컨테이너를 찾을 수 없습니다');
+        }
+        
+        if (closeQrModalBtn) {
+            closeQrModalBtn.addEventListener('click', () => {
+                this.closeQRModal();
+            });
+        }
+        
+        // QR 모달 배경 클릭 시 닫기
+        if (qrModal) {
+            qrModal.addEventListener('click', (e) => {
+                if (e.target === qrModal) {
+                    this.closeQRModal();
+                }
+            });
+        }
+        
+        // ESC 키로 QR 모달 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const qrModal = document.getElementById('qrModal');
+                if (qrModal && qrModal.classList.contains('show')) {
+                    this.closeQRModal();
+                }
+            }
+        });
+    }
+    
     openModal() {
         const modal = document.getElementById('detailsModal');
         if (modal) {
@@ -249,6 +295,36 @@ class ControlController {
             });
             
             modal.style.display = 'none';
+        }
+    }
+    
+    openQRModal() {
+        const qrModal = document.getElementById('qrModal');
+        const qrModalImage = document.getElementById('qrModalImage');
+        const qrCodeImage = document.getElementById('qrCodeImage');
+        
+        if (qrModal && qrModalImage && qrCodeImage) {
+            // 모달 이미지에 원본 QR 코드 이미지 소스 설정
+            qrModalImage.src = qrCodeImage.src;
+            qrModal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+        } else {
+            console.error('❌ QR 모달 요소를 찾을 수 없습니다:', {
+                qrModal: !!qrModal,
+                qrModalImage: !!qrModalImage,
+                qrCodeImage: !!qrCodeImage
+            });
+        }
+    }
+    
+    closeQRModal() {
+        const qrModal = document.getElementById('qrModal');
+        
+        if (qrModal) {
+            qrModal.classList.remove('show');
+            document.body.style.overflow = ''; // 스크롤 복원
+        } else {
+            console.error('❌ QR 모달 요소를 찾을 수 없습니다');
         }
     }
     

@@ -59,6 +59,24 @@
         </div>
     </div>
 
+    <!-- QR 코드 모달 -->
+    <div id="qrModal" class="qr-modal-overlay">
+        <div class="qr-modal-content">
+            <div class="qr-modal-header">
+                <h3 class="qr-modal-title">접속 QR 코드</h3>
+                <button type="button" id="closeQrModalBtn" class="qr-modal-close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="qr-modal-body">
+                <img id="qrModalImage" class="qr-modal-image" src="/desktop/qr.png" alt="접속 QR 코드">
+                <p class="qr-modal-description">
+                    모바일 기기로 이 QR 코드를 스캔하여 접속하세요.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- KRDS UI/UX JavaScript -->
     <script defer src="https://cdn.jsdelivr.net/npm/krds-uiux@1.0.3/resources/cdn/krds.min.js"></script>
     
