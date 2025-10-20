@@ -197,12 +197,12 @@ html, body {
 
 .status-text {
     font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
 }
 
 .status-label {
     font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
 }
@@ -238,7 +238,7 @@ html, body {
 .krds-header__title h1 {
     margin: 0;
     font-family: "HyundaiSansHeadKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 2.8rem;
+    font-size: 2.6rem;
     font-weight: 700;
 }
 
@@ -246,7 +246,7 @@ html, body {
     margin: 0.5rem 0 0 0;
     opacity: 0.9;
     font-family: "HyundaiSansHeadKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
 }
 
 .krds-header__status {
@@ -1238,7 +1238,7 @@ html, body {
 }
 
 .step-label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #374151;
     margin-top: 0.75rem;
@@ -1247,7 +1247,7 @@ html, body {
 }
 
 .step-status {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #6b7280;
     margin-top: 0.25rem;
     text-align: center;
@@ -1447,7 +1447,7 @@ html, body {
 }
 
 .hardware-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #374151;
     margin-bottom: 1rem;
@@ -1455,7 +1455,7 @@ html, body {
 }
 
 .hardware-status {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     padding: 0.4rem 1rem;
     border-radius: 9999px;
@@ -2159,7 +2159,7 @@ html, body {
     align-items: center;
     gap: 0.4rem;
     padding: 0.3rem 0.8rem;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     border-radius: 4px;
     transition: all 0.3s ease;
@@ -2178,7 +2178,7 @@ html, body {
 }
 
 .progress-title-section .krds-btn .material-icons {
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 /* 팝업 모달 스타일 */
@@ -2430,11 +2430,11 @@ html, body {
     font-family: "HyundaiSansHeadKRM", sans-serif;
     font-weight: 600;
     color: var(--color-primary);
-    font-size: 0.9rem;
+    font-size: 1.2rem;
 }
 
 .log-timestamp {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--color-text-secondary);
     background: var(--color-white);
     padding: 0.25rem 0.5rem;
