@@ -696,10 +696,25 @@ class ControlController {
             
             // 이미지 업로드 상태 업데이트
             if (this.imageUploadStatus) {
-                if (data.upload?.uploaded_file === true) {
+                // upload 객체에서 uploaded_file 확인 (우선순위 높음)
+                const uploadedFile = data.upload?.uploaded_file;
+                // 최상위 레벨의 image_uploaded 또는 uploaded_file도 확인 (폴백)
+                const topLevelUploaded = data.image_uploaded ?? data.uploaded_file;
+                
+                // 실제 업로드 상태 결정
+                const isUploaded = uploadedFile ?? topLevelUploaded;
+                
+                console.log('📸 이미지 업로드 상태 체크:', {
+                    'data.upload?.uploaded_file': uploadedFile,
+                    'data.image_uploaded': data.image_uploaded,
+                    'data.uploaded_file': data.uploaded_file,
+                    'isUploaded': isUploaded
+                });
+                
+                if (isUploaded === true) {
                     console.log('📸 이미지 업로드 상태 감지 - 업로드됨');
                     this.updateStatusBadge(this.imageUploadStatus, 'uploaded', '업로드됨');
-                } else if (data.upload?.uploaded_file === false || data.upload?.uploaded_file === null) {
+                } else {
                     console.log('📸 이미지 업로드 상태 감지 - 대기중');
                     this.updateStatusBadge(this.imageUploadStatus, 'waiting', '대기중');
                 }

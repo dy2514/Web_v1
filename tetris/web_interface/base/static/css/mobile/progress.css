@@ -271,7 +271,7 @@ html, body {
 .modal-content {
     position: relative;
     background: white;
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 24px;
     margin: 20px;
     max-width: 400px;
@@ -329,7 +329,7 @@ html, body {
 .warning-message {
     background: #fef5e7;
     border: 1px solid #f6ad55;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 12px;
     color: #744210;
     font-size: 14px;
@@ -348,9 +348,9 @@ html, body {
 .btn-close,
 .btn-retry {
     flex: 1;
-    padding: 12px 20px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -423,10 +423,7 @@ html, body {
 }
 
 .status-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
+    text-align: center;
 }
 
 .status-icon {
@@ -772,10 +769,6 @@ html, body {
     width: 20px;
     height: 20px;
     margin-right: 12px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 /* 참고 정보, 안내 아이콘 (초기 상태) - 파란색 */
