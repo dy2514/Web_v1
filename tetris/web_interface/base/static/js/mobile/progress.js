@@ -1056,6 +1056,21 @@ async function formatStepResult(stepNumber, resultData) {
                 })();
                 console.log(`🔧 1단계 파싱 완료:`, chain1Data);
 
+                let luggageTableRows = '';
+                
+                // object별 갯수 세기
+                const objectCounts = {};
+                for (let luggage in chain1Data.luggage_details) {
+                    const object = chain1Data.luggage_details[luggage].object;
+                    objectCounts[object] = (objectCounts[object] || 0) + 1;
+                }
+                
+                // object별 갯수와 함께 표시
+                for (let object in objectCounts) {
+                    luggageTableRows += `<li>${object} (${objectCounts[object]}개)</li>
+                    `;
+                }
+
                 // state.json에서 직접 image_path 가져오기
                 let imagePath = '';
                 try {
@@ -1073,25 +1088,8 @@ async function formatStepResult(stepNumber, resultData) {
                     <div class="image-container"><img src="${imagePath}" alt="짐 상세 정보" class="analysis-image"></div>
                     <p>👥 인원 수: ${chain1Data.people || 0}명</p>
                     <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
-                    <p>📋 짐 상세 정보</p>
-                `;
-                let luggageTableRows = '';
-                
-                // object별 갯수 세기
-                const objectCounts = {};
-                for (let luggage in chain1Data.luggage_details) {
-                    const object = chain1Data.luggage_details[luggage].object;
-                    objectCounts[object] = (objectCounts[object] || 0) + 1;
-                }
-                
-                // object별 갯수와 함께 표시
-                for (let object in objectCounts) {
-                    luggageTableRows += `<li>${object} (${objectCounts[object]}개)</li>
-                    `;
-                }
-
-                formattedResult += `
-                    <ul style="list-style-type: disc; margin-left: 30px;">${luggageTableRows}</ul>
+                    ${luggageTableRows ? `<p>📋 짐 상세 정보</p>
+                    <ul style="list-style-type: disc; margin-left: 30px;">${luggageTableRows}</ul>` : ''}
                 `;
                 break;
                 
@@ -1129,35 +1127,10 @@ async function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
 
-
-                let taskSequenceTableRows = '';
-                for (let seq in chain3Data.task_sequence) {
-                    let taskSequenceDataArray = chain3Data.task_sequence[seq];
-                    let tabletaskSequenceData = '';
-                    if (taskSequenceDataArray instanceof Array) {
-                        taskSequenceDataArray.forEach((data, index) => {
-                            tabletaskSequenceData += `${data}${index !== taskSequenceDataArray.length - 1 ? ' → ' : ''}`;
-                        });
-                    } else {
-                        tabletaskSequenceData += `${taskSequenceDataArray}`;
-                    }
-                    taskSequenceTableRows += `<li>${tabletaskSequenceData}</li>`;
-                }
-
                 formattedResult = `
                     <div class="image-container">
                     <img src="/static/images/options/${chain3OptionImgNamePrefix}${optionNo}.${chain3OptionImgNameExtension}" alt="시트 동작 계획" class="analysis-image"></div>
-                    <p>📋 작업 순서</p>
-                    <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
                 `;
-                
-                // placement_code가 있을 때만 표시
-                if (chain3Data.placement_code) {
-                    formattedResult += `
-                        <p>🎯 최적 배치 코드: ${chain3Data.placement_code}</p>
-                        <p>16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
-                    `;
-                }
                 break;
                 
             default:

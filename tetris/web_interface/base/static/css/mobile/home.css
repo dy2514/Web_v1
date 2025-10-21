@@ -212,7 +212,7 @@ body {
     margin-left: 16px;
 }
 
-.logo-placeholder {
+.hyundai-logo {
     margin-right: 6px;
     width: 60px;
     height: 60px;
@@ -222,14 +222,6 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 44, 95, 0.2);
-}
-
-.logo-text {
-    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    color: white;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
 }
 
 .start-button {
@@ -525,13 +517,9 @@ body {
         margin: 0 16px 20px 16px;
     }
     
-    .logo-placeholder {
+    .hyundai-logo {
         width: 50px;
         height: 50px;
-    }
-    
-    .logo-text {
-        font-size: 7px;
     }
     
     .control-grid {
@@ -566,13 +554,9 @@ body {
         margin: 0 12px 20px 12px;
     }
     
-    .logo-placeholder {
+    .hyundai-logo {
         width: 45px;
         height: 45px;
-    }
-    
-    .logo-text {
-        font-size: 6px;
     }
     
     .control-grid {

@@ -1687,6 +1687,10 @@ html, body {
     flex: 1;
 }
 
+.accordion-content span {
+    font-size: 1.8rem;
+}
+
 /* 아코디언 상태 표시 영역 */
 .accordion-status {
     margin-left: auto;
@@ -2067,7 +2071,9 @@ html, body {
 
 /* 아코디언 분석 결과에 표시되는 이미지 */
 .analysis-image {
-    height: 200px;
+    height: 18rem;
+    max-width: 23rem;
+    border: #a1a1a1 solid 1px;
 }
 
 .accordion-collapse.collapse.show {
@@ -2098,7 +2104,7 @@ html, body {
     margin-top: 0;
     margin-bottom: 0.5rem;
     color: #ffffff;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     font-weight: 600;
 }
 
@@ -2106,7 +2112,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'HyundaiSansTextKRM';
-    font-size: 1rem;
+    font-size: 1.4rem;
     line-height: 1.5;
     color: #ffffff;
     white-space: pre;
@@ -2115,13 +2121,18 @@ html, body {
 
 /* 분석 결과 컨테이너 */
 .analysis-result-container {
+    background-image: url('/static/images/mobile_frame.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-attachment: local;
     flex: 1;
-    background: white;
     padding: 2rem;
     border: 1px solid #e5e7eb;
     max-height: 500px;
     min-height: 100px;
     overflow: auto;
+    padding-top: 8rem;
+    padding-bottom: 2rem;
 }
 
 .analysis-result-container .image-container {
@@ -2130,9 +2141,9 @@ html, body {
 }
 
 .analysis-result-container p, .analysis-result-container li {
-    margin: 0.5rem 0;
+    margin: 0.5rem 19rem;
     color: #374151;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     line-height: 1.6;
 }
 
@@ -2214,7 +2225,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2rem;
+    padding: 2rem;
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
@@ -2224,12 +2235,12 @@ html, body {
     align-items: center;
     gap: 0.75rem;
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 2rem;
     color: #1f2937;
 }
 
 .modal-title .material-icons {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     color: #3b82f6;
 }
 

@@ -982,8 +982,8 @@ async function formatStepResult(stepNumber, resultData) {
                         ${imageSrc ? `<div class="image-container"><img src="${imageSrc}" alt="짐 상세 정보" class="analysis-image"></div>` : ''}
                         <p>👥 인원 수: ${chain1Data.people || 0}명</p>
                         <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
-                        <p>📋 짐 상세 정보</p>
-                        <ul class="luggage-detail-list">${luggageTableRows}</ul>
+                        ${luggageTableRows ? `<p>📋 짐 상세 정보</p>
+                        <ul class="luggage-detail-list">${luggageTableRows}</ul>` : ''}
                     </div>
                 </div>`;
                 break;
@@ -1048,7 +1048,7 @@ async function formatStepResult(stepNumber, resultData) {
                             <img src="/static/images/options/option${optionNo}.png" alt="시트 동작 계획" class="analysis-image">
                         </div>
                         <p>📋 작업 순서</p>
-                        <ul style="list-style-type: disc; margin-left: 30px;">${taskSequenceTableRows}</ul>
+                        <ul style="list-style-type: disc; margin-left: 3rem;">${taskSequenceTableRows}</ul>
                     </div>
                 </div>`;
                 break;
@@ -1064,14 +1064,14 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
-                        <p>🎯 최적 배치 코드</p>
-                        <div class="placement-code-display" style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 10px 0;">
+                        <p style="font-size: 2rem; margin: 1rem 42rem;">🎯 최적 배치 코드</p>
+                        <div class="placement-code-display" style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 1rem 42rem;">
                             <h3 style="font-size: 24px; font-weight: bold; text-align: center; font-family: monospace; letter-spacing: 4px;">${placementCode}</h3>
                         </div>
                         <div class="image-container">
-                            <img src="/static/images/options/option${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
+                            <img style="height: 20rem; max-width: 40rem;" src="/static/images/options/option${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
                         </div>
-                        <p style="color: #666; font-size: 14px;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
+                        <p style="color: #666; font-size: 1.8rem; margin: 1rem 42rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                     </div>
                 </div>`;
                 break;
