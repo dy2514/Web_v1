@@ -210,6 +210,13 @@ html, body {
     margin: 10px calc(-1* var(--padX));
 }
 
+.thin-divider {
+    height: 1px;
+    background: #646585;
+    margin: -0.5rem 0.2rem 2rem 0.2rem;
+    border: none;
+}
+
 .photo-box {
     border: 2px solid var(--light);
     border-radius: 8px;

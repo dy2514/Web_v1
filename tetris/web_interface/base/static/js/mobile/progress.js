@@ -70,6 +70,9 @@ function moveToNextStep(completedStep) {
         updateProgress(100, 5);
         document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
         
+        // 메인 아이콘을 완료 상태로 변경
+        updateMainIconToCompleted();
+        
         // 모든 단계 아이콘을 성공 상태로 업데이트
         updateAllStepIconsToSuccess();
         
@@ -456,6 +459,10 @@ async function handleStatusData(statusData) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
                 updateProgress(100, 5); // 100% 즉시 표시
                 document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
+                
+                // 메인 아이콘을 완료 상태로 변경
+                updateMainIconToCompleted();
+                
                 showResultButton(); // 분석 완료 시 버튼 활성화
                 // 모든 단계 아이콘을 성공 상태로 업데이트
                 updateAllStepIconsToSuccess();
@@ -471,6 +478,10 @@ async function handleStatusData(statusData) {
                     console.log('⚠️ 최종 출력 미도착 타임아웃 → 완료로 간주하고 종료');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     updateProgress(100, 5); // 100% 즉시 표시
+                    
+                    // 메인 아이콘을 완료 상태로 변경
+                    updateMainIconToCompleted();
+                    
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
@@ -488,6 +499,10 @@ async function handleStatusData(statusData) {
                 if (hasFinal) {
                     console.log('분석 완료! (최종 출력 확인)');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
+                    
+                    // 메인 아이콘을 완료 상태로 변경
+                    updateMainIconToCompleted();
+                    
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 모든 단계 아이콘을 성공 상태로 업데이트
                     updateAllStepIconsToSuccess();
@@ -516,14 +531,12 @@ function showResultButton() {
     const button = document.getElementById('resultCheckButton');
     button.classList.add('show');
     button.disabled = false; // 분석 완료 시 버튼 활성화
-    button.textContent = '분석 결과 적용하기'; // 원래 텍스트로 복원
 }
 
 // 결과 확인 버튼 비활성화
 function disableResultButton() {
     const button = document.getElementById('resultCheckButton');
     button.disabled = true;
-    button.textContent = '분석 완료 후 적용 가능';
 }
 
 // 분석 결과 적용하기 버튼 클릭
@@ -1323,6 +1336,10 @@ async function startSSE() {
                 const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out);
                 if (status === 'done' && hasFinal) {
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
+                    
+                    // 메인 아이콘을 완료 상태로 변경
+                    updateMainIconToCompleted();
+                    
                     showResultButton(); // 분석 완료 시 버튼 활성화
                     // 상세 패널이 열려있다면 메시지 동기화
                     if (detailPanelOpen) {
@@ -1423,4 +1440,23 @@ function updateMainIcon(step) {
     } else {
         console.log('🎯 메인 아이콘: 기본 차량 아이콘 유지');
     }
+}
+
+/**
+ * 메인 아이콘을 완료 상태(체크 표시)로 업데이트
+ */
+function updateMainIconToCompleted() {
+    const mainIcon = document.getElementById('mainIcon');
+    if (!mainIcon) {
+        console.warn('⚠️ 메인 아이콘 요소를 찾을 수 없습니다.');
+        return;
+    }
+
+    // 기존 스텝 클래스 제거
+    mainIcon.classList.remove('step1', 'step2', 'step3', 'step4', 'step5');
+    
+    // 완료 상태 클래스 추가
+    mainIcon.classList.add('completed');
+    
+    console.log('✅ 메인 아이콘을 완료 상태(체크 표시)로 변경');
 }

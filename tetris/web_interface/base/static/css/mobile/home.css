@@ -185,13 +185,14 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .start-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    /* margin-bottom: 24px; */
 }
 
 .start-text-section {
