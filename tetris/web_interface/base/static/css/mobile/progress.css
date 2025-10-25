@@ -55,8 +55,9 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px var(--padX);
+    padding: 16px var(--padX);
     align-items: baseline;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .topbar img {
@@ -120,7 +121,7 @@ html, body {
 
 .main-content {
     /* background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); */
-    padding: 22px 20px;
+    padding: 40px 20px;
     text-align: center;
     max-width: 480px;
     margin-left: auto;
@@ -676,23 +677,18 @@ html, body {
 }
 
 .result-check-button {
-    font-family: 'HyundaiSansTextKRR';
-    width: 100%;
-    padding: 12px 24px;
+    width: 180px;
+    padding: 10px 16px;
     background: #002c5e;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 18px;
+    border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 32px rgba(26, 54, 93, 0.25);
     letter-spacing: -0.3px;
-}
-
-.result-check-button.show {
-    display: block;
+    margin-top: 32px;
 }
 
 .result-check-button:hover {
@@ -710,10 +706,10 @@ html, body {
     /* background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); */
     background: white;
     color: #505357;
-    border: solid #505357;
+    border: solid #505357 2px;
     cursor: not-allowed;
     box-shadow: 0 4px 16px rgba(156, 163, 175, 0.25);
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
 .result-check-button:disabled:hover {
@@ -1190,4 +1186,62 @@ html, body {
         opacity: 1;
         transform: translateX(0);
     }
+}
+
+/* 하단 네비게이션 */
+.bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 999999;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    min-width: 60px;
+}
+
+.nav-item.active {
+    color: #002c5f;
+}
+
+.nav-item.active .nav-icon {
+    color: #002c5f;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+    color: #a1a1a1ad;
+    transition: color 0.3s ease;
+}
+
+.nav-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.nav-label {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a1a1a1ad;
+    transition: color 0.3s ease;
+}
+
+.nav-item.active .nav-label {
+    color: #002c5f;
 }

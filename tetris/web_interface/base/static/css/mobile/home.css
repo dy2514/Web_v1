@@ -50,7 +50,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 16px;
+    padding: 20px 16px;
     background-color: #00000000;
 }
 
@@ -72,7 +72,6 @@ body {
 /* 메인 컨테이너 */
 .home-container {
     padding: 0 0 80px 0;
-    min-height: calc(100vh - 60px);
 }
 
 /* 차량 이미지 섹션 */
@@ -110,7 +109,7 @@ body {
     border-radius: 16px;
     position: relative;
     overflow: hidden;
-    margin: 0px 16px 30px 16px;
+    margin: 0px 12px 30px 12px;
     padding: 16px;
     background-color: #00000000;
 }
@@ -154,9 +153,8 @@ body {
 }
 
 .brand-logo {
-    display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 84px;
     position: relative;
     z-index: 1;
 }
@@ -180,23 +178,43 @@ body {
     background: white;
     border-radius: 8px;
     padding: 24px;
-    margin: 0 20px 20px 20px;
+    margin: 0 16px 20px 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    /* border: 1px solid rgba(0, 0, 0, 0.08); */
     position: relative;
     overflow: hidden;
     cursor: pointer;
+    min-height: 8rem;
+}
+
+/* 새로운 서비스 라벨 */
+.new-service-label {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 10;
 }
 
 .start-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 20px;
     /* margin-bottom: 24px; */
 }
 
 .start-text-section {
     flex: 1;
+    position: relative;
+    z-index: 2;
+    padding-right: 140px;
 }
 
 .start-title {
@@ -204,25 +222,40 @@ body {
     font-size: 18px;
     color: #333;
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.6;
     font-size: 16px;
 }
 
+.start-title.bold {
+    font-size: 18px;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
 .start-logo-section {
-    flex-shrink: 0;
-    margin-left: 16px;
+    position: absolute;
+    top: 55%;
+    right: 1rem;
+    transform: translateY(-50%);
+    z-index: 1;
 }
 
 .hyundai-logo {
     margin-right: 6px;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 44, 95, 0.2);
+}
+
+.tetris-logo {
+    width: 10rem;
+    height: 8rem;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.05));
 }
 
 .start-button {
@@ -255,7 +288,81 @@ body {
     font-size: 14px;
 }
 
-/* 제어 패널 */
+/* 서비스 바로가기 */
+.service-shortcuts {
+    background: #002c5f;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 16px 20px 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.2rem;
+}
+
+.shortcut-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 12px;
+    cursor: pointer;
+}
+
+.shortcut-item img {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.shortcut-icon {
+    margin-bottom: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+}
+
+.shortcut-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.shortcut-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    color: #e4e7ed;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+/* 구분선 */
+.separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 20px 0;
+}
+
+/* 디지털키 섹션 */
+.digital-key-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.digital-key-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+    color: #e4e7ed;
+    font-weight: 500;
+}
+
+/* 제어 패널 (기존 스타일 유지) */
 .control-panel {
     background: white;
     border-radius: 4px;
@@ -341,10 +448,6 @@ body {
     min-width: 60px;
 }
 
-.nav-item:hover {
-    background: rgba(0, 44, 95, 0.05);
-}
-
 .nav-item.active {
     color: #002c5f;
 }
@@ -354,8 +457,8 @@ body {
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     margin-bottom: 4px;
     color: #a1a1a1ad;
     transition: color 0.3s ease;
@@ -501,7 +604,7 @@ body {
 /* 반응형 디자인 */
 @media (max-width: 480px) {
     .topbar {
-        padding: 10px 16px;
+        padding: 20px 16px;
     }
     
     
@@ -514,13 +617,23 @@ body {
     }
     
     .start-container {
-        padding: 20px;
-        margin: 0 16px 20px 16px;
+        padding: 25px 35px;
+    }
+    
+    .new-service-label {
+        top: 12px;
+        left: 12px;
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+    
+    .start-text-section {
+        padding-right: 120px;
     }
     
     .hyundai-logo {
-        width: 50px;
-        height: 50px;
+        width: 80px;
+        height: 80px;
     }
     
     .control-grid {
@@ -540,6 +653,15 @@ body {
         font-size: 11px;
     }
     
+    .shortcut-item {
+        padding: 12px 6px;
+    }
+    
+    .shortcut-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
     .brand-img {
         max-width: 350px;
     }
@@ -552,12 +674,22 @@ body {
     
     .start-container {
         padding: 16px;
-        margin: 0 12px 20px 12px;
+    }
+    
+    .new-service-label {
+        top: 10px;
+        left: 10px;
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    .start-text-section {
+        padding-right: 100px;
     }
     
     .hyundai-logo {
-        width: 45px;
-        height: 45px;
+        width: 80px;
+        height: 80px;
     }
     
     .control-grid {
@@ -574,6 +706,19 @@ body {
     }
     
     .control-icon svg {
+        width: 12px;
+    }
+    
+    .shortcut-item {
+        padding: 10px 4px;
+    }
+    
+    .shortcut-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .shortcut-icon svg {
         width: 12px;
         height: 12px;
     }
@@ -602,12 +747,17 @@ body {
 .vehicle-section,
 .welcome-section,
 .start-container,
-.control-panel {
+.control-panel,
+.service-shortcuts {
     animation: fadeInUp 0.6s ease-out;
 }
 
 .control-panel {
     animation-delay: 0.2s;
+}
+
+.service-shortcuts {
+    animation-delay: 0.3s;
 }
 
 /* 접근성 */

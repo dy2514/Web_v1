@@ -44,14 +44,14 @@
 }
 
 .step-item .step {
-    font-size: var(--font-size-xs);
+    font-size: 1.2rem;
     font-weight: var(--font-weight-bold);
     color: var(--text-secondary);
     margin-bottom: var(--spacing-xs);
 }
 
 .step-item .step-tit {
-    font-size: var(--font-size-xs);
+    font-size: 1.1rem;
     font-weight: var(--font-weight-medium);
     color: var(--text-secondary);
     white-space: nowrap;
@@ -163,7 +163,7 @@
     
     .step-item .step-tit {
         max-width: 60px;
-        font-size: 0.7rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -189,11 +189,11 @@
     }
     
     .step-item .step {
-        font-size: var(--font-size-sm);
+        font-size: 1.4rem;
     }
     
     .step-item .step-tit {
-        font-size: var(--font-size-sm);
+        font-size: 1.3rem;
         max-width: none;
         white-space: normal;
     }

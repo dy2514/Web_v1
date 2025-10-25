@@ -1006,7 +1006,6 @@ async function formatStepResult(stepNumber, resultData) {
                         <pre>${JSON.stringify(chain2Data, null, 2)}</pre>
                     </div>
                     <div class="analysis-result-container">
-                        <p>🪑 좌석 배치 지시사항</p>
                         <div class="image-container">
                             <img src="/static/images/options/option${optNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
@@ -1022,17 +1021,6 @@ async function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
 
-                let taskSequenceTableRows = '';
-                const seq = chain3Data.task_sequence || {};
-                for (let key in seq) {
-                    const arr = seq[key];
-                    if (Array.isArray(arr)) {
-                        taskSequenceTableRows += `<li>${arr.map((d, i) => `${d}${i !== arr.length - 1 ? ' → ' : ''}`).join('')}</li>`;
-                    } else if (arr) {
-                        taskSequenceTableRows += `<li>${arr}</li>`;
-                    }
-                }
-
                 // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
                 const optionNo = window.currentOptionNo || 1;
 
@@ -1047,8 +1035,6 @@ async function formatStepResult(stepNumber, resultData) {
                         <div class="image-container">
                             <img src="/static/images/options/option${optionNo}.png" alt="시트 동작 계획" class="analysis-image">
                         </div>
-                        <p>📋 작업 순서</p>
-                        <ul style="list-style-type: disc; margin-left: 3rem;">${taskSequenceTableRows}</ul>
                     </div>
                 </div>`;
                 break;

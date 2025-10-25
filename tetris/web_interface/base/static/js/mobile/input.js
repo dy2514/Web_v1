@@ -205,4 +205,7 @@ function goToHome() {
     window.location.href = '/mobile/home';
 }
 
-
+// 페이지 네비게이션 함수들
+function navigateToHome() {
+    window.location.href = '/mobile/home';
+}
