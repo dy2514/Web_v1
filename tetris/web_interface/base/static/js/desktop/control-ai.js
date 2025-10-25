@@ -1007,7 +1007,7 @@ async function formatStepResult(stepNumber, resultData) {
                     </div>
                     <div class="analysis-result-container">
                         <div class="image-container">
-                            <img src="/static/images/options/option${optNo}.png" alt="최적 배치 생성" class="analysis-image">
+                            <img src="/static/images/optimum_arrangement_options/${optNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
                     </div>
                 </div>`;
@@ -1033,7 +1033,7 @@ async function formatStepResult(stepNumber, resultData) {
                     <div class="analysis-result-container">
                         <p>📋 시트 동작 계획</p>
                         <div class="image-container">
-                            <img src="/static/images/options/option${optionNo}.png" alt="시트 동작 계획" class="analysis-image">
+                            <img src="/static/images/operation_plan_options/${optionNo}.jpg" alt="시트 동작 계획" class="analysis-image">
                         </div>
                     </div>
                 </div>`;

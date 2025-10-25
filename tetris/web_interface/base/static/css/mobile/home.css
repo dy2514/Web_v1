@@ -214,7 +214,6 @@ body {
     flex: 1;
     position: relative;
     z-index: 2;
-    padding-right: 140px;
 }
 
 .start-title {
@@ -627,10 +626,6 @@ body {
         padding: 5px 10px;
     }
     
-    .start-text-section {
-        padding-right: 120px;
-    }
-    
     .hyundai-logo {
         width: 80px;
         height: 80px;
@@ -681,10 +676,6 @@ body {
         left: 10px;
         font-size: 10px;
         padding: 4px 8px;
-    }
-    
-    .start-text-section {
-        padding-right: 100px;
     }
     
     .hyundai-logo {

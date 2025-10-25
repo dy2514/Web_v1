@@ -1128,7 +1128,7 @@ async function formatStepResult(stepNumber, resultData) {
                 // }
 
                 formattedResult += `<div class="image-container">
-                    <img src="/static/images/options/${chain2OptionImgNamePrefix}${optionNo}.${chain2OptionImgNameExtension}" alt="최적 배치 생성" class="analysis-image">
+                    <img src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 생성" class="analysis-image">
                 </div>`;
                 break;
                 
@@ -1141,7 +1141,7 @@ async function formatStepResult(stepNumber, resultData) {
 
                 formattedResult = `
                     <div class="image-container">
-                    <img src="/static/images/options/${chain3OptionImgNamePrefix}${optionNo}.${chain3OptionImgNameExtension}" alt="시트 동작 계획" class="analysis-image"></div>
+                    <img src="/static/images/operation_plan_options/${optionNo}.jpg" alt="시트 동작 계획" class="analysis-image"></div>
                 `;
                 break;
                 
