@@ -973,10 +973,6 @@ async function formatStepResult(stepNumber, resultData) {
 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
-                    <div class="analysis-result-json-container">
-                        <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain1Data, null, 2)}</pre>
-                    </div>
                     <div class="analysis-result-container">
                         <div class="image-container"><img src="${imagePath}" alt="짐 상세 정보" class="analysis-image"></div>
                         ${imageSrc ? `<div class="image-container"><img src="${imageSrc}" alt="짐 상세 정보" class="analysis-image"></div>` : ''}
@@ -984,6 +980,10 @@ async function formatStepResult(stepNumber, resultData) {
                         <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
                         ${luggageTableRows ? `<p>📋 짐 상세 정보</p>
                         <ul class="luggage-detail-list">${luggageTableRows}</ul>` : ''}
+                    </div>
+                    <div class="analysis-result-json-container">
+                        <h4 class="json-container-title">JSON 데이터</h4>
+                        <pre>${JSON.stringify(chain1Data, null, 2)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1001,14 +1001,14 @@ async function formatStepResult(stepNumber, resultData) {
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
-                    <div class="analysis-result-json-container">
-                        <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain2Data, null, 2)}</pre>
-                    </div>
                     <div class="analysis-result-container">
                         <div class="image-container">
                             <img src="/static/images/optimum_arrangement_options/${optNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
+                    </div>
+                    <div class="analysis-result-json-container">
+                        <h4 class="json-container-title">JSON 데이터</h4>
+                        <pre>${JSON.stringify(chain2Data, null, 2)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1026,15 +1026,14 @@ async function formatStepResult(stepNumber, resultData) {
 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
-                    <div class="analysis-result-json-container">
-                        <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain3Data, null, 2)}</pre>
-                    </div>
                     <div class="analysis-result-container">
-                        <p>📋 시트 동작 계획</p>
                         <div class="image-container">
                             <img src="/static/images/operation_plan_options/${optionNo}.jpg" alt="시트 동작 계획" class="analysis-image">
                         </div>
+                    </div>
+                    <div class="analysis-result-json-container">
+                        <h4 class="json-container-title">JSON 데이터</h4>
+                        <pre>${JSON.stringify(chain3Data, null, 2)}</pre>
                     </div>
                 </div>`;
                 break;
