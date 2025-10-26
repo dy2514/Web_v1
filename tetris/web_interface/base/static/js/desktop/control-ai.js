@@ -1028,12 +1028,14 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
-                        <div class="image-container"><img src="${imagePath}" alt="짐 상세 정보" class="analysis-image"></div>
-                        ${imageSrc ? `<div class="image-container"><img src="${imageSrc}" alt="짐 상세 정보" class="analysis-image"></div>` : ''}
-                        <p>👥 인원 수: ${chain1Data.people || 0}명</p>
-                        <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
-                        ${luggageTableRows ? `<p>📋 짐 상세 정보</p>
-                        <ul class="luggage-detail-list">${luggageTableRows}</ul>` : ''}
+                        <div class="analysis-result-content">
+                            <div class="image-container"><img src="${imagePath}" alt="짐 상세 정보" class="analysis-image"></div>
+                            ${imageSrc ? `<div class="image-container"><img src="${imageSrc}" alt="짐 상세 정보" class="analysis-image"></div>` : ''}
+                            <p>👥 인원 수: ${chain1Data.people || 0}명</p>
+                            <p>🧳 총 짐 개수: ${chain1Data.total_luggage_count || 0}개</p>
+                            ${luggageTableRows ? `<p>📋 짐 상세 정보</p>
+                            <ul class="luggage-detail-list">${luggageTableRows}</ul>` : ''}
+                        </div>
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
@@ -1105,9 +1107,12 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container" style="flex: 1; padding: 0; background-image: none;">
-                        <p style="font-size: 1.3vw; text-align: center; margin: 2rem 6rem;">하드웨어 제어 코드: <span style="font-size: 2.4rem; font-weight: bold; letter-spacing: 0.2rem;">${placementCode}</span></p>
+                        <p style="font-size: 1.3vw; text-align: center; margin: 1vh;">하드웨어 제어 코드</p>
+                        <div class="placement-code-display" style="background: #f5f5f5; padding: 1vh; border-radius: 8px; margin: 0 20vw 1vh;">
+                            <h3 style="font-size: 1.3vw; font-weight: bold; text-align: center; font-family: monospace; letter-spacing: 4px;">${placementCode}</h3>
+                        </div>
                         <div class="image-container">
-                            <img style="height: 50vh; max-width: 50vw;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
+                            <img style="height: 46vh; max-width: 46vw;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
                         </div>
                         <p style="color: #666; font-size: 1vw; text-align: center; margin: 2rem 6rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                     </div>
