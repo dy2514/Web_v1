@@ -139,7 +139,7 @@ html, body {
 
 .wrap {
     padding: 8px var(--padX) 16px;
-    margin: 20px 16px;
+    margin: 20px 16px 75px;
 }
 
 .section-head {

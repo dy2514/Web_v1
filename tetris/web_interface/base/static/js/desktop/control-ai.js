@@ -336,7 +336,7 @@ function updateStepIndicator(step) {
                 if (stepIcon) {
                     // 0단계는 특수 아이콘 처리
                     if (i === 0) {
-                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">check_circle</span>';
+                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 1.8vw;">check_circle</span>';
                     } else {
                         stepIcon.innerHTML = '<span class="step-number">&nbsp;</span>';
                     }
@@ -891,16 +891,16 @@ function updateStepIcon(stepNumber) {
         iconElement.classList.add('warning');
         iconElement.innerHTML = `
 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="8.5" stroke="#D9D9D9" stroke-width="2" fill="none"/>
-    <circle cx="10" cy="10" r="8.5" stroke="#3B82F6" stroke-width="2" fill="none" stroke-dasharray="28.57" stroke-dashoffset="9.42" stroke-linecap="round"/>
-</svg>`;
+                <circle cx="10" cy="10" r="8.5" stroke="#D9D9D9" stroke-width="2" fill="none"></circle>
+                <circle cx="10" cy="10" r="8.5" stroke="#3B82F6" stroke-width="2" fill="none" stroke-dasharray="28.57" stroke-dashoffset="9.42" stroke-linecap="round"></circle>
+            </svg>`;
     } else {
         iconElement.classList.add('info');
         iconElement.innerHTML = `
-<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="20" height="20" rx="10" transform="matrix(1 0 0 -1 0 20)" fill="#0B78CB"/>
-    <path d="M9.89922 7.44102C10.562 7.44102 11.0992 6.90376 11.0992 6.24102C11.0992 5.57827 10.562 5.04102 9.89922 5.04102C9.23648 5.04102 8.69922 5.57827 8.69922 6.24102C8.69922 6.90376 9.23648 7.44102 9.89922 7.44102Z" fill="white"/>
-    <path d="M8.39922 8.43115C8.28876 8.43115 8.19922 8.5207 8.19922 8.63115V9.43115C8.19922 9.54161 8.28876 9.63115 8.39922 9.63115H9.10078C9.21124 9.63115 9.30078 9.7207 9.30078 9.83115V13.5938H8.2C8.08954 13.5938 8 13.6833 8 13.7938V14.5937C8 14.7042 8.08954 14.7937 8.2 14.7937H11.8C11.9105 14.7937 12 14.7042 12 14.5937V13.7937C12 13.6833 11.9105 13.5938 11.8 13.5938H11.1008V8.63115C11.1008 8.5207 11.0112 8.43115 10.9008 8.43115H8.39922Z" fill="white"/>
+<svg width="18" height="20" viewBox="0 0 18 20" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#000000" clip-rule="evenodd" d="M3.44141 6.52374C4.50762 6.86303 5.28 7.86127 5.28 9.0399C5.28 10.2185 4.50762 11.2168 3.44141 11.5561L3.44141 19.2002C3.44141 19.642 3.08323 20.0002 2.64141 20.0002C2.19958 20.0002 1.84141 19.642 1.84141 19.2002L1.84141 11.557C0.773737 11.2185 0 10.2196 0 9.0399C0 7.86023 0.773737 6.86128 1.84141 6.52284L1.84141 0.8C1.84141 0.358172 2.19958 0 2.64141 0C3.08323 0 3.44141 0.358172 3.44141 0.8V6.52374ZM2.64 10.0799C2.06562 10.0799 1.6 9.61428 1.6 9.0399C1.6 8.46553 2.06562 7.9999 2.64 7.9999C3.21438 7.9999 3.68 8.46553 3.68 9.0399C3.68 9.61428 3.21438 10.0799 2.64 10.0799Z" fill="#33363D"/>
+    <path fill="#000000" clip-rule="evenodd" d="M7.8414 19.2002L7.84141 15.1571C6.77374 14.8186 6 13.8197 6 12.64C6 11.4603 6.77374 10.4614 7.84141 10.1229V0.8C7.84141 0.358172 8.19958 0 8.64141 0C9.08323 0 9.44141 0.358172 9.44141 0.8L9.44141 10.1238C10.5076 10.4631 11.28 11.4614 11.28 12.64C11.28 13.8186 10.5076 14.8169 9.44141 15.1562V19.2002C9.44141 19.642 9.08323 20.0002 8.64141 20.0002C8.19958 20.0002 7.8414 19.642 7.8414 19.2002ZM7.6 12.64C7.6 13.2144 8.06562 13.68 8.64 13.68C9.21438 13.68 9.68 13.2144 9.68 12.64C9.68 12.0656 9.21438 11.6 8.64 11.6C8.06562 11.6 7.6 12.0656 7.6 12.64Z" fill="#33363D"/>
+    <path fill="#000000" clip-rule="evenodd" d="M13.8414 4.12294V0.8C13.8414 0.358172 14.1996 0 14.6414 0C15.0832 0 15.4414 0.358172 15.4414 0.8V4.12383C16.5076 4.46313 17.28 5.46137 17.28 6.64C17.28 7.81863 16.5076 8.81687 15.4414 9.15617L15.4414 19.2002C15.4414 19.642 15.0832 20.0002 14.6414 20.0002C14.1996 20.0002 13.8414 19.642 13.8414 19.2002V9.15706C12.7737 8.81862 12 7.81967 12 6.64C12 5.46033 12.7737 4.46138 13.8414 4.12294ZM14.64 7.68C14.0656 7.68 13.6 7.21438 13.6 6.64C13.6 6.06562 14.0656 5.6 14.64 5.6C15.2144 5.6 15.68 6.06562 15.68 6.64C15.68 7.21438 15.2144 7.68 14.64 7.68Z" fill="#33363D"/>
 </svg>`;
     }
 }
@@ -1002,6 +1002,7 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
+                        <p style="margin-bottom: 1vh;">최적 배치 생성 결과</p>
                         <div class="image-container">
                             <img src="/static/images/optimum_arrangement_options/${optNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
@@ -1027,6 +1028,7 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
+                        <p style="margin-bottom: 1vh;">시트 동작 계획 결과</p>
                         <div class="image-container">
                             <img src="/static/images/operation_plan_options/${optionNo}.jpg" alt="시트 동작 계획" class="analysis-image">
                         </div>
@@ -1048,15 +1050,12 @@ async function formatStepResult(stepNumber, resultData) {
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
-                    <div class="analysis-result-container">
-                        <p style="font-size: 2rem; margin: 1rem 42rem;">🎯 최적 배치 코드</p>
-                        <div class="placement-code-display" style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 1rem 42rem;">
-                            <h3 style="font-size: 24px; font-weight: bold; text-align: center; font-family: monospace; letter-spacing: 4px;">${placementCode}</h3>
-                        </div>
+                    <div class="analysis-result-container" style="flex: 1; padding: 0; background-image: none;">
+                        <p style="font-size: 2.4rem; text-align: center; margin: 2rem 6rem;">하드웨어 제어 코드: <span style="font-size: 2.4rem; font-weight: bold; letter-spacing: 0.2rem;">${placementCode}</span></p>
                         <div class="image-container">
-                            <img style="height: 20rem; max-width: 40rem;" src="/static/images/options/option${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
+                            <img style="height: 50%; max-width: 50%;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
                         </div>
-                        <p style="color: #666; font-size: 1.8rem; margin: 1rem 42rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
+                        <p style="color: #666; font-size: 2.2rem; text-align: center; margin: 2rem 6rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                     </div>
                 </div>`;
                 break;

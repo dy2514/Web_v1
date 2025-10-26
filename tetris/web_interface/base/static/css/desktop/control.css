@@ -58,14 +58,11 @@ html, body {
     height: 20px;
     margin-right: 8px;
     border-radius: 50%;
-}
-
-.status-icon.info {
-    background-color: #0B78CB;
+    transform: scale(calc(1 + 1 * (100vw / 1920px)));
+    transform-origin: center;
 }
 
 .status-icon.warning {
-    background-color: #3B82F6;
     animation: spin 1s linear infinite;
 }
 
@@ -78,8 +75,8 @@ html, body {
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from { transform: rotate(0deg) scale(calc(0.8 + 0.4 * (100vw / 1920px))); }
+    to { transform: rotate(360deg) scale(calc(0.8 + 0.4 * (100vw / 1920px))); }
 }
 
 /* Flex 레이아웃 개선 */
@@ -148,7 +145,7 @@ html, body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    min-height: 80px;
+    min-height: 6.7vw;
     position: relative;
 }
 
@@ -185,7 +182,7 @@ html, body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     white-space: nowrap;
-    min-width: 120px;
+    min-width: 10.0vw;
 }
 
 .status-item .status-content {
@@ -197,12 +194,12 @@ html, body {
 
 .status-text {
     font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.2vw;
 }
 
 .status-label {
     font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 1.9rem;
+    font-size: 1.3vw;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
 }
@@ -219,7 +216,7 @@ html, body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     white-space: nowrap;
-    min-width: 100px;
+    min-width: 8.3vw;
 }
 
 .system-control-buttons {
@@ -230,15 +227,15 @@ html, body {
 
 .system-control-buttons .krds-btn {
     padding: 0.4rem 0.8rem;
-    font-size: 1.2rem;
+    font-size: 0.8vw;
     border-radius: 6px;
-    min-width: 40px;
+    min-width: 3.3vw;
 }
 
 .krds-header__title h1 {
     margin: 0;
     font-family: "HyundaiSansHeadKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 4.2rem;
+    font-size: 3.0vw;
     font-weight: 700;
 }
 
@@ -246,7 +243,7 @@ html, body {
     margin: 0.5rem 0 0 0;
     opacity: 0.9;
     font-family: "HyundaiSansHeadKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    font-size: 2.6rem;
+    font-size: 1.8vw;
 }
 
 .krds-header__status {
@@ -256,8 +253,8 @@ html, body {
 }
 
 .krds-status-indicator {
-    width: 12px;
-    height: 12px;
+    width: 1.0vw;
+    height: 1.0vw;
     border-radius: 50%;
     background-color: #10b981;
     animation: pulse 2s infinite;
@@ -292,7 +289,7 @@ html, body {
 
 .qr-code-loading {
     color: #6b7280;
-    font-size: 1.3rem;
+    font-size: 0.9vw;
 }
 
 /* 상태 표시 섹션 */
@@ -331,17 +328,20 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     margin: 10px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     transition: all 0.3s ease;
+    transform: scale(calc(0.6 + 0.4 * (100vw / 1920px)));
+    transform-origin: center;
 }
 
 .status-icon .material-icons {
-    font-size: 24px;
+    font-size: 18px;
     color: rgba(255, 255, 255, 0.8);
+    transform: scale(calc(0.6 + 0.4 * (100vw / 1920px)));
 }
 
 .status-item:hover .status-icon {
@@ -378,8 +378,8 @@ html, body {
 }
 
 .qr-code-container {
-    width: 80px;
-    height: 80px;
+    width: 6.7vw;
+    height: 6.7vw;
     border: none;
     display: flex;
     align-items: center;
@@ -465,7 +465,7 @@ html, body {
 }
 
 .qr-modal-title {
-    font-size: 2.4rem;
+    font-size: 1.6vw;
     font-weight: 600;
     color: #333;
     margin: 0;
@@ -474,14 +474,14 @@ html, body {
 .qr-modal-close {
     background: none;
     border: none;
-    font-size: 2.6rem;
+    font-size: 1.8vw;
     cursor: pointer;
     color: #666;
     padding: 5px;
     border-radius: 50%;
     transition: all 0.3s ease;
-    width: 40px;
-    height: 40px;
+    width: 3.3vw;
+    height: 3.3vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -514,7 +514,7 @@ html, body {
 .qr-modal-description {
     margin-top: 20px;
     color: #666;
-    font-size: 1.7rem;
+    font-size: 1.1vw;
     line-height: 1.5;
 }
 
@@ -629,6 +629,36 @@ html, body {
 }
 
 /* 반응형 헤더 레이아웃 */
+@media (min-width: 1400px) {
+    .status-icon {
+        transform: scale(calc(0.8 + 0.5 * (100vw / 1920px)));
+    }
+    
+    .status-icon .material-icons {
+        transform: scale(calc(0.8 + 0.2 * (100vw / 1920px)));
+    }
+    
+    .hardware-icon svg {
+        transform: scale(calc(1.0 + 0.2 * (100vw / 1920px)));
+    }
+    
+    .hardware-operation-section.waiting .hardware-icon svg {
+        transform: scale(calc(1.2 + 0.3 * (100vw / 1920px)));
+    }
+    
+    .hardware-operation-section.processing .hardware-icon svg {
+        transform: scale(calc(1.0 + 0.2 * (100vw / 1920px)));
+    }
+    
+    .hardware-operation-section.completed .hardware-icon svg {
+        transform: scale(calc(1.1 + 0.2 * (100vw / 1920px)));
+    }
+    
+    .hardware-operation-section.error .hardware-icon svg {
+        transform: scale(calc(1.0 + 0.2 * (100vw / 1920px)));
+    }
+}
+
 @media (max-width: 1200px) {
     .krds-header__content {
         display: flex;
@@ -672,11 +702,11 @@ html, body {
     }
     
     .krds-header__title h1 {
-        font-size: 2rem;
+        font-size: 2.0vw;
     }
     
     .krds-header__title p {
-        font-size: 1.2rem;
+        font-size: 1.4vw;
     }
     
     .status-items {
@@ -686,13 +716,21 @@ html, body {
     }
     
     .status-item {
-        min-width: 200px;
+        min-width: 16.7vw;
         justify-content: center;
     }
     
     .system-control-buttons {
         margin-right: 0;
         margin-top: 1rem;
+    }
+    
+    .status-icon {
+        transform: scale(calc(0.4 + 0.3 * (100vw / 768px)));
+    }
+    
+    .status-icon .material-icons {
+        transform: scale(calc(0.4 + 0.3 * (100vw / 768px)));
     }
 }
 
@@ -720,16 +758,15 @@ html, body {
     }
     
     .hardware-icon svg {
-        width: 60px;
-        height: 60px;
+        transform: scale(calc(0.6 + 0.4 * (100vw / 768px)));
     }
     
     .hardware-title {
-        font-size: 1rem;
+        font-size: 1.0vw;
     }
     
     .hardware-status {
-        font-size: 0.8rem;
+        font-size: 0.8vw;
     }
 }
 
@@ -746,25 +783,24 @@ html, body {
     }
     
     .krds-header__title h1 {
-        font-size: 1.8rem;
+        font-size: 1.8vw;
     }
     
     .krds-header__title p {
-        font-size: 1rem;
+        font-size: 1.2vw;
     }
     
     .status-item {
-        min-width: 180px;
+        min-width: 15.0vw;
         padding: 0.75rem;
     }
     
     .status-icon {
-        width: 24px;
-        height: 24px;
+        transform: scale(calc(0.3 + 0.2 * (100vw / 480px)));
     }
     
     .status-icon .material-icons {
-        font-size: 20px;
+        transform: scale(calc(0.3 + 0.2 * (100vw / 480px)));
     }
     
     .progress-and-hardware-container {
@@ -776,8 +812,7 @@ html, body {
     }
     
     .hardware-icon svg {
-        width: 50px;
-        height: 50px;
+        transform: scale(calc(0.4 + 0.3 * (100vw / 480px)));
     }
 }
 
@@ -804,8 +839,8 @@ html, body {
 
 /* 상태 인디케이터 개선 */
 .krds-status-indicator {
-    width: 16px;
-    height: 16px;
+    width: 1.3vw;
+    height: 1.3vw;
     border-radius: 50%;
     background-color: #10b981;
     animation: pulse 2s infinite;
@@ -813,16 +848,20 @@ html, body {
 
 .krds-text--status {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1.6rem;
+    font-size: 1.0vw;
     font-weight: 500;
     text-align: center;
     margin: 0;
 }
 
+.krds-text  {
+    font-size: 1.2vw;
+}
+
 .krds-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 1.6rem;
+    font-size: 1.0vw;
 }
 
 .krds-table th,
@@ -834,7 +873,7 @@ html, body {
 
 .krds-table th {
     background-color: #f8fafc;
-    font-size: 2.2rem;
+    font-size: 1.4vw;
     color: #374151;
 }
 
@@ -845,13 +884,13 @@ html, body {
 }
 
 .status-type-icon {
-    font-size: 1.9rem;
+    font-size: 1.3vw;
     color: #6b7280;
 }
 
 .status-type-text {
     font-weight: 500;
-    font-size: 1.7rem;
+    font-size: 1.1vw;
 }
 
 /* 배지 스타일 */
@@ -861,10 +900,11 @@ html, body {
     gap: 0.25rem;
     padding: 0.25rem 0.75rem;
     border-radius: 10px;
-    font-size: 1.4rem;
+    font-size: 0.9vw;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    height: 100%;
 }
 
 .krds-badge--success {
@@ -895,8 +935,8 @@ html, body {
 /* 상태 인디케이터 스타일 */
 .status-indicator {
     display: inline-block; 
-    width: 12px; 
-    height: 12px; 
+    width: 1.0vw;
+    height: 1.0vw;
     border-radius: 50%; 
     background-color: #10b981;
 }
@@ -938,7 +978,7 @@ html, body {
 }
 
 .krds-stat__label {
-    font-size: 1.4rem;
+    font-size: 0.9vw;
     color: #6b7280;
     margin-bottom: 0.25rem;
     text-transform: uppercase;
@@ -946,17 +986,17 @@ html, body {
 }
 
 .krds-stat__value {
-    font-size: 2.2rem;
+    font-size: 1.6vw;
     font-weight: 700;
     color: #1f2937;
 }
 
 .krds-title.krds-title--md {
-    font-size: 2.6rem;
+    font-size: 1.8vw;
 }
 
 .krds-title.krds-title--lg {
-    font-size: 2.8rem;
+    font-size: 2.0vw;
 }
 
 /* 아두이노 상태 테이블 */
@@ -981,7 +1021,7 @@ html, body {
     background-color: #f8fafc;
     padding: 0.75rem;
     text-align: center;
-    font-size: 2.2rem;
+    font-size: 1.4vw;
     color: #374151;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -1018,7 +1058,7 @@ html, body {
     background-color: #f8fafc;
     padding: 0.75rem;
     text-align: center;
-    font-size: 2.2rem;
+    font-size: 1.4vw;
     color: #374151;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -1051,7 +1091,7 @@ html, body {
 }
 
 .current-step-status {
-    font-size: 1.9rem;
+    font-size: 1.3vw;
     font-weight: 600;
     color: #374151;
     text-align: center;
@@ -1084,11 +1124,11 @@ html, body {
 
 .overall-progress-bar {
     width: 100%;
-    height: 16px;
+    height: 1.3vw;
     background-color: #e5e7eb;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4vw;
     position: relative;
 }
 
@@ -1113,7 +1153,7 @@ html, body {
 
 .progress-percentage {
     text-align: center;
-    font-size: 1.9rem;
+    font-size: 1.3vw;
     font-weight: 700;
     color: #3b82f6;
 }
@@ -1135,14 +1175,6 @@ html, body {
     flex: 1;
 }
 
-.progress-track {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    padding: 1rem 0;
-    margin: 0 0.5rem; /* 양쪽에 약간의 여백 추가 */
-}
 
 .progress-track::before {
     content: '';
@@ -1150,7 +1182,7 @@ html, body {
     top: 50%;
     left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
     right: 12.5px; /* 마지막 아이콘의 중심에서 끝 */
-    height: 3px;
+    height: 0.25vw;
     background-color: #e5e7eb;
     transform: translateY(-50%);
     z-index: 1;
@@ -1161,7 +1193,7 @@ html, body {
     position: absolute;
     top: 50%;
     left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
-    height: 3px;
+    height: 0.25vw;
     background-color: #10b981;
     transform: translateY(-50%);
     z-index: 2;
@@ -1177,24 +1209,24 @@ html, body {
     position: relative;
     z-index: 3;
     flex: 1;
-    max-width: 16rem;
+    max-width: 50rem;
 }
 
 .step-circle {
-    width: 25px;
-    height: 25px;
+    width: 2.1vw;
+    height: 2.1vw;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 1.6rem;
+    font-size: 1.3vw;
     transition: all 0.3s ease;
     background-color: #e5e7eb;
     color: #6b7280;
-    border: 3px solid #e5e7eb;
+    border: 0.25vw solid #e5e7eb;
     position: relative;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4vw;
 }
 
 .step-circle .material-icons {
@@ -1233,13 +1265,13 @@ html, body {
 .progress-step.completed:not(#stepProgress0) .step-circle::after {
     content: '✓';
     position: absolute;
-    font-size: 1.5rem;
+    font-size: 1.2vw;
     font-weight: bold;
     color: white;
 }
 
 .step-label {
-    font-size: 1.9rem;
+    font-size: 1.8vw;
     font-weight: 600;
     color: #374151;
     margin-top: 0.75rem;
@@ -1248,7 +1280,7 @@ html, body {
 }
 
 .step-status {
-    font-size: 1.7rem;
+    font-size: 1.1vw;
     color: #6b7280;
     margin-top: 0.25rem;
     text-align: center;
@@ -1278,8 +1310,6 @@ html, body {
     justify-content: space-between;
     align-items: center;
     position: relative;
-    padding: 1rem 0;
-    margin: 0 0.5rem;
 }
 
 .progress-track::before {
@@ -1288,7 +1318,7 @@ html, body {
     top: 50%;
     left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
     right: 12.5px; /* 마지막 아이콘의 중심에서 끝 */
-    height: 3px;
+    height: 0.25vw;
     background-color: #e5e7eb;
     transform: translateY(-50%);
     z-index: 1;
@@ -1299,7 +1329,7 @@ html, body {
     position: absolute;
     top: 50%;
     left: 12.5px; /* 첫 번째 아이콘의 중심에서 시작 */
-    height: 3px;
+    height: 0.25vw;
     background-color: #10b981;
     transform: translateY(-50%);
     z-index: 2;
@@ -1309,20 +1339,20 @@ html, body {
 
 /* 단계별 아이콘 원형 스타일 개선 */
 .step-circle {
-    width: 25px;
-    height: 25px;
+    width: 2.1vw;
+    height: 2.1vw;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 1.6rem;
+    font-size: 1.3vw;
     transition: all 0.3s ease;
     background-color: #e5e7eb;
     color: #6b7280;
-    border: 3px solid #e5e7eb;
+    border: 0.25vw solid #e5e7eb;
     position: relative;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4vw;
 }
 
 
@@ -1337,7 +1367,7 @@ html, body {
     padding: 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
-    min-width: 200px;
+    min-width: 12vw;
     transition: all 0.3s ease;
 }
 
@@ -1365,7 +1395,7 @@ html, body {
 /* 하드웨어 상태별 스타일 */
 .hardware-operation-section.waiting .hardware-icon svg {
     opacity: 0.6;
-    transform: scale(1.2);
+    transform: scale(calc(1.0 + 0.4 * (100vw / 1920px)));
 }
 
 .hardware-operation-section.waiting .hardware-icon svg rect,
@@ -1384,7 +1414,7 @@ html, body {
 
 .hardware-operation-section.processing .hardware-icon svg {
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(calc(0.8 + 0.25 * (100vw / 1920px)));
 }
 
 .hardware-operation-section.processing .hardware-icon svg rect,
@@ -1404,7 +1434,7 @@ html, body {
 
 .hardware-operation-section.completed .hardware-icon svg {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(calc(0.9 + 0.2 * (100vw / 1920px)));
 }
 
 .hardware-operation-section.completed .hardware-icon svg rect,
@@ -1419,7 +1449,7 @@ html, body {
 
 .hardware-operation-section.error .hardware-icon svg {
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(calc(0.8 + 0.25 * (100vw / 1920px)));
 }
 
 .hardware-operation-section.error .hardware-icon svg rect,
@@ -1437,7 +1467,7 @@ html, body {
 }
 
 .hardware-title {
-    font-size: 1.9rem;
+    font-size: 1.6vw;
     font-weight: 600;
     color: #374151;
     margin-bottom: 1rem;
@@ -1445,7 +1475,7 @@ html, body {
 }
 
 .hardware-status {
-    font-size: 1.7rem;
+    font-size: 1.1vw;
     font-weight: 500;
     padding: 0.4rem 1rem;
     border-radius: 9999px;
@@ -1536,7 +1566,7 @@ html, body {
     top: 20px;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 0.17vw;
     background-color: #e5e7eb;
     z-index: 1;
 }
@@ -1556,8 +1586,8 @@ html, body {
 }
 
 .step {
-    width: 40px;
-    height: 40px;
+    width: 3.3vw;
+    height: 3.3vw;
     border-radius: 50%;
     background-color: #e5e7eb;
     display: flex;
@@ -1574,13 +1604,13 @@ html, body {
 }
 
 .step-number {
-    font-size: 1.25rem;
+    font-size: 1.2vw;
     color: #000000;
     font-weight: 500;
 }
 
 .step-tit {
-    font-size: 0.9rem;
+    font-size: 0.6vw;
     color: #374151;
     font-weight: 600;
 }
@@ -1629,14 +1659,14 @@ html, body {
 }
 
 .accordion-step-number {
-    width: 24px;
-    height: 24px;
+    width: 2.0vw;
+    height: 2.0vw;
     border-radius: 50%;
     background-color: #e5e7eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.6vw;
     font-weight: 600;
     color: #6b7280;
 }
@@ -1645,19 +1675,32 @@ html, body {
     flex: 1;
     font-weight: 600;
     color: #374151;
-    font-size: 1.7rem;
+    font-size: 1.1vw;
 }
 
 .accordion-step-status {
-    padding: 0.25rem 0.75rem;
+    padding: 0.8vh 0.75vw;
     border-radius: 9999px;
-    font-size: 1.7rem;
+    font-size: 1.1vw;
     font-family: 'HyundaiSansTextKRM';
 }
 
 .accordion-step-status.waiting {
     background-color: #f3f4f6;
     color: #374151;
+}
+
+.accordion-item .accordion-content .status-icon.info + span {
+    color: #b7bcc6;
+}
+
+/* 대기중 상태일 때 SVG 아이콘 색상 설정 */
+.accordion-item .status-icon svg path[fill="#000000"] {
+    fill: #b7bcc6;
+}
+
+.accordion-item .status-icon svg path[fill="#33363D"] {
+    fill: #b7bcc6;
 }
 
 .accordion-step-status.processing {
@@ -1674,12 +1717,12 @@ html, body {
 .accordion-content {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6vw;
     flex: 1;
 }
 
 .accordion-content span {
-    font-size: 2.8rem;
+    font-size: 1.8vw;
 }
 
 /* 아코디언 상태 표시 영역 */
@@ -1690,7 +1733,7 @@ html, body {
 
 /* 아코디언 화살표 스타일 */
 .accordion-arrow {
-    font-size: 1.6rem;
+    font-size: 1.0vw;
     color: #6b7280;
     transition: transform 0.3s ease;
 }
@@ -1706,16 +1749,18 @@ html, body {
 }
 
 .accordion-collapse.show {
-    max-height: 500px;
+    max-height: 40vh;
     display: block !important;
     height: auto !important;
-    overflow: visible !important;
+    overflow-y: auto !important;
 }
 
 .accordion-body {
     padding: 1.5rem;
     background-color: #f8fafc;
     border-top: 1px solid #e5e7eb;
+    max-height: 78vh;
+    overflow-y: auto;
 }
 
 .step-detail-content {
@@ -1723,7 +1768,7 @@ html, body {
     padding: 1rem;
     background-color: #ffffff;
     border-radius: 8px;
-    min-height: 60px;
+    min-height: 5.0vh;
 }
 
 .step-progress-section {
@@ -1737,12 +1782,12 @@ html, body {
 
 .accordion-body .krds-text--small {
     color: #6b7280 !important;
-    font-size: 1.5rem !important;
+    font-size: 1.0vw !important;
 }
 
 .krds-progress {
     flex: 1;
-    height: 8px;
+    height: 0.67vw;
     background-color: #e5e7eb;
     border-radius: 4px;
     overflow: hidden;
@@ -1760,9 +1805,9 @@ html, body {
 }
 
 .step-detail-info li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4vw;
     color: #6b7280;
-    font-size: 1.6rem;
+    font-size: 1.0vw;
 }
 
 /* 버튼 그룹 */
@@ -1798,7 +1843,7 @@ html, body {
     color: white;
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: 0.6vw;
     white-space: nowrap;
     z-index: 9999;
     pointer-events: none;
@@ -1824,7 +1869,7 @@ html, body {
     border: none;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.0vw;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1859,14 +1904,14 @@ html, body {
 
 .krds-btn--lg {
     padding: 1rem 2rem;
-    font-size: 1.7rem;
+    font-size: 1.1vw;
 }
 
 /* 접근성 개선 */
 .sr-only {
     position: absolute;
-    width: 1px;
-    height: 1px;
+    width: 0.08vw;
+    height: 0.08vw;
     padding: 0;
     margin: -1px;
     overflow: hidden;
@@ -1914,14 +1959,14 @@ html, body {
 .step-result-content h4 {
     margin: 0 0 1rem 0;
     color: #1f2937;
-    font-size: 1.8rem;
+    font-size: 1.2vw;
     font-weight: 600;
 }
 
 .step-result-content h5 {
     margin: 1rem 0 0.5rem 0;
     color: #374151;
-    font-size: 1.6rem;
+    font-size: 1.0vw;
     font-weight: 600;
 }
 
@@ -1929,7 +1974,7 @@ html, body {
     margin: 0.5rem 0;
     color: #4b5563;
     line-height: 1.5;
-    font-size: 1.5rem;
+    font-size: 1.0vw;
 }
 
 .step-result-content strong {
@@ -1942,7 +1987,7 @@ html, body {
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
-    font-size: 1.5rem;
+    font-size: 1.0vw;
     color: #1f2937;
     border: 1px solid #d1d5db;
 }
@@ -1956,12 +2001,12 @@ html, body {
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     padding: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.0vw;
     color: #374151;
     overflow-x: auto;
     white-space: pre-wrap;
     word-break: break-word;
-    max-height: 300px;
+    max-height: 25.0vw;
     overflow-y: auto;
 }
 
@@ -2046,7 +2091,7 @@ html, body {
         opacity: 0;
     }
     to {
-        max-height: 500px;
+        max-height: 41.7vw;
         opacity: 1;
     }
 }
@@ -2065,20 +2110,20 @@ html, body {
 
 /* 아코디언 분석 결과에 표시되는 이미지 */
 .analysis-image {
-    height: 18rem;
-    max-width: 23rem;
-    border: #a1a1a1 solid 1px;
+    height: 70%;
+    max-width: 70%;
 }
 
 .accordion-collapse.collapse.show {
-    max-height: 515px !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
 }
 
 /* 분석 결과 래퍼 - 양옆 배치 */
 .analysis-result-wrapper {
     display: flex;
     align-items: stretch; /* 높이를 동일하게 맞춤 */
-    max-height: 500px;
+    /* max-height: 50rem; */
 }
 
 /* JSON 데이터 표시 컨테이너 */
@@ -2087,17 +2132,17 @@ html, body {
     background: #3f516f;
     padding: 2rem;
     overflow-x: auto;
-    max-height: 1000px;
-    min-height: 100px;
+    max-height: 68vh;
+    min-height: 8.3vw;
     overflow-y: auto;
     border: 1px solid #e5e7eb;
 }
 
 .json-container-title {
     margin-top: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4vw;
     color: #ffffff;
-    font-size: 2.2rem;
+    font-size: 1.4vw;
     font-weight: 600;
 }
 
@@ -2105,7 +2150,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'HyundaiSansTextKRM';
-    font-size: 2.0rem;
+    font-size: 1.3vw;
     line-height: 1.5;
     color: #ffffff;
     white-space: pre;
@@ -2118,25 +2163,27 @@ html, body {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-attachment: local;
-    flex: 1;
-    padding: 8rem 0 0;
+    flex: 0.6;
+    padding: 4% 0 2%;
+    overflow: auto;
+    margin: 0 2rem;
+    max-height: 68vh;
     /* border: 1px solid #e5e7eb;
     max-height: 500px;
-    min-height: 100px;
-    overflow: auto;
+    min-height: 8.3vw;
     padding-top: 8rem;
     padding-bottom: 2rem; */
 }
 
 .analysis-result-container .image-container {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     text-align: center;
 }
 
 .analysis-result-container p, .analysis-result-container li {
-    margin: 0.5rem 10rem;
+    margin: 0.5rem 2.6vw;
     color: #374151;
-    font-size: 2rem;
+    font-size: 1.3vw;
     line-height: 1.6;
 }
 
@@ -2163,7 +2210,7 @@ html, body {
     align-items: center;
     gap: 0.4rem;
     padding: 0.6rem 1rem;
-    font-size: 1.6rem;
+    font-size: 1.3vw;
     font-weight: 600;
     border-radius: 6px;
     transition: all 0.3s ease;
@@ -2182,7 +2229,7 @@ html, body {
 }
 
 .progress-title-section .krds-btn .material-icons {
-    font-size: 1rem;
+    font-size: 3rem;
 }
 
 /* 팝업 모달 스타일 */
@@ -2206,12 +2253,12 @@ html, body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 160rem;
-    width: 100%;
-    max-height: 80vh;
-    overflow: hidden;
+    width: 80%;
+    max-height: 100vh;
     animation: slideIn 0.3s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
@@ -2221,6 +2268,7 @@ html, body {
     padding: 2rem;
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 8px;
 }
 
 .modal-title {
@@ -2228,12 +2276,12 @@ html, body {
     align-items: center;
     gap: 0.75rem;
     margin: 0;
-    font-size: 3.0rem;
+    font-size: 2.0vw;
     color: #1f2937;
 }
 
 .modal-title .material-icons {
-    font-size: 4.0rem;
+    font-size: 2.6vw;
     color: #3b82f6;
 }
 
@@ -2241,8 +2289,8 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 3.3vw;
+    height: 3.3vw;
     border: none;
     background: rgba(107, 114, 128, 0.1);
     border-radius: 8px;
@@ -2259,8 +2307,10 @@ html, body {
 
 .modal-body {
     padding: 2rem;
-    max-height: 600px;
     overflow-y: auto;
+    max-height: 80vh;
+    flex: 1;
+    min-height: 0;
 }
 
 .modal-body .krds-accordion {
@@ -2295,7 +2345,7 @@ html, body {
 
 /* 모달 스크롤바 스타일 */
 .modal-body::-webkit-scrollbar {
-    width: 6px;
+    width: 0.5vw;
 }
 
 .modal-body::-webkit-scrollbar-track {
@@ -2309,6 +2359,25 @@ html, body {
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 아코디언 본문 스크롤바 스타일 */
+.accordion-body::-webkit-scrollbar {
+    width: 0.5vw;
+}
+
+.accordion-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.accordion-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.accordion-body::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
 
@@ -2336,13 +2405,13 @@ html, body {
 }
 
 .logs-header .krds-btn {
-    height: 30px;
+    height: 2.5vw;
     padding: 0.375rem 0.75rem;
-    font-size: 1.2rem;
+    font-size: 0.8vw;
 }
 
 .logs-header .krds-btn .material-icons {
-    font-size: 3rem;
+    font-size: 2.0vw;
 }
 
 .logs-loading {
@@ -2434,11 +2503,11 @@ html, body {
     font-family: "HyundaiSansHeadKRM", sans-serif;
     font-weight: 600;
     color: var(--color-primary);
-    font-size: 1.8rem;
+    font-size: 1.2vw;
 }
 
 .log-timestamp {
-    font-size: 1.6rem;
+    font-size: 1.0vw;
     color: var(--color-text-secondary);
     background: var(--color-white);
     padding: 0.25rem 0.5rem;
@@ -2464,14 +2533,14 @@ html, body {
 
 .log-content {
     font-family: "Courier New", monospace;
-    font-size: 1.5rem;
+    font-size: 1.0vw;
     line-height: 1.4;
     color: var(--color-text-secondary);
     background: var(--color-white);
     padding: 0.75rem;
     border-radius: 4px;
     border: 1px solid var(--border-color);
-    max-height: 200px;
+    max-height: 16.7vw;
     overflow-y: auto;
     white-space: pre-wrap;
     word-break: break-word;
@@ -2479,7 +2548,7 @@ html, body {
 
 /* 로그 내용 스크롤바 스타일링 */
 .log-content::-webkit-scrollbar {
-    width: 6px;
+    width: 0.5vw;
 }
 
 .log-content::-webkit-scrollbar-track {
@@ -2506,12 +2575,12 @@ html, body {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 1.4rem;
+    font-size: 0.9vw;
     padding: 0.25rem 0.5rem;
 }
 
 .log-actions .material-icons {
-    font-size: 20px;
+    font-size: 1.3vw;
     transition: transform 0.2s ease;
 }
 
@@ -2531,5 +2600,5 @@ html, body {
 }
 
 .material-icons {
-    font-size: 3.8rem;
+    font-size: 2.6vw;
 }
