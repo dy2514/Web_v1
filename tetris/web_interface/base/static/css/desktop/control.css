@@ -49,18 +49,6 @@ html, body {
     padding: 1rem;
 }
 
-/* AI 처리 진행률 아이콘 스타일 */
-.status-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    border-radius: 50%;
-    transform: scale(calc(1 + 1 * (100vw / 1920px)));
-    transform-origin: center;
-}
 
 .status-icon.warning {
     animation: spin 1s linear infinite;
@@ -75,8 +63,8 @@ html, body {
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg) scale(calc(0.8 + 0.4 * (100vw / 1920px))); }
-    to { transform: rotate(360deg) scale(calc(0.8 + 0.4 * (100vw / 1920px))); }
+    from { transform: rotate(0deg) scale(calc(0.8 + 0.6 * (100vw / 1920px))); }
+    to { transform: rotate(360deg) scale(calc(0.8 + 0.6 * (100vw / 1920px))); }
 }
 
 /* Flex 레이아웃 개선 */
@@ -202,10 +190,6 @@ html, body {
     font-size: 1.3vw;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
-}
-
-.status-icon {
-    color: rgba(255, 255, 255, 0.9);
 }
 
 .connection-status {
@@ -334,7 +318,7 @@ html, body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     transition: all 0.3s ease;
-    transform: scale(calc(0.6 + 0.4 * (100vw / 1920px)));
+    transform: scale(calc(0.8 + 0.5 * (100vw / 1920px)));
     transform-origin: center;
 }
 
@@ -630,9 +614,6 @@ html, body {
 
 /* 반응형 헤더 레이아웃 */
 @media (min-width: 1400px) {
-    .status-icon {
-        transform: scale(calc(0.8 + 0.5 * (100vw / 1920px)));
-    }
     
     .status-icon .material-icons {
         transform: scale(calc(0.8 + 0.2 * (100vw / 1920px)));
@@ -648,10 +629,6 @@ html, body {
     
     .hardware-operation-section.processing .hardware-icon svg {
         transform: scale(calc(1.0 + 0.2 * (100vw / 1920px)));
-    }
-    
-    .hardware-operation-section.completed .hardware-icon svg {
-        transform: scale(calc(1.1 + 0.2 * (100vw / 1920px)));
     }
     
     .hardware-operation-section.error .hardware-icon svg {
@@ -1420,7 +1397,7 @@ html, body {
 
 .hardware-operation-section.completed .hardware-icon svg {
     opacity: 1;
-    transform: scale(calc(0.9 + 0.2 * (100vw / 1920px)));
+    transform: scale(calc(1.1 + 0.2 * (100vw / 1920px)));
 }
 
 .hardware-operation-section.completed .hardware-icon svg rect,
@@ -2264,7 +2241,7 @@ html, body {
 
 .luggage-detail-list {
     list-style-type: disc;
-    margin-left: 30px;
+    margin-left: 2.2vw;
     color: #4b5563;
 }
 

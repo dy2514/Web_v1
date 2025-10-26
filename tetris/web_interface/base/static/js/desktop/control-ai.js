@@ -1105,11 +1105,11 @@ async function formatStepResult(stepNumber, resultData) {
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container" style="flex: 1; padding: 0; background-image: none;">
-                        <p style="font-size: 2.4rem; text-align: center; margin: 2rem 6rem;">하드웨어 제어 코드: <span style="font-size: 2.4rem; font-weight: bold; letter-spacing: 0.2rem;">${placementCode}</span></p>
+                        <p style="font-size: 1.3vw; text-align: center; margin: 2rem 6rem;">하드웨어 제어 코드: <span style="font-size: 2.4rem; font-weight: bold; letter-spacing: 0.2rem;">${placementCode}</span></p>
                         <div class="image-container">
                             <img style="height: 50vh; max-width: 50vw;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
                         </div>
-                        <p style="color: #666; font-size: 2.2rem; text-align: center; margin: 2rem 6rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
+                        <p style="color: #666; font-size: 1vw; text-align: center; margin: 2rem 6rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                     </div>
                 </div>`;
                 break;
