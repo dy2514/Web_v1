@@ -1675,7 +1675,7 @@ html, body {
 }
 .step-indicator.active-1::after { 
     width: 20%; 
-    background: linear-gradient(to right, #374151 0%, #374151 100%);
+    background: linear-gradient(to right, rgb(16, 185, 129) 0%, #374151 100%);
 }
 .step-indicator.active-2::after { 
     width: 40%; 
