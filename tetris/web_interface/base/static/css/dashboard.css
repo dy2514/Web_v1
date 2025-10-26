@@ -1136,15 +1136,6 @@ html, body {
   --step-text-color-active: #0066cc;
 }
 
-/* KRDS 표준 단계 표시기 컨테이너 */
-.step-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 var(--space-4) 0;
-  text-align: center;
-}
-
 /* KRDS 표준 단계 표시기 */
 .krds-step-wrap {
   display: flex;

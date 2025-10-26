@@ -34,52 +34,45 @@
                 </div>
                 <div class="progress-percentage" id="overallProgressPercentage">0%</div>
             </div>
-                    <div class="progress-track">
-                        <!-- 0단계: 분석 시작 -->
-                        <div class="progress-step" id="stepProgress0">
-                            <div class="step-circle" id="stepIcon0">
-                                <span class="material-icons" style="font-size: 16px;">hourglass_empty</span>
+                    <!-- Step indicator -->
+                    <ol class="step-indicator">
+                        <li class="active" id="stepProgress0">
+                            <div class="step-circle"></div>
+                            <div class="step-label">
+                                <span class="step-number">Step 1</span>
+                                <span class="step-title">분석 시작</span>
                             </div>
-                            <div class="step-label">분석 시작</div>
-                            <div class="step-status" id="stepStatus0">대기중</div>
-                        </div>
-                        
-                        <!-- 1단계: 사용자 입력 분석 -->
-                        <div class="progress-step" id="stepProgress1">
-                            <div class="step-circle" id="stepIcon1">
-                                <span class="step-number">1</span>
+                        </li>
+                        <li class="inactive" id="stepProgress1">
+                            <div class="step-circle"></div>
+                            <div class="step-label">
+                                <span class="step-number">Step 2</span>
+                                <span class="step-title">사용자 입력 분석</span>
                             </div>
-                            <div class="step-label">사용자 입력 분석</div>
-                            <div class="step-status" id="stepStatus1">대기중</div>
-                        </div>
-                        
-                        <!-- 2단계: 최적 배치 생성 -->
-                        <div class="progress-step" id="stepProgress2">
-                            <div class="step-circle" id="stepIcon2">
-                                <span class="step-number">2</span>
+                        </li>
+                        <li class="inactive" id="stepProgress2">
+                            <div class="step-circle"></div>
+                            <div class="step-label">
+                                <span class="step-number">Step 3</span>
+                                <span class="step-title">최적 배치 생성</span>
                             </div>
-                            <div class="step-label">최적 배치 생성</div>
-                            <div class="step-status" id="stepStatus2">대기중</div>
-                        </div>
-                        
-                        <!-- 3단계: 시트 동작 계획 -->
-                        <div class="progress-step" id="stepProgress3">
-                            <div class="step-circle" id="stepIcon3">
-                                <span class="step-number">3</span>
+                        </li>
+                        <li class="inactive" id="stepProgress3">
+                            <div class="step-circle"></div>
+                            <div class="step-label">
+                                <span class="step-number">Step 4</span>
+                                <span class="step-title">시트 동작 계획</span>
                             </div>
-                            <div class="step-label">시트 동작 계획</div>
-                            <div class="step-status" id="stepStatus3">대기중</div>
-                        </div>
-
-                        <!-- 4단계: 최적 배치 코드 생성 -->
-                        <div class="progress-step" id="stepProgress4">
-                            <div class="step-circle" id="stepIcon4">
-                                <span class="step-number">4</span>
+                        </li>
+                        <li class="inactive" id="stepProgress4">
+                            <div class="step-circle"></div>
+                            <div class="step-label">
+                                <span class="step-number">Step 5</span>
+                                <span class="step-title">최적 배치 코드 생성</span>
                             </div>
-                            <div class="step-label">최적 배치 코드 생성</div>
-                            <div class="step-status" id="stepStatus4">대기중</div>
-                        </div>
-                    </div>
+                        </li>
+                    </ol>
+                    <!-- //Step indicator -->
                 </div>
                 
                 <!-- 독립적인 하드웨어 구동 섹션 -->

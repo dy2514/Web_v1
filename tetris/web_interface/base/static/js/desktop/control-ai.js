@@ -318,69 +318,77 @@ function updateAIProgress(step, progress, status, message) {
     }
 }
 
+// 새로운 step indicator 아이콘 업데이트 함수
+function updateStepIndicatorIcon(stepIndex, status) {
+    const stepProgress = document.getElementById(`stepProgress${stepIndex}`);
+    if (!stepProgress) return;
+    
+    const stepCircle = stepProgress.querySelector('.step-circle');
+    if (!stepCircle) return;
+    
+    // 기존 ::after 가상 요소 제거를 위해 클래스 초기화
+    stepCircle.className = 'step-circle';
+    
+    if (status === 'completed') {
+        // 완료된 단계: 체크마크 표시
+        stepCircle.style.border = '2px solid #10b981';
+        stepCircle.style.backgroundColor = '#10b981';
+        stepCircle.innerHTML = '<span style="color: white; font-size: 1.6vw; font-weight: bold;">✓</span>';
+    } else if (status === 'active') {
+        // 활성 단계: 검은색 원 표시
+        stepCircle.style.border = '0.3rem solid rgb(66, 76, 92)';
+        // stepCircle.style.backgroundColor = '#374151';
+        stepCircle.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1vw; height: 1vw; border-radius: 50%; background-color: rgb(66, 76, 92);"></div>';
+    } else {
+        // 비활성 단계: 빈 원
+        stepCircle.style.border = '2px solid #6b7280';
+        stepCircle.style.backgroundColor = '#ffffff';
+        stepCircle.innerHTML = '';
+    }
+}
+
 // 단계별 인디케이터 업데이트 (0-4단계까지)
 function updateStepIndicator(step) {
     console.log(`🎯 updateStepIndicator 호출: 단계=${step}`);
     
-    // AI 처리 단계 (0-4단계) 업데이트
+    // step indicator 컨테이너에 진행 상태 클래스 추가
+    const stepIndicator = document.querySelector('.step-indicator');
+    if (stepIndicator) {
+        // 기존 진행 상태 클래스 제거
+        stepIndicator.classList.remove('completed-0', 'completed-1', 'completed-2', 'completed-3', 'completed-4');
+        stepIndicator.classList.remove('active-0', 'active-1', 'active-2', 'active-3', 'active-4');
+        
+        // 현재 진행 상태에 맞는 클래스 추가
+        // step이 현재 진행 중인 단계를 나타냄
+        // 0: Step 1 진행 중, 1: Step 2 진행 중, ..., 4: 모든 단계 완료
+        if (step === 4) {
+            // 모든 단계 완료 - 모든 연결선이 초록색
+            stepIndicator.classList.add(`completed-${step}`);
+        } else {
+            // 현재 단계 진행 중 - 현재 단계까지 어두운 회색 선
+            stepIndicator.classList.add(`active-${step}`);
+        }
+    }
+    
+    // AI 처리 단계 (0-4단계) 업데이트 - 새로운 step indicator 구조
     for (let i = 0; i <= 4; i++) {
         const stepProgress = document.getElementById(`stepProgress${i}`);
-        const stepIcon = document.getElementById(`stepIcon${i}`);
-        const stepStatus = document.getElementById(`stepStatus${i}`);
         
         if (stepProgress) {
-            stepProgress.classList.remove('active', 'completed');
+            stepProgress.classList.remove('active', 'completed', 'inactive');
             
             if (i < step) {
+                // 완료된 단계
                 stepProgress.classList.add('completed');
-                if (stepIcon) {
-                    // 0단계는 특수 아이콘 처리
-                    if (i === 0) {
-                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 1.8vw;">check_circle</span>';
-                    } else {
-                        stepIcon.innerHTML = '<span class="step-number">&nbsp;</span>';
-                    }
-                }
-                if (stepStatus) {
-                    stepStatus.textContent = '완료';
-                }
-                // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function' && i >= 1) {
-                    updateStepIcon(i);
-                }
+                updateStepIndicatorIcon(i, 'completed');
             } else if (i === step) {
+                // 현재 진행 중인 단계
                 stepProgress.classList.add('active');
-                if (stepIcon) {
-                    // 0단계는 특수 아이콘 처리
-                    if (i === 0) {
-                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">sync</span>';
-                    } else {
-                        stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
-                    }
-                }
-                if (stepStatus) {
-                    stepStatus.textContent = '진행중';
-                }
-                // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function' && i >= 1) {
-                    updateStepIcon(i);
-                }
+                updateStepIndicatorIcon(i, 'active');
             } else {
-                if (stepIcon) {
-                    // 0단계는 특수 아이콘 처리
-                    if (i === 0) {
-                        stepIcon.innerHTML = '<span class="material-icons" style="font-size: 16px;">hourglass_empty</span>';
-                    } else {
-                        stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
-                    }
-                }
-                if (stepStatus) {
-                    stepStatus.textContent = '대기중';
-                }
-                // 세부 현황 모달의 아이콘도 업데이트
-                if (typeof updateStepIcon === 'function' && i >= 1) {
-                    updateStepIcon(i);
-                }
+                // 대기 중인 단계
+                stepProgress.classList.add('inactive');
+                updateStepIndicatorIcon(i, 'inactive');
             }
         }
     }
@@ -546,18 +554,22 @@ function resetAllSteps() {
     // shownSteps 플래그 리셋
     shownSteps = { 1: false, 2: false, 3: false, 4: false };
     
-    // 0단계 초기화
-    const stepProgress0 = document.getElementById(`stepProgress0`);
-    if (stepProgress0) {
-        stepProgress0.classList.remove('active', 'completed');
+    // step indicator 컨테이너 초기화
+    const stepIndicator = document.querySelector('.step-indicator');
+    if (stepIndicator) {
+        stepIndicator.classList.remove('completed-0', 'completed-1', 'completed-2', 'completed-3', 'completed-4');
+        stepIndicator.classList.remove('active-0', 'active-1', 'active-2', 'active-3', 'active-4');
+        stepIndicator.classList.add('active-0');
     }
-    const stepIcon0 = document.getElementById(`stepIcon0`);
-    if (stepIcon0) {
-        stepIcon0.innerHTML = '<span class="material-icons" style="font-size: 16px;">hourglass_empty</span>';
-    }
-    const stepStatus0 = document.getElementById(`stepStatus0`);
-    if (stepStatus0) {
-        stepStatus0.textContent = '대기중';
+    
+    // 새로운 step indicator 구조로 모든 단계 초기화
+    for (let i = 0; i <= 4; i++) {
+        const stepProgress = document.getElementById(`stepProgress${i}`);
+        if (stepProgress) {
+            stepProgress.classList.remove('active', 'completed', 'inactive');
+            stepProgress.classList.add('inactive');
+            updateStepIndicatorIcon(i, 'inactive');
+        }
     }
     
     // 모든 단계를 대기중으로 초기화 (1-4단계)
@@ -586,19 +598,7 @@ function resetAllSteps() {
             detailInfo.classList.remove('has-result');
         }
 
-        // 상단 진행 카드도 초기화
-        const stepProgress = document.getElementById(`stepProgress${i}`);
-        if (stepProgress) {
-            stepProgress.classList.remove('active', 'completed');
-        }
-        const stepIcon = document.getElementById(`stepIcon${i}`);
-        if (stepIcon) {
-            stepIcon.innerHTML = `<span class="step-number">${i}</span>`;
-        }
-        const stepStatus = document.getElementById(`stepStatus${i}`);
-        if (stepStatus) {
-            stepStatus.textContent = '대기중';
-        }
+        // 상단 진행 카드는 이미 위에서 초기화됨
 
         // 아코디언 닫기
         const accordionCollapse = document.getElementById(`accordionCollapseStep${i}`);
@@ -1053,7 +1053,7 @@ async function formatStepResult(stepNumber, resultData) {
                     <div class="analysis-result-container" style="flex: 1; padding: 0; background-image: none;">
                         <p style="font-size: 2.4rem; text-align: center; margin: 2rem 6rem;">하드웨어 제어 코드: <span style="font-size: 2.4rem; font-weight: bold; letter-spacing: 0.2rem;">${placementCode}</span></p>
                         <div class="image-container">
-                            <img style="height: 50%; max-width: 50%;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
+                            <img style="height: 50vh; max-width: 50vw;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
                         </div>
                         <p style="color: #666; font-size: 2.2rem; text-align: center; margin: 2rem 6rem;">16자리 코드는 각 좌석의 최적 배치 상태를 나타냅니다.</p>
                     </div>

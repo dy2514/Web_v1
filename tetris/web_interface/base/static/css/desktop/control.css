@@ -899,7 +899,7 @@ html, body {
     align-items: center;
     gap: 0.25rem;
     padding: 0.25rem 0.75rem;
-    border-radius: 10px;
+    border-radius: 18px;
     font-size: 0.9vw;
     font-weight: 500;
     text-transform: uppercase;
@@ -1213,8 +1213,8 @@ html, body {
 }
 
 .step-circle {
-    width: 2.1vw;
-    height: 2.1vw;
+    width: 3vw;
+    height: 3vw;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1227,6 +1227,13 @@ html, body {
     border: 0.25vw solid #e5e7eb;
     position: relative;
     margin-bottom: 0.4vw;
+
+
+    z-index: 3;
+    margin-bottom: 8px;
+    border: 2px solid #6b7280;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
 }
 
 .step-circle .material-icons {
@@ -1275,7 +1282,6 @@ html, body {
     font-weight: 600;
     color: #374151;
     margin-top: 0.75rem;
-    text-align: center;
     line-height: 1.2;
 }
 
@@ -1306,10 +1312,7 @@ html, body {
 
 /* 프로그래스 바와 단계별 아이콘 정확한 정렬을 위한 추가 스타일 */
 .progress-track {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
+    display: none; /* KRDS 스타일로 대체됨 */
 }
 
 .progress-track::before {
@@ -1337,23 +1340,6 @@ html, body {
     width: 0%;
 }
 
-/* 단계별 아이콘 원형 스타일 개선 */
-.step-circle {
-    width: 2.1vw;
-    height: 2.1vw;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1.3vw;
-    transition: all 0.3s ease;
-    background-color: #e5e7eb;
-    color: #6b7280;
-    border: 0.25vw solid #e5e7eb;
-    position: relative;
-    margin-bottom: 0.4vw;
-}
 
 
 /* 하드웨어 구동 섹션 스타일 */
@@ -1551,68 +1537,157 @@ html, body {
     }
 }
 
-.krds-step-wrap {
+/* Step Indicator Styles */
+.step-indicator {
     display: flex;
     justify-content: space-between;
     margin: 2rem 0;
     padding: 0;
     list-style: none;
     position: relative;
+    width: 100%;
 }
 
-.krds-step-wrap::before {
+ .step-indicator::before {
     content: '';
     position: absolute;
-    top: 20px;
-    left: 0;
-    right: 0;
-    height: 0.17vw;
-    background-color: #e5e7eb;
+    top: 3vh;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: #d1d5db;
+    z-index: 1;
+    width: 80%;
+} 
+
+.step-indicator::after {
+    content: '';
+    position: absolute;
+    top: 3vh;
+    left: 1vw;
+    height: 3px;
+    background-color: rgb(16, 185, 129);
+    z-index: 2;
+    transition: width 0.5s ease;
+    width: 80%;
     z-index: 1;
 }
 
-.krds-step-wrap li {
+.step-indicator li {
     position: relative;
     z-index: 2;
     flex: 1;
-    text-align: center;
-}
-
-.krds-step-wrap li span {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
 }
 
-.step {
-    width: 3.3vw;
-    height: 3.3vw;
+.step-indicator li.inactive .step-circle {
+    width: 1.4vw;
+    height: 1.4vw;
+    margin: 0.8vw 0 1.2vw;
+}
+
+.step-indicator li.active .step-circle {
+    border: 2px solid #374151;
+    background-color: #374151;
+}
+
+.step-indicator li.active .step-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background-color: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7280;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    background-color: rgb(66, 76, 92);
 }
 
-.krds-step-wrap li.active .step {
-    background-color: #3b82f6;
-    color: white;
+.step-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .step-number {
-    font-size: 1.2vw;
-    color: #000000;
-    font-weight: 500;
+    font-size: 1.4vw;
+    color: #9ca3af;
+    font-weight: 400;
 }
 
-.step-tit {
-    font-size: 0.6vw;
-    color: #374151;
+.step-title {
+    font-size: 1.8vw;
+    color: #6b7280;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.step-indicator li.active .step-number {
+    color: #9ca3af;
+}
+
+.step-indicator li.active .step-title {
+    color: #000000;
     font-weight: 600;
+}
+
+.step-indicator li.completed .step-circle {
+    border: 2px solid #10b981;
+    background-color: #10b981;
+}
+
+.step-indicator li.completed .step-number {
+    color: #9ca3af;
+}
+
+.step-indicator li.completed .step-title {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* 완료된 단계 - 초록색 선 */
+.step-indicator.completed-0::after { 
+    width: 0%; 
+    background-color: #374151;
+}
+.step-indicator.completed-1::after { 
+    width: 20%; 
+    background-color: rgb(16, 185, 129);
+}
+.step-indicator.completed-2::after { 
+    width: 40%; 
+    background-color: rgb(16, 185, 129);
+}
+.step-indicator.completed-3::after { 
+    width: 60%; 
+    background-color: rgb(16, 185, 129);
+}
+.step-indicator.completed-4::after { 
+    width: 80%; 
+    background-color: rgb(16, 185, 129);
+}
+
+/* 진행 중인 단계 - 완료된 부분은 초록색, 현재 진행 중인 부분은 어두운 회색 */
+.step-indicator.active-0::after { 
+    width: 0%; 
+    background-color: #374151;
+}
+.step-indicator.active-1::after { 
+    width: 20%; 
+    background: linear-gradient(to right, #374151 0%, #374151 100%);
+}
+.step-indicator.active-2::after { 
+    width: 40%; 
+    background: linear-gradient(to right, rgb(16, 185, 129) 0%, rgb(16, 185, 129) 50%, rgb(16, 185, 129) 50%, #374151 100%);
+}
+.step-indicator.active-3::after { 
+    width: 60%; 
+    background: linear-gradient(to right, rgb(16, 185, 129) 0%, rgb(16, 185, 129) 66.67%, rgb(16, 185, 129) 66.67%, #374151 100%);
+}
+.step-indicator.active-4::after { 
+    width: 80%; 
+    background: linear-gradient(to right, rgb(16, 185, 129) 0%, rgb(16, 185, 129) 75%, rgb(16, 185, 129) 75%, #374151 100%);
 }
 
 .step-status-text {
