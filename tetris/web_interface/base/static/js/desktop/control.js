@@ -251,7 +251,6 @@ class ControlController {
         if (modal) {
             modal.style.display = 'flex';
             document.body.classList.add('modal-open'); // body에 클래스 추가
-            console.log('📋 세부 정보 팝업 열림');
         }
     }
     
@@ -383,12 +382,6 @@ class ControlController {
         
         // 현재 상태 확인 (show 클래스 기준으로 판단)
         const isCurrentlyExpanded = targetCollapse && targetCollapse.classList.contains('show');
-        console.log('🔍 아코디언 상태 확인:', {
-            targetId,
-            isCurrentlyExpanded,
-            ariaExpanded: button.getAttribute('aria-expanded'),
-            hasShowClass: targetCollapse?.classList.contains('show')
-        });
         
         if (targetCollapse) {
             // 다른 아코디언들 닫기
@@ -432,8 +425,6 @@ class ControlController {
                     accordionItem.classList.remove('active');
                 }
                 
-                console.log('📁 아코디언 닫기:', targetId);
-                
                 // 화살표 회전 초기화
                 const arrow = button.querySelector('.accordion-arrow');
                 if (arrow) {
@@ -454,8 +445,6 @@ class ControlController {
                 if (accordionItem) {
                     accordionItem.classList.add('active');
                 }
-                
-                console.log('📂 아코디언 열기:', targetId);
                 
                 // 아코디언 내용 가시성 확인 및 강제 설정
                 const accordionBody = targetCollapse.querySelector('.accordion-body');
