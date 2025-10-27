@@ -69,7 +69,7 @@ function displayRecentLogs(logs) {
     // 로그 항목들을 아코디언 형태로 생성 (기본적으로 모두 열림)
     const logsHTML = logs.map((log, index) => `
         <div class="log-item">
-            <button class="log-accordion-header active" onclick="toggleLogAccordion(this)">
+            <button class="log-accordion-header" onclick="toggleLogAccordion(this)">
                 <div class="log-header-left">
                     <span class="material-icons log-accordion-icon" style="transform: rotate(180deg);">expand_more</span>
                     <span class="log-filename">${log.filename}</span>
@@ -78,7 +78,7 @@ function displayRecentLogs(logs) {
                     <span class="log-timestamp">${log.timestamp}</span>
                 </div>
             </button>
-            <div class="log-accordion-content active" id="logContent_${index}">
+            <div class="log-accordion-content" id="logContent_${index}">
                 <div class="log-content-wrapper">
                     <div class="log-content">${escapeHtml(log.content)}</div>
                 </div>

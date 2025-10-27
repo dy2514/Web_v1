@@ -2579,8 +2579,6 @@ body.modal-open {
 
 .log-timestamp {
     font-size: 1.0vw;
-    color: var(--color-text-secondary);
-    background: var(--color-white);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     border: 1px solid var(--border-color);
