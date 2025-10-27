@@ -250,7 +250,7 @@ class ControlController {
         const modal = document.getElementById('detailsModal');
         if (modal) {
             modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+            document.body.classList.add('modal-open'); // body에 클래스 추가
             console.log('📋 세부 정보 팝업 열림');
         }
     }
@@ -295,6 +295,9 @@ class ControlController {
             });
             
             modal.style.display = 'none';
+            
+            // body에서 modal-open 클래스 제거
+            document.body.classList.remove('modal-open');
         }
     }
     
@@ -307,7 +310,7 @@ class ControlController {
             // 모달 이미지에 원본 QR 코드 이미지 소스 설정
             qrModalImage.src = qrCodeImage.src;
             qrModal.classList.add('show');
-            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+            document.body.classList.add('modal-open'); // body에 클래스 추가
         } else {
             console.error('❌ QR 모달 요소를 찾을 수 없습니다:', {
                 qrModal: !!qrModal,
@@ -322,7 +325,9 @@ class ControlController {
         
         if (qrModal) {
             qrModal.classList.remove('show');
-            document.body.style.overflow = ''; // 스크롤 복원
+            
+            // body에서 modal-open 클래스 제거
+            document.body.classList.remove('modal-open');
         } else {
             console.error('❌ QR 모달 요소를 찾을 수 없습니다');
         }
