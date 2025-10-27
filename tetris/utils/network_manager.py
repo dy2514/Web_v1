@@ -1,5 +1,4 @@
-# network_manager.py - 네트워크 접근 제어 및 관리
-
+# 네트워크 접근 제어 및 관리 시스템
 import ipaddress
 import logging
 from typing import List, Set
@@ -17,7 +16,6 @@ class NetworkManager:
     def _load_allowed_ips(self, allowed_ips: List[str] = None):
         """허용된 IP 대역을 로드"""
         if allowed_ips is None:
-            # 기본 로컬 네트워크 대역
             allowed_ips = [
                 "127.0.0.1/32",      # localhost
                 "192.168.0.0/16",    # 사설 IP 대역 A
@@ -82,15 +80,12 @@ class NetworkManager:
 
 def get_client_ip(request) -> str:
     """Flask request에서 클라이언트 IP 추출"""
-    # X-Forwarded-For 헤더 확인 (프록시 환경)
     if request.headers.get('X-Forwarded-For'):
         return request.headers.get('X-Forwarded-For').split(',')[0].strip()
     
-    # X-Real-IP 헤더 확인
     if request.headers.get('X-Real-IP'):
         return request.headers.get('X-Real-IP')
     
-    # 기본 remote_addr 사용
     return request.remote_addr
 
 # 전역 네트워크 매니저 인스턴스
