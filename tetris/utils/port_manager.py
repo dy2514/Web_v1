@@ -1,5 +1,4 @@
-# port_manager.py - 포트 동적 할당 및 관리
-
+# 포트 동적 할당 및 관리 시스템
 import socket
 import logging
 from typing import Optional, List

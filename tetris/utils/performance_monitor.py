@@ -1,5 +1,4 @@
-# performance_monitor.py - 성능 모니터링 시스템
-
+# 성능 모니터링 시스템 - 시스템 리소스 및 프로세스 모니터링
 import time
 import logging
 import threading
@@ -30,14 +29,7 @@ class PerformanceMonitor:
                  interval: int = 30,
                  alert_thresholds: Optional[Dict[str, float]] = None,
                  max_history: int = 100):
-        """
-        성능 모니터 초기화
-        
-        Args:
-            interval: 모니터링 간격 (초)
-            alert_thresholds: 알림 임계값
-            max_history: 최대 기록 보관 수
-        """
+        """성능 모니터 초기화"""
         self.interval = interval
         self.max_history = max_history
         self.metrics_history: List[PerformanceMetrics] = []
@@ -45,14 +37,12 @@ class PerformanceMonitor:
         self.monitor_thread: Optional[threading.Thread] = None
         self.alert_callbacks: List[Callable] = []
         
-        # 라즈베리파이5 16GB 최적화 임계값
         self.alert_thresholds = alert_thresholds or {
             'cpu_percent': 80.0,
-            'memory_percent': 90.0,  # 16GB 메모리에 맞게 상향 조정
+            'memory_percent': 90.0,
             'disk_percent': 85.0
         }
         
-        # psutil 가용성 확인
         try:
             import psutil
             self.psutil_available = True
@@ -69,25 +59,20 @@ class PerformanceMonitor:
         try:
             import psutil
             
-            # CPU 사용률
             cpu_percent = psutil.cpu_percent(interval=1)
             
-            # 메모리 정보
             memory = psutil.virtual_memory()
             memory_percent = memory.percent
             memory_used_mb = memory.used / (1024 * 1024)
             memory_total_mb = memory.total / (1024 * 1024)
             
-            # 디스크 정보
             disk = psutil.disk_usage('/')
             disk_percent = (disk.used / disk.total) * 100
             disk_used_gb = disk.used / (1024 * 1024 * 1024)
             disk_total_gb = disk.total / (1024 * 1024 * 1024)
             
-            # 프로세스 수
             process_count = len(psutil.pids())
             
-            # 로드 평균 (Linux/Unix만)
             try:
                 load_average = list(psutil.getloadavg())
             except AttributeError:
@@ -129,7 +114,6 @@ class PerformanceMonitor:
             alert_message = " | ".join(alerts)
             logger.warning(f"성능 알림: {alert_message}")
             
-            # 알림 콜백 실행
             for callback in self.alert_callbacks:
                 try:
                     callback(metrics, alerts)
@@ -148,14 +132,11 @@ class PerformanceMonitor:
             try:
                 metrics = self.collect_metrics()
                 if metrics:
-                    # 히스토리에 추가
                     self.metrics_history.append(metrics)
                     
-                    # 최대 기록 수 제한
                     if len(self.metrics_history) > self.max_history:
                         self.metrics_history.pop(0)
                     
-                    # 알림 확인
                     self.check_alerts(metrics)
                     
                     logger.debug(f"성능 메트릭 수집: CPU {metrics.cpu_percent:.1f}%, "
@@ -264,10 +245,9 @@ def get_performance_monitor() -> PerformanceMonitor:
     return _performance_monitor
 
 def start_performance_monitoring(interval: int = 60) -> bool:
-    """성능 모니터링 시작 편의 함수 (라즈베리파이5 최적화)"""
+    """성능 모니터링 시작 편의 함수"""
     monitor = get_performance_monitor()
     monitor.interval = interval
-    # 라즈베리파이5 16GB에 맞게 메모리 임계값 조정
     monitor.alert_thresholds['memory_percent'] = 90.0
     return monitor.start_monitoring()
 

@@ -1,14 +1,11 @@
-# rpi_controller.py
-
+# 아두이노 통합 제어 시스템 - 멀티 아두이노 시리얼 통신 관리
 import time
 
 import readchar
 import serial
 import serial.tools.list_ports
 
-# --- 사용자 설정 영역 ---
-# 제어할 아두이노의 시리얼 번호를 순서대로 입력하세요.
-# 이 순서가 셀 1, 2, 3, 4번이 됩니다.
+# 아두이노 설정
 ARDUINO_SERIAL_NUMBERS = [
     '33437363436351303113',  # 셀 1번
     '3343736343635121F0B0',  # 셀 2번
@@ -16,14 +13,12 @@ ARDUINO_SERIAL_NUMBERS = [
     '33437363436351010223'   # 셀 4번
 ]
 BAUD_RATE = 9600
-# 자동화 모드에서 사용할 명령어 길이 (4대 = 16자리)
 AUTOMATION_COMMAND_LENGTH = 16
-# ---------------------
 
-# 아두이노 연결 관리 딕셔너리
+# 전역 변수
 arduino_connections = {}
 
-# 수동 모드에서 사용할 키 매핑
+# 수동 제어 키 매핑
 manual_key_map = {
     'Q': 'Q', 'A': 'A', # Stepper A
     'W': 'W', 'S': 'S', # Stepper B
@@ -32,8 +27,9 @@ manual_key_map = {
     'T': 'T', 'G': 'G', 'B': 'B', # Servo 2
 }
 
+# 아두이노 연결 관리
 def connect_to_arduinos():
-    """시리얼 번호를 기반으로 아두이노에 연결하고 딕셔너리에 저장합니다."""
+    """시리얼 번호를 기반으로 아두이노에 연결"""
     print("아두이노 연결을 시작합니다...")
     found_ports = list(serial.tools.list_ports.comports())
     for i, sn in enumerate(ARDUINO_SERIAL_NUMBERS):
@@ -41,7 +37,6 @@ def connect_to_arduinos():
         for p in found_ports:
             if p.serial_number and p.serial_number == sn:
                 try:
-                    # 간단한 재시도/백오프 로직 추가 (최대 3회)
                     last_exc = None
                     for attempt in range(3):
                         try:
@@ -64,8 +59,9 @@ def connect_to_arduinos():
         if not port_found:
             print(f"  [경고] 셀 {i+1}번 아두이노를 찾을 수 없습니다 (SN: {sn}).")
 
+# 수동 제어 모드
 def run_manual_mode(cell_number):
-    """선택된 셀에 대해 수동 모드를 실행합니다."""
+    """선택된 셀에 대해 수동 모드 실행"""
     try:
         target_sn = ARDUINO_SERIAL_NUMBERS[cell_number - 1]
     except IndexError:
@@ -86,13 +82,12 @@ def run_manual_mode(cell_number):
             key = readchar.readkey()
             key_upper = key.upper()
 
-            if key == '\x1b': # ESC 키
+            if key == '\x1b':
                 print("\n[완료] 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
                 break
 
             if key_upper in manual_key_map:
                 command = manual_key_map[key_upper]
-                # 수동모드 명령어는 싱글 캐릭터이므로 끝에 \n 추가
                 arduino_connections[target_sn].write((command + '\n').encode('utf-8'))
                 print(f"  > 셀 {cell_number}에 전송: '{command}'")
 
@@ -100,7 +95,9 @@ def run_manual_mode(cell_number):
             print("\n[완료] 수동 모드를 종료하고 메인 메뉴로 돌아갑니다.")
             break
 
+# 자동화 명령 실행
 def send_automated_command(full_command):
+    """16자리 명령을 4개 아두이노에 분할 전송"""
     print(f"[실행] 자동화 명령 실행: {full_command}")
     num_arduinos = AUTOMATION_COMMAND_LENGTH // 4
     command_chunks = [full_command[i:i+4] for i in range(0, AUTOMATION_COMMAND_LENGTH, 4)]
@@ -118,9 +115,9 @@ def send_automated_command(full_command):
             print(f"  > 셀 {i+1} 건너뛰기 (연결 안됨).")
     print("-" * 20)
 
-
+# 전체 방송 명령
 def broadcast_command(command):
-    """하나의 명령('P' 또는 '0000')을 모든 연결된 아두이노에 전송합니다."""
+    """하나의 명령을 모든 연결된 아두이노에 전송"""
     print(f"'{command}' 명령을 전체 아두이노에 방송합니다...")
     for i, serial_num in enumerate(ARDUINO_SERIAL_NUMBERS):
         if serial_num in arduino_connections:
@@ -129,9 +126,11 @@ def broadcast_command(command):
             print(f"  > 셀 {i+1}에 방송 완료.")
     print("-" * 20)
 
+# 연결 종료
 def close_all_connections():
+    """모든 시리얼 포트 연결 종료"""
     print("모든 시리얼 포트를 닫습니다...")
-    BROADCAST_ON_CLOSE = False  # 테스트 동안 False
+    BROADCAST_ON_CLOSE = False
     if BROADCAST_ON_CLOSE:           
         broadcast_command("0000")
         time.sleep(0.1)
@@ -140,7 +139,7 @@ def close_all_connections():
             conn.close()
     print("[완료] 모든 연결이 안전하게 종료되었습니다.")
 
-# --- 메인 실행 영역 ---
+# 메인 실행
 if __name__ == "__main__":
     connect_to_arduinos()
     if not arduino_connections:
