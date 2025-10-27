@@ -421,11 +421,11 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, ar.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (ar.chain4_out && ar.chain3_out && !shownSteps[3]) {
+                if (ar.serial_encoder_out && ar.chain3_out && !shownSteps[3]) {
                     // 3단계 결과가 있으면 바로 표시
                     ar.chain3_out = safeJsonParse(ar.chain3_out);
-                    if (ar.chain4_out) {
-                        ar.chain3_out.placement_code = ar.chain4_out;
+                    if (ar.serial_encoder_out) {
+                        ar.chain3_out.placement_code = ar.serial_encoder_out;
                     }
                     await displayStepResult(3, ar.chain3_out);
                     shownSteps[3] = true;
@@ -440,11 +440,11 @@ async function handleStatusData(statusData) {
                     await displayStepResult(2, statusData.chain2_out);
                     shownSteps[2] = true;
                 }
-                if (statusData.chain4_out && statusData.chain3_out && !shownSteps[3]) {
+                if (statusData.serial_encoder_out && statusData.chain3_out && !shownSteps[3]) {
                     // 3단계 결과가 있으면 바로 표시
                     statusData.chain3_out = safeJsonParse(statusData.chain3_out);
-                    if (statusData.chain4_out) {
-                        statusData.chain3_out.placement_code = statusData.chain4_out;
+                    if (statusData.serial_encoder_out) {
+                        statusData.chain3_out.placement_code = statusData.serial_encoder_out;
                     }
                     await displayStepResult(3, statusData.chain3_out);
                     shownSteps[3] = true;
@@ -454,7 +454,7 @@ async function handleStatusData(statusData) {
             }
 
             // 5단계 완료 시 - 실제 4단계 결과가 도착한 경우에만 완료 처리
-            const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.chain4_out);
+            const hasStep4Output = !!(shownSteps[4] || statusData.analysis_result?.serial_encoder_out);
             if (currentStep >= 5 && hasStep4Output) {
                 console.log('✅ 5단계 완료 - 분석 완료 처리 (출력 확인됨)');
                 updateProgress(100, 5); // 100% 즉시 표시
@@ -495,7 +495,7 @@ async function handleStatusData(statusData) {
             // 상태에 따른 처리
             const status = statusData.status || statusData.system?.status;
             if (status === 'done') {
-                const hasFinal = !!(statusData.chain4_out || statusData.analysis_result?.chain4_out);
+                const hasFinal = !!(statusData.serial_encoder_out || statusData.analysis_result?.serial_encoder_out);
                 if (hasFinal) {
                     console.log('분석 완료! (최종 출력 확인)');
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
@@ -891,13 +891,13 @@ async function updateStepResults(resultData) {
         await displayStepResult(2, resultData.chain2_out);
     }
     
-    // 3단계: 시트 동작 계획 결과 (chain4_out 없이도 표시)
+    // 3단계: 시트 동작 계획 결과 (serial_encoder_out 없이도 표시)
     if (resultData.chain3_out) {
         console.log('3단계 결과 발견:', resultData.chain3_out);
         resultData.chain3_out = safeJsonParse(resultData.chain3_out);
-        if (resultData.chain4_out) {
-            console.log('4단계 결과 발견:', resultData.chain4_out);
-            resultData.chain3_out.placement_code = resultData.chain4_out;
+        if (resultData.serial_encoder_out) {
+            console.log('4단계 결과 발견:', resultData.serial_encoder_out);
+            resultData.chain3_out.placement_code = resultData.serial_encoder_out;
         }
         await displayStepResult(3, resultData.chain3_out);
     }
@@ -933,9 +933,9 @@ async function updateProcessedStepResults(processedResults) {
     }
     
     // 4단계: 최적 배치 생성 결과
-    if (processedResults.chain4_out) {
-        console.log('가공된 4단계 결과 발견:', processedResults.chain4_out);
-        await displayProcessedStepResult(4, processedResults.chain4_out);
+    if (processedResults.serial_encoder_out) {
+        console.log('가공된 4단계 결과 발견:', processedResults.serial_encoder_out);
+        await displayProcessedStepResult(4, processedResults.serial_encoder_out);
     }
 }
 
@@ -1332,7 +1332,7 @@ async function startSSE() {
                 
                 await handleStatusData(payload);
                 const status = payload.status || payload.system?.status;
-                const hasFinal = !!(payload.chain4_out || payload.analysis_result?.chain4_out);
+                const hasFinal = !!(payload.serial_encoder_out || payload.analysis_result?.serial_encoder_out);
                 if (status === 'done' && hasFinal) {
                     document.getElementById('progressText').innerHTML = '분석이 완료되었습니다!';
                     
