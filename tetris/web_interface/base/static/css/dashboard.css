@@ -1,0 +1,1756 @@
+/* ========================================
+   TETRIS Dashboard Layout
+   현대차 브랜딩 기반 대시보드 디자인
+   ======================================== */
+
+/* ========================================
+   모던 밝은 테마 대시보드 컨테이너
+   ======================================== */
+   @font-face {
+    font-family: "HyundaiSansHeadKRM";
+    src: url("/static/css/fonts/HyundaiSansHeadKRMedium.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansHeadKRR";
+    src: url("/static/css/fonts/HyundaiSansHeadKRRegular.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRM";
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRR";
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+
+html, body {
+    margin: 0;
+    background: #fff;
+    color: var(--black);
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* ========================================
+   대시보드 헤더 및 카드 헤더 통일 스타일
+   ======================================== */
+/* 이미지 기반 모던 헤더 디자인 */
+.dashboard-header,
+.card-header-unified {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-6) var(--space-8);
+  background: linear-gradient(135deg, var(--image-primary) 0%, var(--image-primary-light) 100%); /* 이미지 헤더 파란색 그라데이션 */
+  border-radius: 12px;          /* 모던 둥근 모서리 */
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); /* 이미지 헤더 파란색 깊은 그림자 */
+  color: var(--text-inverse);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 미세한 보더 */
+}
+
+.dashboard-header {
+  margin-bottom: var(--space-8);
+}
+
+.dashboard-header::before,
+.card-header-unified::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+/* 이미지 기반 모던 메인 제목 */
+.dashboard-title {
+  font-size: 2.5rem;      /* 40px - 더 큰 메인 제목 */
+  font-weight: 800;       /* Extra Bold */
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  letter-spacing: -0.02em; /* 글자 간격 조정 */
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%); /* 그라데이션 텍스트 */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 이미지 기반 모던 카드 제목 */
+.card-title-unified {
+  font-size: 1.375rem;    /* 22px - 모던 카드 제목 */
+  font-weight: 700;       /* Bold */
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+  color: var(--text-primary); /* KRDS 메인 텍스트 색상 */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-title::before {
+  content: '🎛️';
+  font-size: 1.5rem;        /* KRDS 표준 아이콘 크기 - 24px */
+  width: 24px;              /* KRDS 아이콘 표준 크기 */
+  height: 24px;             /* KRDS 아이콘 표준 크기 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 이미지 기반 모던 메인 부제목 */
+.dashboard-subtitle {
+  font-size: 1.25rem;     /* 20px - 모던 부제목 */
+  opacity: 0.9;
+  margin: var(--space-2) 0 0 0;
+  font-weight: 500;       /* Medium */
+  position: relative;
+  z-index: 1;
+  color: var(--text-inverse); /* 이미지 헤더 스타일 - 흰색 텍스트 */
+  letter-spacing: -0.01em;
+}
+
+/* 이미지 기반 모던 카드 부제목 */
+.card-subtitle-unified {
+  font-size: 0.875rem;    /* 14px - 모던 카드 부제목 */
+  opacity: 0.8;
+  margin: var(--space-1) 0 0 0;
+  font-weight: 500;       /* Medium */
+  position: relative;
+  z-index: 1;
+  color: var(--text-secondary); /* 이미지 카드 부제목 색상 */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 현대차 브랜드 연결 상태 표시기 */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.1);
+  padding: var(--space-3) var(--space-5);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* KRDS 표준 상태 표시기 */
+.status-indicator {
+  width: 12px;              /* KRDS 표준 아이콘 크기 */
+  height: 12px;             /* KRDS 표준 아이콘 크기 */
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2); /* KRDS 표준 보더 */
+}
+
+.status-indicator.online {
+  background: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success);
+}
+
+.status-indicator.offline {
+  background: var(--color-error);
+  box-shadow: 0 0 10px var(--color-error);
+}
+
+/* ========================================
+   메인 대시보드 그리드
+   ======================================== */
+/* 모던 대시보드 그리드 구조 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto auto;
+  gap: var(--space-6);               /* 모던 간격 */
+  margin-bottom: var(--space-8);
+}
+
+/* ========================================
+   중앙 2개 메인 카드 그룹
+   ======================================== */
+.main-cards {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* 모바일 접속 현황 카드 */
+.mobile-status-card {
+  grid-column: span 1;
+}
+
+/* 카드 내부 분할 레이아웃 */
+.mobile-card-split {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* QR:상태내용 1:2 비율 */
+  gap: var(--space-4);
+  align-items: stretch;
+  min-height: 280px; /* 최소 높이 설정으로 가로선 정렬 */
+}
+
+.hardware-card-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 라즈베리파이:아두이노 1:1 비율 */
+  gap: var(--space-4);
+  align-items: stretch;
+  min-height: 280px; /* 최소 높이 설정으로 가로선 정렬 */
+}
+
+/* 모바일 카드 섹션 */
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  height: 100%;
+}
+
+.status-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: var(--space-4);
+  height: 100%;
+}
+
+/* 하드웨어 카드 섹션 */
+.raspberry-section {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+}
+
+.arduino-section {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+}
+
+.mobile-instruction {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--space-2);
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  margin-top: var(--space-2);
+  line-height: 1.4;
+}
+
+/* 모바일 상태 테이블 (2열 구조) */
+.mobile-status-table-container {
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.06);
+}
+
+.mobile-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-primary);
+}
+
+.mobile-status-table td {
+  padding: var(--space-3);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.mobile-status-table td:first-child {
+  width: 60%;
+  text-align: left;
+}
+
+.mobile-status-table td:last-child {
+  width: 40%;
+  text-align: right;
+}
+
+.mobile-status-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mobile-status-table tbody tr:hover {
+  background: var(--bg-tertiary);
+  transition: background-color 0.2s ease;
+}
+
+/* 상태 유형 스타일 */
+.status-type {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.status-type-icon {
+  font-size: 1.25rem;
+  color: var(--image-primary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-type-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-description {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 모바일 상태 배지 */
+.mobile-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* 상태별 색상 시스템 */
+.mobile-status-badge[data-status="connected"] {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.mobile-status-badge[data-status="connected"] .status-indicator {
+  background: var(--color-success);
+}
+
+.mobile-status-badge[data-status="disconnected"] {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.mobile-status-badge[data-status="disconnected"] .status-indicator {
+  background: var(--color-error);
+}
+
+.mobile-status-badge[data-status="uploading"] {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mobile-status-badge[data-status="uploading"] .status-indicator {
+  background: var(--color-warning);
+}
+
+.mobile-status-badge[data-status="completed"] {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.mobile-status-badge[data-status="completed"] .status-indicator {
+  background: var(--color-success);
+}
+
+.mobile-status-badge[data-status="waiting"] {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--color-gray-500);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.mobile-status-badge[data-status="waiting"] .status-indicator {
+  background: var(--color-gray-500);
+}
+
+.mobile-status-badge[data-status="error"] {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.mobile-status-badge[data-status="error"] .status-indicator {
+  background: var(--color-error);
+}
+
+.mobile-status-badge[data-status="active"] {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.mobile-status-badge[data-status="active"] .status-indicator {
+  background: var(--color-success);
+}
+
+.mobile-status-badge[data-status="inactive"] {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--color-gray-500);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.mobile-status-badge[data-status="inactive"] .status-indicator {
+  background: var(--color-gray-500);
+}
+
+.mobile-status-badge[data-status="processing"] {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mobile-status-badge[data-status="processing"] .status-indicator {
+  background: var(--color-warning);
+}
+
+/* 시스템 & 하드웨어 현황 카드 */
+.system-hardware-card {
+  grid-column: span 1;
+}
+
+/* ========================================
+   AI 처리 단계별 진행 상황 (전체 너비)
+   ======================================== */
+.ai-steps-card {
+  grid-column: 1 / -1;
+}
+
+/* ========================================
+   카드 스타일링
+   ======================================== */
+/* 이미지 기반 모던 카드 디자인 */
+.dashboard-card {
+  background: var(--bg-secondary);        /* 이미지 카드 배경 */
+  border: 1px solid rgba(30, 58, 138, 0.08); /* 이미지 헤더 파란색 미세 보더 */
+  border-radius: 16px;                   /* 모던 둥근 모서리 */
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.08); /* 이미지 헤더 파란색 깊은 그림자 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: var(--space-6);
+  backdrop-filter: blur(16px);           /* 강화된 블러 효과 */
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12); /* 이미지 헤더 파란색 강화된 호버 그림자 */
+  transform: translateY(-4px);
+  border-color: var(--image-primary);
+  background: var(--image-neutral); /* 호버 시 배경 변화 */
+}
+
+.dashboard-card-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+}
+
+.dashboard-card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dashboard-card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: var(--space-1) 0 0 0;
+}
+
+.dashboard-card-body {
+  padding: var(--space-6);
+}
+
+/* ========================================
+   통합 카드 섹션 스타일
+   ======================================== */
+.system-status-section,
+.hardware-status-section {
+  margin-bottom: var(--space-6);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4) 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--border-light);
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+  margin: var(--space-6) 0;
+}
+
+/* ========================================
+   시스템 상태 그리드 (통합 카드용)
+   ======================================== */
+.system-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.system-status-item,
+.system-status-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+}
+
+.system-status-item:hover,
+.system-status-box:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.system-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--image-primary);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.system-status-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.system-status-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.system-status-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ========================================
+   AI 처리 단계별 진행 상황
+   ======================================== */
+.ai-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ai-steps-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.ai-steps-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ai-steps-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ai-steps-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.ai-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.ai-step-connector {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  right: -50%;
+  height: 2px;
+  background: var(--border-medium);
+  z-index: 1;
+}
+
+.ai-step:last-child .ai-step-connector {
+  display: none;
+}
+
+.ai-step-connector.active {
+  background: var(--color-primary);
+}
+
+.ai-step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 3px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 2;
+  transition: all var(--transition-normal);
+}
+
+.ai-step-circle.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-inverse);
+  box-shadow: 0 0 20px rgba(0, 44, 95, 0.3);
+}
+
+.ai-step-circle.completed {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--text-inverse);
+}
+
+.ai-step-circle.error {
+  background: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--text-inverse);
+}
+
+.ai-step-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  margin: var(--space-2) 0 var(--space-1) 0;
+}
+
+.ai-step-description {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ai-step-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-2);
+  overflow: hidden;
+}
+
+.ai-step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* ========================================
+   전체 진행률 표시기 (라즈베리파이 카드용)
+   ======================================== */
+.overall-progress {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-light);
+}
+
+.progress-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.progress-text {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  text-align: center;
+  margin-top: var(--space-2);
+}
+
+/* ========================================
+   전체 진행률 표시기 (AI 섹션용 - 대형)
+   ======================================== */
+.overall-progress-large {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--border-light);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.progress-header h4 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.progress-percentage {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+}
+
+.progress-bar-large {
+  width: 100%;
+  height: 16px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+}
+
+.progress-fill-large {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+  position: relative;
+}
+
+.progress-fill-large::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.progress-status {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ========================================
+   아두이노 연결 상태 표시
+   ======================================== */
+.arduino-connection-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.arduino-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+  text-align: center;
+}
+
+/* 아두이노 연결 상태 표 형식 */
+.arduino-status-table {
+  margin-bottom: var(--space-6);
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.06);
+}
+
+/* 아두이노 표 2행 구조 */
+.arduino-header-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.arduino-cell-header {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  padding: var(--space-2);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+.arduino-status-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.arduino-status-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
+
+/* 기존 테이블 스타일 (호환성 유지) */
+.connection-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-primary);
+}
+
+.connection-status-table td:first-child {
+  width: 40%;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.connection-status-table td:last-child {
+  width: 60%;
+  text-align: right;
+}
+
+.connection-status-table td {
+  padding: var(--space-4);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.connection-status-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.connection-status-table tbody tr:hover {
+  background: var(--bg-tertiary);
+  transition: background-color 0.2s ease;
+}
+
+/* 연결 상태 색상 시스템 */
+.connection-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.connection-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+/* 연결 상태별 색상 */
+.connection-status[data-status="connected"] {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.connection-status[data-status="connecting"] {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.connection-status[data-status="disconnected"] {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* 연결 상태 텍스트 */
+.connection-status[data-status="connected"]::after {
+  content: '연결됨';
+}
+
+.connection-status[data-status="connecting"]::after {
+  content: '연결중';
+}
+
+.connection-status[data-status="disconnected"]::after {
+  content: '연결 끊김';
+}
+
+.arduino-controls {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ========================================
+   QR 코드 섹션
+   ======================================== */
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+
+.qr-code-container {
+  width: 120px;
+  height: 120px;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.qr-code-container img {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: var(--radius-md);
+}
+
+.qr-code-loading {
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}
+
+.qr-instruction {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--text-inverse);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  text-align: center;
+  width: 100%;
+  max-width: 200px;
+}
+
+.mobile-url {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  word-break: break-all;
+  background: var(--bg-tertiary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-mono);
+}
+
+
+/* ========================================
+   데스크탑 전용 최적화
+   ======================================== */
+/* AI 처리 섹션 데스크탑 최적화 */
+.ai-processing-full-width {
+  min-width: 1200px; /* 최소 너비 보장 */
+  max-width: 1400px; /* 최대 너비 제한 */
+}
+
+.ai-steps-grid {
+  grid-template-columns: repeat(4, 1fr); /* 4열 고정 */
+  gap: var(--space-6);
+}
+
+.ai-steps-horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  /* 모바일 대응 제거, 데스크탑 전용 */
+}
+
+/* 데스크탑에서만 표시되는 요소들 */
+.desktop-only {
+  display: block;
+}
+
+/* 데스크탑 최적화된 카드 레이아웃 */
+.main-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2열 고정 */
+  gap: var(--space-6);
+}
+
+.mobile-card-split {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* QR:상태내용 1:2 비율 고정 */
+  gap: var(--space-4);
+  align-items: stretch;
+  min-height: 280px;
+}
+
+.hardware-card-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 라즈베리파이:아두이노 1:1 비율 고정 */
+  gap: var(--space-4);
+  align-items: stretch;
+  min-height: 280px;
+}
+
+/* ========================================
+   AI 처리 전체 너비 섹션 (12열 활용)
+   ======================================== */
+.ai-processing-full-width {
+  grid-column: 1 / -1;                    /* 12열 전체 사용 */
+  margin-bottom: var(--space-6);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.08);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-processing-full-width:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
+  border-color: var(--image-primary);
+}
+
+.ai-processing-content {
+  padding: var(--space-6);
+}
+
+/* ========================================
+   AI 처리 카드 (모바일 QR 형식) - 기존 호환성
+   ======================================== */
+.ai-processing-card {
+  margin-bottom: var(--space-6);
+}
+
+/* KRDS 표준 단계 표시기 변수 정의 */
+:root {
+  --step-circle-size: 24px;
+  --step-circle-radius: 50%;
+  --step-gap: 18px;
+  --step-font-size: 0.75rem;
+  --step-title-font-size: 0.875rem;
+  --step-color-default: #6b7280;
+  --step-color-done: #374151;
+  --step-color-active: #0066cc;
+  --step-bg-default: #f3f4f6;
+  --step-bg-done: #374151;
+  --step-bg-active: #ffffff;
+  --step-border-active: #0066cc;
+  --step-text-color-default: #6b7280;
+  --step-text-color-done: #374151;
+  --step-text-color-active: #0066cc;
+}
+
+/* KRDS 표준 단계 표시기 */
+.krds-step-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  gap: var(--step-gap);
+}
+
+/* 연결선 */
+.krds-step-wrap::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--step-circle-size) / 2);
+  left: calc(var(--step-circle-size) / 2);
+  right: calc(var(--step-circle-size) / 2);
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 1;
+}
+
+/* 단계 아이템 */
+.krds-step-wrap li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  max-width: 120px;
+}
+
+.krds-step-wrap li span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* 단계 원형 아이콘 - 기본 스타일 */
+.krds-step-wrap .step {
+  width: var(--step-circle-size);
+  height: var(--step-circle-size);
+  border-radius: var(--step-circle-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-size: var(--step-font-size);
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  background: var(--step-bg-default);
+  color: var(--step-color-default);
+}
+
+/* 단계 번호 */
+.krds-step-wrap .step-number {
+  font-size: var(--step-font-size);
+  font-weight: 600;
+  color: var(--step-text-color-default);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+/* 단계 제목 */
+.krds-step-wrap .step-tit {
+  font-size: var(--step-title-font-size);
+  font-weight: 500;
+  color: var(--step-text-color-default);
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* 완료된 단계 - 회색 원 + 체크마크 */
+.krds-step-wrap li.done .step {
+  background: var(--step-bg-done);
+  color: white;
+}
+
+.krds-step-wrap li.done .step::after {
+  content: '✓';
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.krds-step-wrap li.done .step-number {
+  color: var(--step-text-color-done);
+  font-weight: 600;
+}
+
+.krds-step-wrap li.done .step-tit {
+  color: var(--step-text-color-done);
+  font-weight: 600;
+}
+
+/* 활성 단계 - 파란색 테두리 + 흰색 내부 + 중앙 점 */
+.krds-step-wrap li.active .step {
+  background: var(--step-bg-active);
+  border: 2px solid var(--step-border-active);
+  color: var(--step-color-active);
+}
+
+.krds-step-wrap li.active .step::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--step-color-active);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.krds-step-wrap li.active .step-number {
+  color: var(--step-text-color-active);
+  font-weight: 600;
+}
+
+.krds-step-wrap li.active .step-tit {
+  color: var(--step-text-color-active);
+  font-weight: 600;
+}
+
+/* 오류 상태 */
+.krds-step-wrap li.error .step {
+  background: #dc2626;
+  color: white;
+}
+
+.krds-step-wrap li.error .step::after {
+  content: '⚠';
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.krds-step-wrap li.error .step-number {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.krds-step-wrap li.error .step-tit {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* 상태 텍스트 */
+.step-status-text {
+  font-size: var(--step-title-font-size);
+  color: var(--step-color-default);
+  text-align: center;
+  font-weight: 500;
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: rgba(0, 102, 204, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 102, 204, 0.1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ai-steps-horizontal {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  
+  .ai-steps-horizontal::before {
+    display: none;
+  }
+  
+  .step-item::after {
+    display: none;
+  }
+  
+  .step-item {
+    flex-direction: row;
+    align-items: center;
+    max-width: none;
+    width: 100%;
+    padding: var(--space-3);
+    background: var(--bg-primary);
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+  }
+  
+  .step-item::before {
+    margin-bottom: 0;
+    margin-right: var(--space-3);
+    flex-shrink: 0;
+  }
+  
+  .step-number {
+    margin-bottom: 0;
+    margin-right: var(--space-2);
+  }
+  
+  .step-label {
+    text-align: left;
+    flex: 1;
+  }
+}
+
+/* ========================================
+   KRDS Accordion Styles
+   ======================================== */
+.krds-accordion {
+  margin: var(--krds-accordion--list-margin-y) 0;
+}
+
+.accordion-item {
+  margin-bottom: 0;
+}
+
+.btn-accordion {
+  width: 100%;
+  padding: var(--krds-accordion--line-padding);
+  padding-right: var(--krds-accordion--line-button-padding-right);
+  font-size: var(--krds-accordion--button-pc-font-size);
+  font-weight: var(--font-semibold);
+  color: var(--krds-accordion--button-color-text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.btn-accordion:hover {
+  color: var(--krds-accordion--button-color-action-hover);
+  background: var(--bg-tertiary);
+}
+
+.btn-accordion:focus {
+  outline: 2px solid var(--krds-accordion--button-color-action);
+  outline-offset: -2px;
+}
+
+.btn-accordion::after {
+  content: '';
+  width: var(--krds-accordion--button-icon-size);
+  height: var(--krds-accordion--button-icon-size);
+  border: 2px solid var(--krds-accordion--button-color-action);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-accordion[aria-expanded="true"]::after {
+  transform: rotate(225deg);
+}
+
+.btn-accordion[aria-expanded="true"] {
+  color: var(--krds-accordion--button-color-text-open);
+  background: var(--bg-tertiary);
+}
+
+.accordion-collapse {
+  overflow: hidden;
+  transition: height var(--transition-normal);
+}
+
+.accordion-collapse.collapse {
+  display: none;
+}
+
+.accordion-collapse.collapse.show {
+  display: block;
+}
+
+.accordion-body {
+  padding: 0 var(--krds-accordion--line-padding) var(--krds-accordion--padding);
+  background: var(--bg-primary);
+}
+
+/* 아코디언 헤더 내부 요소 스타일 */
+.accordion-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--krds-accordion--button-color-action);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: var(--font-bold);
+  margin-right: var(--space-3);
+  flex-shrink: 0;
+}
+
+.accordion-step-title {
+  flex: 1;
+  margin-right: var(--space-3);
+}
+
+.accordion-step-status {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: var(--font-normal);
+  margin-right: var(--space-4);
+}
+
+/* 아코디언 본문 스타일 */
+.step-detail-content {
+  padding: var(--space-4) 0;
+}
+
+.step-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+.step-progress-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.step-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--krds-accordion--button-color-action), var(--krds-accordion--button-color-action-hover));
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+  width: 0%;
+}
+
+.step-progress-text {
+  font-size: 0.875rem;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.step-detail-info {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  border: 1px solid var(--border-light);
+}
+
+.step-detail-info p {
+  margin: 0 0 var(--space-2) 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.step-detail-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* 아코디언 반응형 스타일 */
+@media (max-width: 768px) {
+  .btn-accordion {
+    font-size: var(--krds-accordion--button-mobile-font-size);
+    padding: var(--space-4);
+    padding-right: calc(var(--space-4) + var(--krds-accordion--button-icon-size) + var(--space-2));
+  }
+  
+  .accordion-body {
+    padding: 0 var(--space-4) var(--space-4);
+  }
+  
+  .accordion-step-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    margin-right: var(--space-2);
+  }
+  
+  .step-detail-content {
+    padding: var(--space-3) 0;
+  }
+}
+
+/* 처리 세부 현황 */
+.ai-details-section {
+  margin-top: var(--space-4);
+}
+
+.ai-details-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-5) 0;
+  text-align: center;
+}
+
+.ai-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.ai-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ai-step-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  border-color: var(--image-primary);
+}
+
+.ai-step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--image-primary);
+  color: var(--text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.ai-step-info {
+  flex: 1;
+}
+
+.ai-step-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ai-step-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-3) 0;
+  line-height: 1.4;
+}
+
+.ai-step-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--color-gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ai-step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--image-accent) 0%, var(--image-primary-light) 100%);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* 단계별 상태 스타일 */
+.ai-step-item.active .ai-step-number {
+  background: var(--image-accent);
+  animation: pulse 2s infinite;
+}
+
+.ai-step-item.active .ai-step-progress-fill {
+  width: 100%;
+}
+
+.ai-step-item.completed .ai-step-number {
+  background: var(--image-accent);
+}
+
+.ai-step-item.completed .ai-step-progress-fill {
+  width: 100%;
+  background: var(--image-accent);
+}
+
+/* ========================================
+   접근성 개선 스타일
+   ======================================== */
+/* 스크린 리더 전용 텍스트 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 포커스 표시기 */
+.step-item:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.step-item:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.step-item:hover::before {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.step-item.done:hover::before {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(55, 65, 81, 0.3);
+}
+
+.step-item.active:hover::before {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
+}
+
+.ai-step-item:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
+/* ========================================
+   모던 애니메이션 효과
+   ======================================== */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 카드 등장 애니메이션 */
+.dashboard-card {
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ========================================
+   데스크탑 전용 AI 처리 레이아웃
+   ======================================== */
+/* AI 처리 섹션은 데스크탑에서만 최적화된 레이아웃 사용 */
+.ai-processing-full-width {
+  grid-column: 1 / -1; /* 12열 전체 사용 */
+  margin-bottom: var(--space-6);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.08);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-processing-content {
+  padding: var(--space-6);
+}

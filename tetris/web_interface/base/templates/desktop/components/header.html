@@ -1,0 +1,39 @@
+<!--
+    헤더 컴포넌트
+    TETRIS Control Dashboard의 상단 헤더 영역
+    - 시스템 제목 및 설명
+    - 연결 상태 표시
+-->
+<header class="control-header">
+    <div class="krds-header__content">
+        <!-- 왼쪽: 제목과 QR 코드 -->
+        <div class="krds-header__left">
+            <div class="krds-header__title">
+                <h1 class="krds-title krds-title--xl">AI TETRIS Control Dashboard</h1>
+                <p>AI 기반 좌석 배치 최적화 시스템</p>
+            </div>
+        </div>
+        
+        <!-- 오른쪽: 모든 상태와 버튼들 -->
+        <div class="krds-header__right">
+            <!-- QR 코드 섹션 -->
+            <div class="qr-section">
+                <div class="qr-code-container" id="qrCodeContainer" title="클릭하여 QR 코드 확대 보기">
+                    <img id="qrCodeImage" src="/desktop/qr.png" alt="접속 QR">
+                </div>
+            </div>
+            
+            <!-- 제어 버튼들 -->
+            <!-- <div class="system-control-buttons">
+                <button class="krds-btn krds-btn--secondary" onclick="refreshStatus()" aria-label="시스템 상태 새로고침">
+                    <span class="material-icons krds-icon" aria-hidden="true">refresh</span>
+                </button>
+                
+                <button class="krds-btn krds-btn--danger" onclick="resetSystem()" aria-label="시스템 초기화">
+                    <span class="material-icons krds-icon" aria-hidden="true">restart_alt</span>
+                </button>
+            </div> -->
+        </div>
+    </div>
+</header>
+

@@ -1,0 +1,33 @@
+{
+  "system": {
+    "status": "idle",
+    "last_updated": "2025-10-01T19:33:23.424540",
+    "version": "1.0.0"
+  },
+  "sessions": {},
+  "processing": {
+    "current_scenario": null,
+    "progress": 0,
+    "status": "idle",
+    "started_at": null,
+    "completed_at": null
+  },
+  "upload": {
+    "uploaded_file": null,
+    "image_path": null,
+    "image_data_url": null,
+    "people_count": 0,
+    "scenario": null
+  },
+  "hardware": {
+    "arduino_connected": false,
+    "motor_status": "idle",
+    "last_command": null
+  },
+  "notifications": [],
+  "current_step": 0,
+  "step_times": {},
+  "total_elapsed": 0,
+  "analysis_result": {},
+  "processed_results": {}
+}

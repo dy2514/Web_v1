@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# TETRIS specific
+tetris/tetris_IO/uploads/*
+tetris/tetris_IO/log_data/*
+
+tetris_secrets.json

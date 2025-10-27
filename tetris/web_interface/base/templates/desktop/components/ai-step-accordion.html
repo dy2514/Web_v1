@@ -1,0 +1,141 @@
+<!--
+    AI 단계별 아코디언 컴포넌트 (모바일 progress.html과 동일한 구조)
+    - 4단계 AI 처리 과정의 세부 정보
+    - 각 단계별 진행률과 상태 표시
+-->
+<!-- 1단계: 사용자 입력 분석 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep1" class="btn-accordion" aria-controls="accordionCollapseStep1" aria-expanded="false">
+            <div class="accordion-content">
+                <div class="status-icon info" id="step1-icon">
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#000000" clip-rule="evenodd" d="M3.44141 6.52374C4.50762 6.86303 5.28 7.86127 5.28 9.0399C5.28 10.2185 4.50762 11.2168 3.44141 11.5561L3.44141 19.2002C3.44141 19.642 3.08323 20.0002 2.64141 20.0002C2.19958 20.0002 1.84141 19.642 1.84141 19.2002L1.84141 11.557C0.773737 11.2185 0 10.2196 0 9.0399C0 7.86023 0.773737 6.86128 1.84141 6.52284L1.84141 0.8C1.84141 0.358172 2.19958 0 2.64141 0C3.08323 0 3.44141 0.358172 3.44141 0.8V6.52374ZM2.64 10.0799C2.06562 10.0799 1.6 9.61428 1.6 9.0399C1.6 8.46553 2.06562 7.9999 2.64 7.9999C3.21438 7.9999 3.68 8.46553 3.68 9.0399C3.68 9.61428 3.21438 10.0799 2.64 10.0799Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M7.8414 19.2002L7.84141 15.1571C6.77374 14.8186 6 13.8197 6 12.64C6 11.4603 6.77374 10.4614 7.84141 10.1229V0.8C7.84141 0.358172 8.19958 0 8.64141 0C9.08323 0 9.44141 0.358172 9.44141 0.8L9.44141 10.1238C10.5076 10.4631 11.28 11.4614 11.28 12.64C11.28 13.8186 10.5076 14.8169 9.44141 15.1562V19.2002C9.44141 19.642 9.08323 20.0002 8.64141 20.0002C8.19958 20.0002 7.8414 19.642 7.8414 19.2002ZM7.6 12.64C7.6 13.2144 8.06562 13.68 8.64 13.68C9.21438 13.68 9.68 13.2144 9.68 12.64C9.68 12.0656 9.21438 11.6 8.64 11.6C8.06562 11.6 7.6 12.0656 7.6 12.64Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M13.8414 4.12294V0.8C13.8414 0.358172 14.1996 0 14.6414 0C15.0832 0 15.4414 0.358172 15.4414 0.8V4.12383C16.5076 4.46313 17.28 5.46137 17.28 6.64C17.28 7.81863 16.5076 8.81687 15.4414 9.15617L15.4414 19.2002C15.4414 19.642 15.0832 20.0002 14.6414 20.0002C14.1996 20.0002 13.8414 19.642 13.8414 19.2002V9.15706C12.7737 8.81862 12 7.81967 12 6.64C12 5.46033 12.7737 4.46138 13.8414 4.12294ZM14.64 7.68C14.0656 7.68 13.6 7.21438 13.6 6.64C13.6 6.06562 14.0656 5.6 14.64 5.6C15.2144 5.6 15.68 6.06562 15.68 6.64C15.68 7.21438 15.2144 7.68 14.64 7.68Z" fill="#33363D"/>
+                    </svg>
+                </div>
+                <span>사용자 입력 분석</span>
+            </div>
+            <div class="accordion-status">
+                <span class="accordion-step-status waiting" id="step1AccordionStatus">대기중</span>
+            </div>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep1" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep1" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content" id="step1DetailInfo">
+                <p class="krds-text">업로드된 이미지에서 좌석과 승객 인식</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="사용자 입력 분석 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="사용자 입력 분석 진행률: 0%">
+                        <div class="krds-progress__bar" id="step1Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step1ProgressText">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2단계: 최적 배치 생성 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep2" class="btn-accordion" aria-controls="accordionCollapseStep2" aria-expanded="false">
+            <div class="accordion-content">
+                <div class="status-icon info" id="step2-icon">
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#000000" clip-rule="evenodd" d="M3.44141 6.52374C4.50762 6.86303 5.28 7.86127 5.28 9.0399C5.28 10.2185 4.50762 11.2168 3.44141 11.5561L3.44141 19.2002C3.44141 19.642 3.08323 20.0002 2.64141 20.0002C2.19958 20.0002 1.84141 19.642 1.84141 19.2002L1.84141 11.557C0.773737 11.2185 0 10.2196 0 9.0399C0 7.86023 0.773737 6.86128 1.84141 6.52284L1.84141 0.8C1.84141 0.358172 2.19958 0 2.64141 0C3.08323 0 3.44141 0.358172 3.44141 0.8V6.52374ZM2.64 10.0799C2.06562 10.0799 1.6 9.61428 1.6 9.0399C1.6 8.46553 2.06562 7.9999 2.64 7.9999C3.21438 7.9999 3.68 8.46553 3.68 9.0399C3.68 9.61428 3.21438 10.0799 2.64 10.0799Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M7.8414 19.2002L7.84141 15.1571C6.77374 14.8186 6 13.8197 6 12.64C6 11.4603 6.77374 10.4614 7.84141 10.1229V0.8C7.84141 0.358172 8.19958 0 8.64141 0C9.08323 0 9.44141 0.358172 9.44141 0.8L9.44141 10.1238C10.5076 10.4631 11.28 11.4614 11.28 12.64C11.28 13.8186 10.5076 14.8169 9.44141 15.1562V19.2002C9.44141 19.642 9.08323 20.0002 8.64141 20.0002C8.19958 20.0002 7.8414 19.642 7.8414 19.2002ZM7.6 12.64C7.6 13.2144 8.06562 13.68 8.64 13.68C9.21438 13.68 9.68 13.2144 9.68 12.64C9.68 12.0656 9.21438 11.6 8.64 11.6C8.06562 11.6 7.6 12.0656 7.6 12.64Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M13.8414 4.12294V0.8C13.8414 0.358172 14.1996 0 14.6414 0C15.0832 0 15.4414 0.358172 15.4414 0.8V4.12383C16.5076 4.46313 17.28 5.46137 17.28 6.64C17.28 7.81863 16.5076 8.81687 15.4414 9.15617L15.4414 19.2002C15.4414 19.642 15.0832 20.0002 14.6414 20.0002C14.1996 20.0002 13.8414 19.642 13.8414 19.2002V9.15706C12.7737 8.81862 12 7.81967 12 6.64C12 5.46033 12.7737 4.46138 13.8414 4.12294ZM14.64 7.68C14.0656 7.68 13.6 7.21438 13.6 6.64C13.6 6.06562 14.0656 5.6 14.64 5.6C15.2144 5.6 15.68 6.06562 15.68 6.64C15.68 7.21438 15.2144 7.68 14.64 7.68Z" fill="#33363D"/>
+                    </svg>
+                </div>
+                <span>최적 배치 생성</span>
+            </div>
+            <div class="accordion-status">
+                <span class="accordion-step-status waiting" id="step2AccordionStatus">대기중</span>
+            </div>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep2" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep2" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content" id="step2DetailInfo">
+                <p class="krds-text">인식된 데이터를 구조화하고 분석</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="최적 배치 생성 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="최적 배치 생성 진행률: 0%">
+                        <div class="krds-progress__bar" id="step2Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step2ProgressText">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3단계: 시트 동작 계획 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep3" class="btn-accordion" aria-controls="accordionCollapseStep3" aria-expanded="false">
+            <div class="accordion-content">
+                <div class="status-icon info" id="step3-icon">
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#000000" clip-rule="evenodd" d="M3.44141 6.52374C4.50762 6.86303 5.28 7.86127 5.28 9.0399C5.28 10.2185 4.50762 11.2168 3.44141 11.5561L3.44141 19.2002C3.44141 19.642 3.08323 20.0002 2.64141 20.0002C2.19958 20.0002 1.84141 19.642 1.84141 19.2002L1.84141 11.557C0.773737 11.2185 0 10.2196 0 9.0399C0 7.86023 0.773737 6.86128 1.84141 6.52284L1.84141 0.8C1.84141 0.358172 2.19958 0 2.64141 0C3.08323 0 3.44141 0.358172 3.44141 0.8V6.52374ZM2.64 10.0799C2.06562 10.0799 1.6 9.61428 1.6 9.0399C1.6 8.46553 2.06562 7.9999 2.64 7.9999C3.21438 7.9999 3.68 8.46553 3.68 9.0399C3.68 9.61428 3.21438 10.0799 2.64 10.0799Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M7.8414 19.2002L7.84141 15.1571C6.77374 14.8186 6 13.8197 6 12.64C6 11.4603 6.77374 10.4614 7.84141 10.1229V0.8C7.84141 0.358172 8.19958 0 8.64141 0C9.08323 0 9.44141 0.358172 9.44141 0.8L9.44141 10.1238C10.5076 10.4631 11.28 11.4614 11.28 12.64C11.28 13.8186 10.5076 14.8169 9.44141 15.1562V19.2002C9.44141 19.642 9.08323 20.0002 8.64141 20.0002C8.19958 20.0002 7.8414 19.642 7.8414 19.2002ZM7.6 12.64C7.6 13.2144 8.06562 13.68 8.64 13.68C9.21438 13.68 9.68 13.2144 9.68 12.64C9.68 12.0656 9.21438 11.6 8.64 11.6C8.06562 11.6 7.6 12.0656 7.6 12.64Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M13.8414 4.12294V0.8C13.8414 0.358172 14.1996 0 14.6414 0C15.0832 0 15.4414 0.358172 15.4414 0.8V4.12383C16.5076 4.46313 17.28 5.46137 17.28 6.64C17.28 7.81863 16.5076 8.81687 15.4414 9.15617L15.4414 19.2002C15.4414 19.642 15.0832 20.0002 14.6414 20.0002C14.1996 20.0002 13.8414 19.642 13.8414 19.2002V9.15706C12.7737 8.81862 12 7.81967 12 6.64C12 5.46033 12.7737 4.46138 13.8414 4.12294ZM14.64 7.68C14.0656 7.68 13.6 7.21438 13.6 6.64C13.6 6.06562 14.0656 5.6 14.64 5.6C15.2144 5.6 15.68 6.06562 15.68 6.64C15.68 7.21438 15.2144 7.68 14.64 7.68Z" fill="#33363D"/>
+                    </svg>
+                </div>
+                <span>시트 동작 계획</span>
+            </div>
+            <div class="accordion-status">
+                <span class="accordion-step-status waiting" id="step3AccordionStatus">대기중</span>
+            </div>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep3" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep3" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content" id="step3DetailInfo">
+                <p class="krds-text">AI 알고리즘으로 최적 좌석 배치 생성</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="시트 동작 계획 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="시트 동작 계획 진행률: 0%">
+                        <div class="krds-progress__bar" id="step3Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step3ProgressText">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4단계: 최적 배치 코드 생성 -->
+<div class="accordion-item">
+    <h5 class="accordion-header">
+        <button type="button" id="accordionHeaderStep4" class="btn-accordion" aria-controls="accordionCollapseStep4" aria-expanded="false">
+            <div class="accordion-content">
+                <div class="status-icon info" id="step4-icon">
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#000000" clip-rule="evenodd" d="M3.44141 6.52374C4.50762 6.86303 5.28 7.86127 5.28 9.0399C5.28 10.2185 4.50762 11.2168 3.44141 11.5561L3.44141 19.2002C3.44141 19.642 3.08323 20.0002 2.64141 20.0002C2.19958 20.0002 1.84141 19.642 1.84141 19.2002L1.84141 11.557C0.773737 11.2185 0 10.2196 0 9.0399C0 7.86023 0.773737 6.86128 1.84141 6.52284L1.84141 0.8C1.84141 0.358172 2.19958 0 2.64141 0C3.08323 0 3.44141 0.358172 3.44141 0.8V6.52374ZM2.64 10.0799C2.06562 10.0799 1.6 9.61428 1.6 9.0399C1.6 8.46553 2.06562 7.9999 2.64 7.9999C3.21438 7.9999 3.68 8.46553 3.68 9.0399C3.68 9.61428 3.21438 10.0799 2.64 10.0799Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M7.8414 19.2002L7.84141 15.1571C6.77374 14.8186 6 13.8197 6 12.64C6 11.4603 6.77374 10.4614 7.84141 10.1229V0.8C7.84141 0.358172 8.19958 0 8.64141 0C9.08323 0 9.44141 0.358172 9.44141 0.8L9.44141 10.1238C10.5076 10.4631 11.28 11.4614 11.28 12.64C11.28 13.8186 10.5076 14.8169 9.44141 15.1562V19.2002C9.44141 19.642 9.08323 20.0002 8.64141 20.0002C8.19958 20.0002 7.8414 19.642 7.8414 19.2002ZM7.6 12.64C7.6 13.2144 8.06562 13.68 8.64 13.68C9.21438 13.68 9.68 13.2144 9.68 12.64C9.68 12.0656 9.21438 11.6 8.64 11.6C8.06562 11.6 7.6 12.0656 7.6 12.64Z" fill="#33363D"/>
+                        <path fill="#000000" clip-rule="evenodd" d="M13.8414 4.12294V0.8C13.8414 0.358172 14.1996 0 14.6414 0C15.0832 0 15.4414 0.358172 15.4414 0.8V4.12383C16.5076 4.46313 17.28 5.46137 17.28 6.64C17.28 7.81863 16.5076 8.81687 15.4414 9.15617L15.4414 19.2002C15.4414 19.642 15.0832 20.0002 14.6414 20.0002C14.1996 20.0002 13.8414 19.642 13.8414 19.2002V9.15706C12.7737 8.81862 12 7.81967 12 6.64C12 5.46033 12.7737 4.46138 13.8414 4.12294ZM14.64 7.68C14.0656 7.68 13.6 7.21438 13.6 6.64C13.6 6.06562 14.0656 5.6 14.64 5.6C15.2144 5.6 15.68 6.06562 15.68 6.64C15.68 7.21438 15.2144 7.68 14.64 7.68Z" fill="#33363D"/>
+                    </svg>
+                </div>
+                <span>최적 배치 코드 생성</span>
+            </div>
+            <div class="accordion-status">
+                <span class="accordion-step-status waiting" id="step4AccordionStatus">대기중</span>
+            </div>
+        </button>
+    </h5>
+    <div id="accordionCollapseStep4" class="accordion-collapse collapse" aria-labelledby="accordionHeaderStep4" aria-hidden="true">
+        <div class="accordion-body">
+            <div class="step-detail-content" id="step4DetailInfo">
+                <p class="krds-text">시트 배치를 위한 16자리 코드 생성</p>
+                <div class="step-progress-section">
+                    <div class="krds-progress" role="progressbar" aria-label="최적 배치 코드 생성 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="최적 배치 코드 생성 진행률: 0%">
+                        <div class="krds-progress__bar" id="step4Progress" style="width: 0%"></div>
+                    </div>
+                    <span class="krds-text krds-text--small" id="step4ProgressText">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

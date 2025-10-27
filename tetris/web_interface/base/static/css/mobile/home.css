@@ -1,0 +1,761 @@
+@font-face {
+    font-family: "HyundaiSansHeadKRM";
+    src: url("/static/css/fonts/HyundaiSansHeadKRMedium.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansHeadKRR";
+    src: url("/static/css/fonts/HyundaiSansHeadKRRegular.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRM";
+    src: url("/static/css/fonts/HyundaiSansTextKRMedium.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "HyundaiSansTextKRR";
+    src: url("/static/css/fonts/HyundaiSansTextKRRegular.woff2") format("woff2");
+    font-style: normal;
+    font-display: swap;
+}
+
+/* AI TETRIS 홈화면 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    min-height: 100vh;
+    color: #333;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    background-image: url('/static/images/pv5_home.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* 상단 바 */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    background-color: #00000000;
+}
+
+.topbar img {
+    width: 50%;
+    height: 50%;
+    margin: 3px;
+}
+
+.topbar h1 {
+    font-family: 'HyundaiSansTextKRM';
+    font-size: 25px;
+    color: var(--black);
+    letter-spacing: .2px;
+    margin: 3px auto 3px 0;
+}
+
+
+/* 메인 컨테이너 */
+.home-container {
+    padding: 0 0 80px 0;
+}
+
+/* 차량 이미지 섹션 */
+.vehicle-section {
+    text-align: center;
+    padding: 20px 0 30px 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+}
+
+.vehicle-image {
+    position: relative;
+    display: inline-block;
+}
+
+.vehicle-img {
+    width: 280px;
+    height: auto;
+    max-width: 100%;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.15));
+    transition: transform 0.3s ease;
+}
+
+.vehicle-img:hover {
+    transform: scale(1.02);
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+    padding: 0 20px;
+}
+
+.welcome-section {
+    text-align: left;
+    margin-bottom: 30px;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    margin: 0px 12px 30px 12px;
+    padding: 16px;
+    background-color: #00000000;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -30%;
+    width: 150%;
+    height: 150%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-title {
+    font-family: "HyundaiSansHeadKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 26px;
+    color: #333;
+    line-height: 1.5;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-sub-title {
+    font-family: "HyundaiSansHeadKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: #333;
+    font-size: 22px;
+}
+
+.brand-logo {
+    justify-content: center;
+    margin-bottom: 84px;
+    position: relative;
+    z-index: 1;
+}
+
+.brand-img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    filter: brightness(1.02) contrast(1.05);
+}
+
+.brand-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 44, 95, 0.2);
+}
+
+/* 시작하기 버튼 컨테이너 */
+.start-container {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 0 16px 20px 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    /* border: 1px solid rgba(0, 0, 0, 0.08); */
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    min-height: 8rem;
+}
+
+/* 새로운 서비스 라벨 */
+.new-service-label {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+.start-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    /* margin-bottom: 24px; */
+}
+
+.start-text-section {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.start-title {
+    font-family: "HyundaiSansTextKRR", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.start-title.bold {
+    font-size: 18px;
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.start-logo-section {
+    position: absolute;
+    top: 55%;
+    right: 1rem;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.hyundai-logo {
+    margin-right: 6px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 44, 95, 0.2);
+}
+
+.tetris-logo {
+    width: 10rem;
+    height: 8rem;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.05));
+}
+
+.start-button {
+    background: linear-gradient(135deg, #002c5f 0%, #004080 100%);
+    color: white;
+    border: none;
+    padding: 10px 32px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 44, 95, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 44, 95, 0.4);
+}
+
+.start-button:active {
+    transform: translateY(0);
+}
+
+.button-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+}
+
+/* 서비스 바로가기 */
+.service-shortcuts {
+    background: #002c5f;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 16px 20px 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.2rem;
+}
+
+.shortcut-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 12px;
+    cursor: pointer;
+}
+
+.shortcut-item img {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.shortcut-icon {
+    margin-bottom: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+}
+
+.shortcut-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.shortcut-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    color: #e4e7ed;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+/* 구분선 */
+.separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 20px 0;
+}
+
+/* 디지털키 섹션 */
+.digital-key-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.digital-key-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+    color: #e4e7ed;
+    font-weight: 500;
+}
+
+/* 제어 패널 (기존 스타일 유지) */
+.control-panel {
+    background: white;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 0 20px 20px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.control-panel-title {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+
+.control-item:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 44, 95, 0.05);
+    border-color: rgba(0, 44, 95, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 44, 95, 0.15);
+}
+
+.control-icon {
+    margin-bottom: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+}
+
+.control-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.control-text {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* 하단 네비게이션 */
+.bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    min-width: 60px;
+}
+
+.nav-item.active {
+    color: #002c5f;
+}
+
+.nav-item.active .nav-icon {
+    color: #002c5f;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+    color: #a1a1a1ad;
+    transition: color 0.3s ease;
+}
+
+.nav-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.nav-label {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a1a1a1ad;
+    transition: color 0.3s ease;
+}
+
+.nav-item.active .nav-label {
+    color: #002c5f;
+}
+
+/* 알림 모달 */
+.notification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-modal.show {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    z-index: 1001;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h3 {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notification-content h4 {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.notification-content p {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.notification-time {
+    font-family: "HyundaiSansTextKRM", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 12px;
+    color: #999;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .topbar {
+        padding: 20px 16px;
+    }
+    
+    
+    .main-content {
+        padding: 0 16px;
+    }
+    
+    .vehicle-img {
+        width: 240px;
+    }
+    
+    .start-container {
+        padding: 25px 35px;
+    }
+    
+    .new-service-label {
+        top: 12px;
+        left: 12px;
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+    
+    .hyundai-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .control-grid {
+        gap: 12px;
+    }
+    
+    .control-item {
+        padding: 12px 6px;
+    }
+    
+    .control-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .control-text {
+        font-size: 11px;
+    }
+    
+    .shortcut-item {
+        padding: 12px 6px;
+    }
+    
+    .shortcut-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .brand-img {
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 360px) {
+    .vehicle-img {
+        width: 200px;
+    }
+    
+    .start-container {
+        padding: 16px;
+    }
+    
+    .new-service-label {
+        top: 10px;
+        left: 10px;
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    .hyundai-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .control-grid {
+        gap: 8px;
+    }
+    
+    .control-item {
+        padding: 10px 4px;
+    }
+    
+    .control-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .control-icon svg {
+        width: 12px;
+    }
+    
+    .shortcut-item {
+        padding: 10px 4px;
+    }
+    
+    .shortcut-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .shortcut-icon svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .control-text {
+        font-size: 10px;
+    }
+    
+    .brand-img {
+        max-width: 300px;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vehicle-section,
+.welcome-section,
+.start-container,
+.control-panel,
+.service-shortcuts {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.control-panel {
+    animation-delay: 0.2s;
+}
+
+.service-shortcuts {
+    animation-delay: 0.3s;
+}
+
+/* 접근성 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
