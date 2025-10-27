@@ -32,21 +32,36 @@ if str(RPI_DIR) not in sys.path:
     sys.path.insert(0, str(RPI_DIR))
 import rpi_controller as RPI
 
-def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
-    """웹 모드 실행 - 통합 웹 서버 사용"""
-    # web_interface 모듈 로드
+def start_web_server(port: int = 5002, host: str = '0.0.0.0', debug: bool = False) -> tuple:
+    """웹 서버 시작 - 런처에서 직접 호출 가능한 함수"""
+    import threading
+    
+    # web_interface 경로 추가
     WEB_DIR = HERE / "web_interface"
     if str(WEB_DIR) not in sys.path:
         sys.path.insert(0, str(WEB_DIR))
     
-    # 통합 웹 서버 실행
     from web_interface.web import app
-    import threading
-    import time
     
-    print(f"TETRIS 통합 웹 서버 시작 (포트: {port})")
-    print(f"모바일 접속: http://localhost:{port}/mobile/input")
-    print(f"데스크탑 접속: http://localhost:{port}/desktop/control")
+    print(f"🚀 TETRIS 웹 서버 시작 (포트: {port})")
+    print(f"📱 모바일 접속: http://localhost:{port}/mobile/input")
+    print(f"🖥️  데스크탑 접속: http://localhost:{port}/desktop/control")
+    
+    # 웹 서버를 별도 스레드에서 실행
+    def run_server():
+        app.run(host=host, port=port, debug=debug, threaded=True, use_reloader=False)
+    
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
+    
+    # 서버 시작 대기
+    time.sleep(1)
+    
+    return server_thread
+
+def get_user_input_via_web(port: int = 5002, open_browser: bool = True) -> tuple:
+    """웹을 통한 사용자 입력 수집"""
+    from user_input import get_user_input_web
     
     if open_browser:
         try:
@@ -55,41 +70,30 @@ def run_web_mode(port: int = 5002, open_browser: bool = True) -> tuple:
         except Exception:
             pass
     
-    # 웹 서버를 별도 스레드에서 실행
-    def run_server():
-        app.run(host='0.0.0.0', port=port, debug=True, threaded=True, use_reloader=False)
-    
-    server_thread = threading.Thread(target=run_server, daemon=True)
-    server_thread.start()
-    
-    # user_input.py의 웹 모드 함수 사용
-    from user_input import get_user_input_web
     return get_user_input_web(port=port)
 
-def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict:
-    # 1) 입력 수집 - 웹 모드만 지원
-    if mode != "web":
-        raise ValueError("웹 모드만 지원됩니다. --mode web을 사용해주세요.")
+def run_full_pipeline(port: int = 5002, open_browser: bool = True) -> dict:
+    """전체 파이프라인 실행 - 런처에서 직접 호출"""
+    # 1) 웹 서버 시작
+    start_web_server(port=port, debug=config['web']['DEBUG'])
     
-    # 웹 모드: Blueprint 기반 통합 웹 서버 사용
-    people_count, image_data_url, scenario = run_web_mode(
-        port=port, open_browser=open_browser
-    )
+    # 2) 사용자 입력 수집
+    people_count, image_data_url, scenario = get_user_input_via_web(port=port, open_browser=open_browser)
 
-    # 2) main_chain 입력 생성
+    # 3) main_chain 입력 생성
     print("AI 체인 입력 생성 중...")
     user_msgs = MC.make_chain1_user_input(
         people_count=people_count, image_data_url=image_data_url
     )
     print(f"AI 체인 입력 생성 완료: {len(user_msgs)}개 메시지")
 
-    # 2-1) 출력 파일 경로 준비
+    # 4) 출력 파일 경로 준비
     OUT_ROOT = config['output']['OUTPUT_ROOT']
     OUT_DIR = OUT_ROOT / "log_data"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{scenario}.txt"
 
-    # 3) 전체 체인 실행 
+    # 5) 전체 체인 실행 
     print("AI 체인 실행 시작...")
     t_chain_start = perf_counter()
     try:
@@ -104,7 +108,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     chain_elapsed = t_chain_end - t_chain_start
     print(f"AI 체인 실행 시간: {chain_elapsed:.3f}초")
 
-    # 3-1) chain4_out → 아두이노 전송 
+    # 6) chain4_out → 아두이노 전송 
     chain4_out = result["chain4_out"].strip()
     print(f"모터 제어 시작 (16-digit 코드: {chain4_out})")
     try:
@@ -139,7 +143,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
             pass
     print("모터 제어 완료")
 
-    # 4) 최종 출력 
+    # 7) 최종 출력 
     print("\n====================[ chain1_out ]====================")
     print(result.get("chain1_out", ""))
     print("\n====================[ chain2_out ]====================")
@@ -149,7 +153,7 @@ def run_pipeline(mode: str, port: int = 5002, open_browser: bool = True) -> dict
     print("\n====================[ chain4_out ]====================")
     print(chain4_out)
 
-    # 5) 파일 저장 
+    # 8) 파일 저장 
     lines = []
     lines.append("====================[ chain1_out ]====================")
     lines.append(result.get("chain1_out", ""))
@@ -276,6 +280,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
 
 
 def main():
+    """명령줄 실행용 메인 함수 (하위 호환성 유지)"""
     ap = argparse.ArgumentParser(description="AI TETRIS launcher")
     ap.add_argument("--mode", default="web", choices=["web"], help="실행 모드 (웹 모드만 지원)")
     ap.add_argument("--port", type=int, default=5002)
@@ -284,7 +289,7 @@ def main():
 
     # 전체 실행 시간 측정 시작
     t_total_start = perf_counter()
-    res = run_pipeline(mode=args.mode, port=args.port, open_browser=(not args.no_browser))
+    res = run_full_pipeline(port=args.port, open_browser=(not args.no_browser))
 
     # 전체 실행 시간 측정 종료
     t_total_end = perf_counter()

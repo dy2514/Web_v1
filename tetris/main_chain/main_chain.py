@@ -82,12 +82,12 @@ chain1_llm = ChatGoogleGenerativeAI(
     api_key=GOOGLE_API_KEY
 )
 chain2_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-image-preview",
+    model="gemini-2.5-flash-image",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
 chain3_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-pro",
+    model="gemini-2.5-flash-image",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
