@@ -457,13 +457,6 @@ html, body {
 }
 
 /* ========================================
-   AI 처리 단계별 진행 상황 (전체 너비)
-   ======================================== */
-.ai-steps-card {
-  grid-column: 1 / -1;
-}
-
-/* ========================================
    카드 스타일링
    ======================================== */
 /* 이미지 기반 모던 카드 디자인 */
@@ -601,133 +594,6 @@ html, body {
 }
 
 /* ========================================
-   AI 처리 단계별 진행 상황
-   ======================================== */
-.ai-steps-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.ai-steps-header {
-  text-align: center;
-  margin-bottom: var(--space-4);
-}
-
-.ai-steps-title {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.ai-steps-description {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.ai-steps-flow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  position: relative;
-}
-
-.ai-step {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-}
-
-.ai-step-connector {
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  right: -50%;
-  height: 2px;
-  background: var(--border-medium);
-  z-index: 1;
-}
-
-.ai-step:last-child .ai-step-connector {
-  display: none;
-}
-
-.ai-step-connector.active {
-  background: var(--color-primary);
-}
-
-.ai-step-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--bg-tertiary);
-  border: 3px solid var(--border-medium);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 2;
-  transition: all var(--transition-normal);
-}
-
-.ai-step-circle.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--text-inverse);
-  box-shadow: 0 0 20px rgba(0, 44, 95, 0.3);
-}
-
-.ai-step-circle.completed {
-  background: var(--color-success);
-  border-color: var(--color-success);
-  color: var(--text-inverse);
-}
-
-.ai-step-circle.error {
-  background: var(--color-error);
-  border-color: var(--color-error);
-  color: var(--text-inverse);
-}
-
-.ai-step-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-primary);
-  margin: var(--space-2) 0 var(--space-1) 0;
-}
-
-.ai-step-description {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.ai-step-progress {
-  width: 100%;
-  height: 4px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
-  margin-top: var(--space-2);
-  overflow: hidden;
-}
-
-.ai-step-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
-}
-
-/* ========================================
    전체 진행률 표시기 (라즈베리파이 카드용)
    ======================================== */
 .overall-progress {
@@ -790,30 +656,6 @@ html, body {
   border-radius: var(--radius-full);
   overflow: hidden;
   margin-bottom: var(--space-3);
-}
-
-.progress-fill-large {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
-  position: relative;
-}
-
-.progress-fill-large::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: shimmer 2s infinite;
 }
 
 .progress-status {
@@ -1039,23 +881,6 @@ html, body {
 /* ========================================
    데스크탑 전용 최적화
    ======================================== */
-/* AI 처리 섹션 데스크탑 최적화 */
-.ai-processing-full-width {
-  min-width: 1200px; /* 최소 너비 보장 */
-  max-width: 1400px; /* 최대 너비 제한 */
-}
-
-.ai-steps-grid {
-  grid-template-columns: repeat(4, 1fr); /* 4열 고정 */
-  gap: var(--space-6);
-}
-
-.ai-steps-horizontal {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  /* 모바일 대응 제거, 데스크탑 전용 */
-}
 
 /* 데스크탑에서만 표시되는 요소들 */
 .desktop-only {
@@ -1083,38 +908,6 @@ html, body {
   gap: var(--space-4);
   align-items: stretch;
   min-height: 280px;
-}
-
-/* ========================================
-   AI 처리 전체 너비 섹션 (12열 활용)
-   ======================================== */
-.ai-processing-full-width {
-  grid-column: 1 / -1;                    /* 12열 전체 사용 */
-  margin-bottom: var(--space-6);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.08);
-  backdrop-filter: blur(16px);
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-processing-full-width:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
-  border-color: var(--image-primary);
-}
-
-.ai-processing-content {
-  padding: var(--space-6);
-}
-
-/* ========================================
-   AI 처리 카드 (모바일 QR 형식) - 기존 호환성
-   ======================================== */
-.ai-processing-card {
-  margin-bottom: var(--space-6);
 }
 
 /* KRDS 표준 단계 표시기 변수 정의 */
@@ -1302,14 +1095,6 @@ html, body {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-  .ai-steps-horizontal {
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-  
-  .ai-steps-horizontal::before {
-    display: none;
-  }
   
   .step-item::after {
     display: none;
@@ -1455,13 +1240,6 @@ html, body {
   padding: var(--space-4) 0;
 }
 
-.step-description {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-bottom: var(--space-4);
-  line-height: 1.5;
-}
-
 .step-progress-section {
   display: flex;
   align-items: center;
@@ -1469,48 +1247,6 @@ html, body {
   margin-bottom: var(--space-4);
 }
 
-.step-progress-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  position: relative;
-}
-
-.step-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--krds-accordion--button-color-action), var(--krds-accordion--button-color-action-hover));
-  border-radius: var(--radius-sm);
-  transition: width var(--transition-normal);
-  width: 0%;
-}
-
-.step-progress-text {
-  font-size: 0.875rem;
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-  min-width: 40px;
-  text-align: right;
-}
-
-.step-detail-info {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  border: 1px solid var(--border-light);
-}
-
-.step-detail-info p {
-  margin: 0 0 var(--space-2) 0;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.step-detail-info p:last-child {
-  margin-bottom: 0;
-}
 
 /* 아코디언 반응형 스타일 */
 @media (max-width: 768px) {
@@ -1534,108 +1270,6 @@ html, body {
   .step-detail-content {
     padding: var(--space-3) 0;
   }
-}
-
-/* 처리 세부 현황 */
-.ai-details-section {
-  margin-top: var(--space-4);
-}
-
-.ai-details-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 var(--space-5) 0;
-  text-align: center;
-}
-
-.ai-steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-}
-
-.ai-step-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.ai-step-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
-  border-color: var(--image-primary);
-}
-
-.ai-step-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--image-primary);
-  color: var(--text-inverse);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.ai-step-info {
-  flex: 1;
-}
-
-.ai-step-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.ai-step-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0 0 var(--space-3) 0;
-  line-height: 1.4;
-}
-
-.ai-step-progress-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--color-gray-200);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.ai-step-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--image-accent) 0%, var(--image-primary-light) 100%);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-/* 단계별 상태 스타일 */
-.ai-step-item.active .ai-step-number {
-  background: var(--image-accent);
-  animation: pulse 2s infinite;
-}
-
-.ai-step-item.active .ai-step-progress-fill {
-  width: 100%;
-}
-
-.ai-step-item.completed .ai-step-number {
-  background: var(--image-accent);
-}
-
-.ai-step-item.completed .ai-step-progress-fill {
-  width: 100%;
-  background: var(--image-accent);
 }
 
 /* ========================================
@@ -1679,12 +1313,6 @@ html, body {
 .step-item.active:hover::before {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
-}
-
-.ai-step-item:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--radius-lg);
 }
 
 /* ========================================
@@ -1734,23 +1362,3 @@ html, body {
 .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
 .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
 .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
-
-/* ========================================
-   데스크탑 전용 AI 처리 레이아웃
-   ======================================== */
-/* AI 처리 섹션은 데스크탑에서만 최적화된 레이아웃 사용 */
-.ai-processing-full-width {
-  grid-column: 1 / -1; /* 12열 전체 사용 */
-  margin-bottom: var(--space-6);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.08);
-  backdrop-filter: blur(16px);
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-processing-content {
-  padding: var(--space-6);
-}

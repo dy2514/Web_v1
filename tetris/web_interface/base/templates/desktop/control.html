@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TETRIS - 데스크탑 관제 (현대차 브랜딩)</title>
+    <title>TETRIS - 데스크탑 관제</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
@@ -82,8 +82,6 @@
     
     <!-- 통합 통신 구조 스크립트 -->
     <script src="{{ url_for('static', filename='js/config/frontend-config.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/utils/validation-utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/utils/dom-utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/performance-optimizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/error-handler.js') }}"></script>
     <script src="{{ url_for('static', filename='js/unified-communication-manager.js') }}"></script>
@@ -93,44 +91,5 @@
     <script src="{{ url_for('static', filename='js/desktop/control.js') }}"></script>
     <script src="{{ url_for('static', filename='js/desktop/control-ai.js') }}"></script>
     
-    <!-- 디버깅용 스크립트 -->
-    <script>
-        console.log('🚀 TETRIS Control Dashboard 로딩 시작');
-        console.log('현재 URL:', window.location.href);
-        console.log('DOM 로딩 완료:', document.readyState);
-        
-        // CSS 파일 로딩 확인
-        const cssFiles = [
-            'css/design-system.css',
-            'css/components.css', 
-            'css/icons.css',
-            'css/dashboard.css',
-            'css/desktop/control.css'
-        ];
-        
-        cssFiles.forEach(file => {
-            const link = document.querySelector(`link[href*="${file}"]`);
-            if (link) {
-                console.log(`✅ CSS 파일 로딩됨: ${file}`);
-            } else {
-                console.error(`❌ CSS 파일 누락: ${file}`);
-            }
-        });
-        
-        // JavaScript 파일 로딩 확인
-        const jsFiles = [
-            'js/desktop/control.js',
-            'js/desktop/control-ai.js'
-        ];
-        
-        jsFiles.forEach(file => {
-            const script = document.querySelector(`script[src*="${file}"]`);
-            if (script) {
-                console.log(`✅ JS 파일 로딩됨: ${file}`);
-            } else {
-                console.error(`❌ JS 파일 누락: ${file}`);
-            }
-        });
-    </script>
 </body>
 </html>

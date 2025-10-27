@@ -1841,17 +1841,6 @@ body.modal-open {
     transition: width 0.3s ease;
 }
 
-.step-detail-info ul {
-    margin: 0;
-    padding-left: 1.5rem;
-}
-
-.step-detail-info li {
-    margin-bottom: 0.4vw;
-    color: #6b7280;
-    font-size: 1.0vw;
-}
-
 /* 버튼 그룹 */
 .krds-button-group {
     display: flex;
@@ -2136,18 +2125,6 @@ body.modal-open {
         max-height: 41.7vw;
         opacity: 1;
     }
-}
-
-/* 결과 표시 시 하이라이트 */
-.step-detail-info.has-result {
-    background-color: #f0f9ff;
-    border-left: 4px solid #3b82f6;
-    padding-left: 1rem;
-}
-
-.step-detail-info.has-result .step-result-content {
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 아코디언 분석 결과에 표시되는 이미지 */
