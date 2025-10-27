@@ -341,7 +341,7 @@ class ControlController {
             1: statusData.analysis_result.chain1_out,
             2: statusData.analysis_result.chain2_out,
             3: statusData.analysis_result.chain3_out,
-            4: statusData.analysis_result.chain4_out
+            4: statusData.analysis_result.serial_encoder_out
         };
         
         return !!(stepResults[step] && stepResults[step].trim());
@@ -603,7 +603,7 @@ class ControlController {
         }
         
         // 분석 결과가 있는 경우 즉시 표시
-        if (data.analysis_result || data.chain1_out || data.chain2_out || data.chain3_out || data.chain4_out) {
+        if (data.analysis_result || data.chain1_out || data.chain2_out || data.chain3_out || data.serial_encoder_out) {
             console.log('🎯 분석 결과 업데이트 트리거:', data);
             if (window.handleAIStatusData) {
                 await window.handleAIStatusData(data);

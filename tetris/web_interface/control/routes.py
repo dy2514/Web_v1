@@ -165,14 +165,14 @@ def get_status():
     # 호환성: 잘못 중첩된 analysis_result 구조를 평탄화
     try:
         ar = status_data.get('analysis_result')
-        if isinstance(ar, dict) and 'analysis_result' in ar and 'chain4_out' not in ar:
+        if isinstance(ar, dict) and 'analysis_result' in ar and 'serial_encoder_out' not in ar:
             inner = ar.get('analysis_result')
             if isinstance(inner, dict):
                 status_data['analysis_result'] = inner
         # 보조 체크를 위해 최종 출력이 있으면 최상위에도 복사
         ar2 = status_data.get('analysis_result')
-        if isinstance(ar2, dict) and 'chain4_out' in ar2:
-            status_data.setdefault('chain4_out', ar2.get('chain4_out'))
+        if isinstance(ar2, dict) and 'serial_encoder_out' in ar2:
+            status_data.setdefault('serial_encoder_out', ar2.get('serial_encoder_out'))
     except Exception:
         pass
     
@@ -227,16 +227,16 @@ def status_stream():
         
         def build_payload() -> dict:
             data = get_global_status().copy()
-            # 호환성: analysis_result 중첩 평탄화 및 chain4_out 복사
+            # 호환성: analysis_result 중첩 평탄화 및 serial_encoder_out 복사
             try:
                 ar = data.get('analysis_result')
-                if isinstance(ar, dict) and 'analysis_result' in ar and 'chain4_out' not in ar:
+                if isinstance(ar, dict) and 'analysis_result' in ar and 'serial_encoder_out' not in ar:
                     inner = ar.get('analysis_result')
                     if isinstance(inner, dict):
                         data['analysis_result'] = inner
                 ar2 = data.get('analysis_result')
-                if isinstance(ar2, dict) and 'chain4_out' in ar2:
-                    data.setdefault('chain4_out', ar2.get('chain4_out'))
+                if isinstance(ar2, dict) and 'serial_encoder_out' in ar2:
+                    data.setdefault('serial_encoder_out', ar2.get('serial_encoder_out'))
             except Exception:
                 pass
 
@@ -282,7 +282,7 @@ def status_stream():
                 ar = status_data.get('analysis_result')
                 current_steps = set()
                 if isinstance(ar, dict):
-                    for key in ('chain1_out', 'chain2_out', 'chain3_out', 'chain4_out'):
+                    for key in ('chain1_out', 'chain2_out', 'chain3_out', 'serial_encoder_out'):
                         if key in ar:
                             current_steps.add(key)
 
@@ -304,8 +304,8 @@ def status_stream():
                         payload_ar = {k: ar[k] for k in new_steps if k in ar}
                         payload['analysis_result'] = payload_ar
                         payload['result'] = payload_ar
-                        if 'chain4_out' in payload_ar:
-                            payload.setdefault('chain4_out', payload_ar['chain4_out'])
+                        if 'serial_encoder_out' in payload_ar:
+                            payload.setdefault('serial_encoder_out', payload_ar['serial_encoder_out'])
                     last_sent_steps.update(new_steps)
                     should_emit = True
 
@@ -598,13 +598,13 @@ def trigger_hardware():
             global_status = get_global_status()
             analysis_result = global_status.get('analysis_result', {})
             
-            if isinstance(analysis_result, dict) and 'chain4_out' in analysis_result:
-                placement_code = analysis_result['chain4_out']
+            if isinstance(analysis_result, dict) and 'serial_encoder_out' in analysis_result:
+                placement_code = analysis_result['serial_encoder_out']
                 logger.info(f"분석 결과에서 placement_code 자동 추출: {placement_code}")
             else:
                 # 분석이 완료되지 않은 경우 기본 배치 코드 사용 (테스트용)
                 placement_code = "0000000000000000"  # 16자리 기본값
-                logger.warning(f"분석 결과에서 chain4_out을 찾을 수 없습니다. 기본값 사용: {placement_code}")
+                logger.warning(f"분석 결과에서 serial_encoder_out을 찾을 수 없습니다. 기본값 사용: {placement_code}")
                 # return jsonify({
                 #     'success': False, 
                 #     'error': '분석 결과에서 배치 코드를 찾을 수 없습니다. 먼저 사용자 입력 분석을 완료해주세요.'

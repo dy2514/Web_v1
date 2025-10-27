@@ -805,9 +805,9 @@ async function handleStepResults(statusData) {
             await displayStepResult(3, ar.chain3_out);
             shownSteps[3] = true;
         }
-        if (ar.chain4_out && !shownSteps[4]) {
+        if (ar.serial_encoder_out && !shownSteps[4]) {
             // 4단계: 최적 배치 코드 생성 결과 표시
-            await displayStepResult(4, ar.chain4_out);
+            await displayStepResult(4, ar.serial_encoder_out);
             shownSteps[4] = true;
         }
 
@@ -825,9 +825,9 @@ async function handleStepResults(statusData) {
             await displayStepResult(3, statusData.chain3_out);
             shownSteps[3] = true;
         }
-        if (statusData.chain4_out && !shownSteps[4]) {
+        if (statusData.serial_encoder_out && !shownSteps[4]) {
             // 4단계: 최적 배치 코드 생성 결과 표시
-            await displayStepResult(4, statusData.chain4_out);
+            await displayStepResult(4, statusData.serial_encoder_out);
             shownSteps[4] = true;
         }
 
@@ -1251,8 +1251,8 @@ async function checkCurrentStatusAndUpdateHardware() {
                 }
                 
                 // 4단계 결과 표시
-                if (analysisResult.chain4_out && !shownSteps[4]) {
-                    await displayStepResult(4, analysisResult.chain4_out);
+                if (analysisResult.serial_encoder_out && !shownSteps[4]) {
+                    await displayStepResult(4, analysisResult.serial_encoder_out);
                     shownSteps[4] = true;
                 }
             }
@@ -1289,7 +1289,7 @@ function updateCompletedStepsStatus(analysisResult, currentStep) {
         1: analysisResult.chain1_out,
         2: analysisResult.chain2_out,
         3: analysisResult.chain3_out,
-        4: analysisResult.chain4_out
+        4: analysisResult.serial_encoder_out
     };
     
     console.log('🔧 단계별 결과:', stepResults);

@@ -161,22 +161,22 @@ def run_full_pipeline(port: int = 5002, open_browser: bool = True) -> dict:
     chain_elapsed = t_chain_end - t_chain_start
     print(f"AI 체인 실행 시간: {chain_elapsed:.3f}초")
 
-    # 6) chain4_out → 아두이노 전송 
-    chain4_out = result["chain4_out"].strip()
-    print(f"모터 제어 시작 (16-digit 코드: {chain4_out})")
+    # 6) serial_encoder_out → 아두이노 전송 
+    serial_encoder_out = result["serial_encoder_out"].strip()
+    print(f"모터 제어 시작 (16-digit 코드: {serial_encoder_out})")
     try:
         RPI.connect_to_arduinos()
 
         connected = getattr(RPI, "arduino_connections", {})
         if not connected:
             print("연결된 아두이노가 없습니다. DRY-RUN 모드로 진행합니다.")
-            print(f"[DRY-RUN] 16-digit 코드: {chain4_out}")
+            print(f"[DRY-RUN] 16-digit 코드: {serial_encoder_out}")
         else:
             print(f"[연결] 아두이노 {len(connected)}개 연결됨")
             # 연결 직후 약간 대기 (보드 리셋/초기화 여유)
             time.sleep(0.3)
 
-            RPI.send_automated_command(chain4_out)
+            RPI.send_automated_command(serial_encoder_out)
             print("모터 제어 명령 전송 완료")
 
             # 동작할 시간 확보
@@ -185,7 +185,7 @@ def run_full_pipeline(port: int = 5002, open_browser: bool = True) -> dict:
     except Exception as e:
         # 하드웨어 제어 중 예외가 나도 결과 저장은 계속 진행
         print(f"하드웨어 제어 중 예외 발생 → DRY-RUN 전환: {e}")
-        print(f"[DRY-RUN] 16-digit 코드: {chain4_out}")
+        print(f"[DRY-RUN] 16-digit 코드: {serial_encoder_out}")
 
     finally:
         # 연결 유무와 상관없이 안전 종료 시도
@@ -203,8 +203,8 @@ def run_full_pipeline(port: int = 5002, open_browser: bool = True) -> dict:
     print(result.get("chain2_out", ""))
     print("\n====================[ chain3_out ]====================")
     print(result.get("chain3_out", ""))
-    print("\n====================[ chain4_out ]====================")
-    print(chain4_out)
+    print("\n====================[ serial_encoder_out ]====================")
+    print(serial_encoder_out)
 
     # 8) 파일 저장 
     lines = []
@@ -217,8 +217,8 @@ def run_full_pipeline(port: int = 5002, open_browser: bool = True) -> dict:
     lines.append("====================[ chain3_out ]====================")
     lines.append(result.get("chain3_out", ""))
     lines.append("")
-    lines.append("====================[ chain4_out ]====================")
-    lines.append(chain4_out)
+    lines.append("====================[ serial_encoder_out ]====================")
+    lines.append(serial_encoder_out)
 
     out_path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -302,8 +302,8 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
         lines.append("====================[ chain3_out ]====================")
         lines.append(analysis_result.get("chain3_out", ""))
         lines.append("")
-        lines.append("====================[ chain4_out ]====================")
-        lines.append(analysis_result.get("chain4_out", ""))
+        lines.append("====================[ serial_encoder_out ]====================")
+        lines.append(analysis_result.get("serial_encoder_out", ""))
         
         out_path.write_text("\n".join(lines), encoding="utf-8")
         
@@ -321,7 +321,7 @@ def run_step_by_step_analysis(people_count: int, image_data_url: str, scenario: 
                 "step1": result.get("chain1_run_time", 0),
                 "step2": result.get("chain2_run_time", 0),
                 "step3": result.get("chain3_run_time", 0),
-                "step4": 0  # chain4는 변환만 하므로 시간 측정 안함
+                "step4": 0  # serial_encoder는 변환만 하므로 시간 측정 안함
             }
         }
         
