@@ -8,8 +8,8 @@ from datetime import datetime
 # 기본 설정
 BASE_DIR = Path(__file__).resolve().parent
 
-# 환경 설정 (라즈베리파이5 최적화)
-ENVIRONMENT = os.getenv('TETRIS_ENV', 'raspberry_pi5')
+# 환경 설정
+ENVIRONMENT = os.getenv('TETRIS_ENV', 'production')
 
 # 웹 서버 설정
 def get_available_port():
@@ -25,80 +25,59 @@ WEB_CONFIG = {
     'HOST': '0.0.0.0',
     'PORT': get_available_port(),
     'DEBUG': False,
-    'SECRET_KEY': os.getenv('FLASK_SECRET_KEY', 'tetris-stable-key-2024'),
+    'SECRET_KEY': os.getenv('FLASK_SECRET_KEY', '2025ESWContest-ATM'),  # Flask 기본 동작용
     'THREADED': True,
     'USE_RELOADER': False
 }
 
-# 파일 업로드 설정 (라즈베리파이5 최적화)
+# 파일 업로드 설정
 UPLOAD_CONFIG = {
     'UPLOAD_FOLDER': BASE_DIR / 'tetris_IO' / 'uploads',
-    'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg', 'webp'},  # gif 제거로 처리 속도 향상
-    'MAX_FILE_SIZE': 5 * 1024 * 1024,  # 5MB로 감소 (메모리 효율성)
+    'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg', 'webp'},
+    'MAX_FILE_SIZE': 10 * 1024 * 1024,  # 10MB
     'MIN_PEOPLE_COUNT': 0,
     'MAX_PEOPLE_COUNT': 4
 }
 
 # AI 체인 설정
 AI_CONFIG = {
-    'SECRETS_JSON': BASE_DIR / 'tetris_secrets.json',
+    'SECRETS_JSON': BASE_DIR / 'tetris_secrets.json',  # Google API 키 저장용
     'CHAIN_TIMEOUT': 300,  # 5분
     'MAX_RETRIES': 3
 }
 
-# SECRET_KEY를 secrets 파일에서도 읽도록 설정
-def load_secret_key():
-    """SECRET_KEY를 환경변수 또는 secrets 파일에서 로드"""
-    secret_key = os.getenv('FLASK_SECRET_KEY')
-    if not secret_key:
-        secrets_file = AI_CONFIG['SECRETS_JSON']
-        if secrets_file.exists():
-            try:
-                import json
-                with open(secrets_file, 'r', encoding='utf-8') as f:
-                    secrets = json.load(f)
-                    secret_key = secrets.get('flask', {}).get('SECRET_KEY')
-            except Exception:
-                pass
-    return secret_key or 'tetris-stable-key-2024'
-
-# SECRET_KEY 업데이트
-WEB_CONFIG['SECRET_KEY'] = load_secret_key()
-
-# 하드웨어 설정
+# 하드웨어 설정 (아두이노 모터 제어용)
 HARDWARE_CONFIG = {
     'ARDUINO_SERIAL_NUMBERS': [
-        '33437363436351303113',  # 셀 1번
-        '3343736343635121F0B0',  # 셀 2번
-        '33437363436351409183',  # 셀 3번
-        '33437363436351010223'   # 셀 4번
+        '33437363436351303113',  # 셀 1번 아두이노
+        '3343736343635121F0B0',  # 셀 2번 아두이노
+        '33437363436351409183',  # 셀 3번 아두이노
+        '33437363436351010223'   # 셀 4번 아두이노
     ],
-    'BAUD_RATE': 9600,
-    'AUTOMATION_COMMAND_LENGTH': 16,
-    'CONNECTION_TIMEOUT': 5.0,
-    'OPERATION_TIMEOUT': 30.0
+    'BAUD_RATE': 9600,  # 시리얼 통신 속도
+    'AUTOMATION_COMMAND_LENGTH': 16,  # AI 생성 배치 코드 길이
+    'CONNECTION_TIMEOUT': 5.0,  # 연결 대기 시간 (초)
+    'OPERATION_TIMEOUT': 30.0   # 작업 완료 대기 시간 (초)
 }
 
-# 출력 설정
+# 출력 설정 (AI 분석 결과 저장용)
 OUTPUT_CONFIG = {
-    'OUTPUT_ROOT': BASE_DIR / 'tetris_IO',
-    'OUTPUT_RT_DIR': BASE_DIR / 'tetris_IO' / 'out_rt',
-    'OUTPUT_SCENARIO_DIR': BASE_DIR / 'tetris_IO' / 'out_scenario'
+    'OUTPUT_ROOT': BASE_DIR / 'tetris_IO'  # 메인 출력 디렉토리
 }
 
-# 로깅 설정 (라즈베리파이5 최적화)
+# 로깅 설정
 LOGGING_CONFIG = {
-    'LEVEL': 'WARNING',  # INFO에서 WARNING으로 변경 (로그 크기 감소)
+    'LEVEL': 'INFO',
     'FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     'LOG_FILE': BASE_DIR / 'logs' / f'tetris_{datetime.now().strftime("%Y%m%d")}.log',
-    'MAX_BYTES': 5 * 1024 * 1024,  # 5MB로 감소
-    'BACKUP_COUNT': 3,  # 백업 파일 수 감소
+    'MAX_BYTES': 10 * 1024 * 1024,  # 10MB
+    'BACKUP_COUNT': 5,
     'MODULE_LEVELS': {
-        'tetris.web_interface': 'WARNING',
-        'tetris.main_chain': 'INFO',  # AI 체인은 여전히 INFO 유지
-        'tetris.rpi_controller': 'INFO',  # 하드웨어 제어는 INFO 유지
-        'flask': 'ERROR',
-        'werkzeug': 'ERROR'
+        'tetris.web_interface': 'INFO',
+        'tetris.main_chain': 'INFO',
+        'tetris.rpi_controller': 'INFO',
+        'flask': 'WARNING',
+        'werkzeug': 'WARNING'
     }
 }
 
@@ -125,12 +104,13 @@ def setup_logging(config):
     
     return logging.getLogger('tetris')
 
-# 환경별 설정
+# 환경별 설정 함수
 def get_config(env=None):
     """환경별 설정 반환"""
     if env is None:
         env = ENVIRONMENT
     
+    # 기본 설정 복사
     config = {
         'web': WEB_CONFIG.copy(),
         'upload': UPLOAD_CONFIG.copy(),
@@ -141,6 +121,7 @@ def get_config(env=None):
         'environment': env
     }
     
+    # 개발 환경 설정
     if env == 'development':
         config['web']['DEBUG'] = True
         config['web']['USE_RELOADER'] = True
@@ -148,34 +129,27 @@ def get_config(env=None):
         config['logging']['LEVEL'] = 'DEBUG'
         config['logging']['MODULE_LEVELS']['tetris.web_interface'] = 'DEBUG'
         
+    # 테스트 환경 설정
     elif env == 'testing':
         config['web']['DEBUG'] = False
         config['web']['PORT'] = 5003
         config['logging']['LEVEL'] = 'WARNING'
         config['upload']['MAX_FILE_SIZE'] = 1024 * 1024  # 1MB for testing
         
+    # 프로덕션 환경 설정
     elif env == 'production':
         config['web']['DEBUG'] = False
         config['web']['USE_RELOADER'] = False
         config['logging']['LEVEL'] = 'INFO'
         
-    elif env == 'raspberry_pi5':
-        # 라즈베리파이5 16GB 전용 최적화 설정
-        config['web']['DEBUG'] = False
-        config['web']['USE_RELOADER'] = False
-        config['web']['THREADED'] = True
-        config['logging']['LEVEL'] = 'WARNING'
-        config['upload']['MAX_FILE_SIZE'] = 5 * 1024 * 1024  # 5MB
-        config['logging']['MAX_BYTES'] = 5 * 1024 * 1024  # 5MB
-        config['logging']['BACKUP_COUNT'] = 3
     
     return config
 
-# 전역 설정 인스턴스
+# 전역 설정 인스턴스 관리
 _config = None
 
 def get_global_config():
-    """전역 설정 인스턴스 반환"""
+    """전역 설정 인스턴스 반환 (싱글톤 패턴)"""
     global _config
     if _config is None:
         _config = get_config()
