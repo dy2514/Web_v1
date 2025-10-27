@@ -11,6 +11,7 @@ import time
 import threading
 import webbrowser
 import logging
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple, Dict, Any
@@ -22,7 +23,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-print("🚀 TETRIS 시스템 최종 런처")
+print("TETRIS 시스템 최종 런처")
 print("=" * 60)
 
 # ============================================
@@ -37,17 +38,17 @@ def log_step(step_number: int, step_name: str):
 def print_success(message: str):
     """성공 메시지 출력"""
     logger.info(message)
-    print(f"✅ {message}")
+    print(f"[SUCCESS] {message}")
 
 def print_error(message: str):
     """에러 메시지 출력"""
     logger.error(message)
-    print(f"❌ {message}")
+    print(f"[ERROR] {message}")
 
 def print_warning(message: str):
     """경고 메시지 출력"""
     logger.warning(message)
-    print(f"⚠️ {message}")
+    print(f"[WARNING] {message}")
 
 def open_browser(url: str) -> bool:
     """브라우저 자동 열기"""
@@ -61,10 +62,10 @@ def open_browser(url: str) -> bool:
 
 def print_urls(port: int):
     """접속 URL 출력"""
-    print(f"\n📱 웹 접속 주소:")
-    print(f"  🏠 메인 페이지: http://127.0.0.1:{port}/")
-    print(f"  📱 모바일 입력: http://127.0.0.1:{port}/mobile/input")
-    print(f"  🖥️  데스크탑 제어: http://127.0.0.1:{port}/desktop/control")
+    print(f"\n웹 접속 주소:")
+    print(f"  메인 페이지: http://127.0.0.1:{port}/")
+    print(f"  모바일 입력: http://127.0.0.1:{port}/mobile/input")
+    print(f"  데스크탑 제어: http://127.0.0.1:{port}/desktop/control")
 
 # ============================================
 # Phase 2: 에러 처리 통합
@@ -89,33 +90,102 @@ def check_prerequisites() -> bool:
     """필수 조건 확인"""
     log_step(1, "필수 조건 확인")
     
-    # 프로젝트 구조 확인
-    tetris_dir = Path("tetris")
-    if not tetris_dir.exists():
-        print_error("tetris 디렉토리가 없습니다.")
+    # 1. requirements.txt 파일 확인
+    requirements_file = Path("requirements.txt")
+    if not requirements_file.exists():
+        print_error("requirements.txt 파일이 없습니다.")
         return False
     
-    tetris_py = tetris_dir / "tetris.py"
-    if not tetris_py.exists():
-        print_error("tetris.py 파일이 없습니다.")
+    print_success("requirements.txt 파일 확인 완료")
+    
+    # 2. 의존성 패키지 확인 및 설치
+    if not check_and_install_dependencies():
+        print_error("의존성 패키지 설치에 실패했습니다.")
         return False
     
-    web_dir = tetris_dir / "web_interface"
-    if not web_dir.exists():
-        print_error("web_interface 디렉토리가 없습니다.")
+    # 3. 프로젝트 구조 확인
+    if not check_project_structure():
         return False
     
-    print_success("프로젝트 구조 확인 완료")
+    print_success("모든 필수 조건 확인 완료")
+    return True
+
+def check_and_install_dependencies() -> bool:
+    """requirements.txt 의존성 확인 및 설치"""
+    log_step(1, "의존성 패키지 확인 및 설치")
     
-    # Python 모듈 확인
     try:
-        import flask
-        import PIL
-        import langchain
-        print_success("필수 패키지 확인 완료")
-    except ImportError as e:
-        print_error(f"필수 패키지 누락: {e}")
+        
+        # requirements.txt 파일 읽기
+        requirements_file = Path("requirements.txt")
+        with open(requirements_file, 'r', encoding='utf-8') as f:
+            requirements = f.read().strip().split('\n')
+        
+        # 주석과 빈 줄 제거
+        packages = [line.strip() for line in requirements if line.strip() and not line.startswith('#')]
+        
+        print(f"[INFO] {len(packages)}개 패키지 확인 중...")
+        
+        # pip list로 설치된 패키지 확인
+        try:
+            result = subprocess.run([sys.executable, '-m', 'pip', 'list'], 
+                                  capture_output=True, text=True, check=True)
+            installed_packages = result.stdout.lower()
+        except subprocess.CalledProcessError:
+            print_warning("pip list 실행 실패, 패키지 설치를 진행합니다.")
+            installed_packages = ""
+        
+        # 누락된 패키지 확인
+        missing_packages = []
+        for package in packages:
+            package_name = package.split('==')[0].split('[')[0].lower()
+            # 하이픈을 언더스코어로 변환하여 확인 (Python 패키지명 변환 규칙)
+            package_name_normalized = package_name.replace('-', '_')
+            if package_name not in installed_packages and package_name_normalized not in installed_packages:
+                missing_packages.append(package)
+        
+        if not missing_packages:
+            print_success("모든 의존성 패키지가 설치되어 있습니다.")
+            return True
+        
+        print_warning(f"{len(missing_packages)}개 패키지가 누락되었습니다.")
+        print("[INFO] 누락된 패키지 설치를 시작합니다...")
+        
+        # pip install 실행
+        try:
+            install_cmd = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
+            result = subprocess.run(install_cmd, check=True, capture_output=True, text=True)
+            print_success("의존성 패키지 설치 완료")
+            return True
+        except subprocess.CalledProcessError as e:
+            print_error(f"패키지 설치 실패: {e}")
+            print_error(f"오류 출력: {e.stderr}")
+            return False
+            
+    except Exception as e:
+        print_error(f"의존성 확인 중 오류 발생: {e}")
         return False
+
+def check_project_structure() -> bool:
+    """프로젝트 구조 확인"""
+    log_step(1, "프로젝트 구조 확인")
+    
+    # 필수 디렉토리 및 파일 확인
+    required_paths = [
+        ("tetris", "tetris 디렉토리"),
+        ("tetris/tetris.py", "tetris.py 파일"),
+        ("tetris/main_chain", "main_chain 디렉토리"),
+        ("tetris/main_chain/main_chain.py", "main_chain.py 파일"),
+        ("tetris/web_interface", "web_interface 디렉토리"),
+        ("tetris/web_interface/web.py", "web.py 파일")
+    ]
+    
+    for path_str, description in required_paths:
+        path = Path(path_str)
+        if not path.exists():
+            print_error(f"{description}이(가) 없습니다: {path_str}")
+            return False
+        print_success(f"{description} 확인 완료")
     
     return True
 
@@ -172,7 +242,7 @@ def launch_tetris_direct(port: int) -> Tuple[Optional[threading.Thread], bool]:
         sys.path.insert(0, "tetris")
         from tetris import start_web_server
         
-        logger.info("🚀 TETRIS 시스템 시작 중...")
+        logger.info("TETRIS 시스템 시작 중...")
         
         # 웹 서버 시작
         server_thread = start_web_server(port=port, debug=False)
@@ -231,7 +301,7 @@ def verify_web_access(port: int) -> bool:
 def reset_state_on_startup() -> bool:
     """프로그램 시작 시 state.json 파일 초기화"""
     logger.info("0단계: 상태 파일 초기화")
-    print("\n🔄 0단계: 상태 파일 초기화")
+    print("\n0단계: 상태 파일 초기화")
     
     try:
         # state.json 파일 경로 설정
@@ -301,7 +371,7 @@ def main():
                 return
         else:
             logger.info("상태 파일 초기화를 건너뜁니다.")
-            print("\n⚠️ 상태 파일 초기화를 건너뜁니다.")
+            print("\n[WARNING] 상태 파일 초기화를 건너뜁니다.")
         
         # 1단계: 필수 조건 확인
         if not check_prerequisites():
@@ -324,27 +394,27 @@ def main():
         # 4단계: 웹 접속 확인
         if verify_web_access(port):
             logger.info("TETRIS 시스템이 성공적으로 실행되었습니다!")
-            print("\n🎉 TETRIS 시스템이 성공적으로 실행되었습니다!")
+            print("\n[SUCCESS] TETRIS 시스템이 성공적으로 실행되었습니다!")
             
             # URL 출력 (중복 코드 제거)
             print_urls(port)
             
-            print(f"\n💡 웹 브라우저에서 위 주소 중 하나로 접속하세요!")
+            print(f"\n[INFO] 웹 브라우저에서 위 주소 중 하나로 접속하세요!")
             
             # 브라우저 자동 열기 (옵션)
             if not args.no_browser:
                 logger.info("브라우저 자동 열기 시도")
-                print("\n🌐 기본 브라우저를 열고 있습니다...")
+                print("\n[INFO] 기본 브라우저를 열고 있습니다...")
                 open_browser(f"http://127.0.0.1:{port}/desktop/control")
             
-            print("\n🛑 시스템을 종료하려면 Ctrl+C를 누르세요.")
+            print("\n[INFO] 시스템을 종료하려면 Ctrl+C를 누르세요.")
             
             try:
                 # 서버 스레드 유지 (메인 스레드 대기)
                 server_thread.join()
             except KeyboardInterrupt:
                 logger.info("사용자가 종료를 요청했습니다.")
-                print("\n🛑 사용자가 종료를 요청했습니다.")
+                print("\n[INFO] 사용자가 종료를 요청했습니다.")
                 print_success("TETRIS 시스템이 종료되었습니다.")
         else:
             print_error("웹 접속 확인에 실패했습니다.")
@@ -354,7 +424,7 @@ def main():
         return
     except KeyboardInterrupt:
         logger.info("사용자가 중단했습니다.")
-        print("\n🛑 사용자가 중단했습니다.")
+        print("\n[INFO] 사용자가 중단했습니다.")
     except Exception as e:
         handle_error(e, "예상치 못한 오류 발생")
 
