@@ -77,7 +77,7 @@ if not GOOGLE_API_KEY:
 
 # === 모델/온도 환경변수 ===
 chain1_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-pro",
+    model="gemini-2.5-flash-image",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
