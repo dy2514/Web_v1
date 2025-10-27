@@ -21,13 +21,13 @@ if str(MC_DIR) not in sys.path:
 import main_chain as MC
 
 # 하드웨어 제어 모듈 로드
-RPI_DIR = HERE / "rpi_controller"
-RPI_FILE = RPI_DIR / "rpi_controller.py"
+RPI_DIR = HERE / "arduino_ctrl"
+RPI_FILE = RPI_DIR / "arduino_ctrl.py"
 if not RPI_FILE.exists():
     raise FileNotFoundError(f"필수 파일이 없습니다: {RPI_FILE}")
 if str(RPI_DIR) not in sys.path:
     sys.path.insert(0, str(RPI_DIR))
-import rpi_controller as RPI
+import arduino_ctrl as RPI
 
 # 공통 유틸리티 함수들
 def _setup_module_path(module_name: str) -> Path:

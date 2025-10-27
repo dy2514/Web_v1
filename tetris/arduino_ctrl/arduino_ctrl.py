@@ -1,4 +1,4 @@
-# rpi_controller.py
+# arduino_ctrl.py
 
 import time
 

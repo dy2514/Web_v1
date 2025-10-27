@@ -75,7 +75,7 @@ LOGGING_CONFIG = {
     'MODULE_LEVELS': {
         'tetris.web_interface': 'INFO',
         'tetris.main_chain': 'INFO',
-        'tetris.rpi_controller': 'INFO',
+        'tetris.arduino_ctrl': 'INFO',
         'flask': 'WARNING',
         'werkzeug': 'WARNING'
     }

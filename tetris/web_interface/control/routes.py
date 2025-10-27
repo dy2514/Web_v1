@@ -637,9 +637,9 @@ def trigger_hardware():
         try:
             import sys
             import os
-            # rpi_controller 모듈 경로 추가
-            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'rpi_controller'))
-            from rpi_controller import send_automated_command, connect_to_arduinos, arduino_connections
+            # arduino_ctrl 모듈 경로 추가
+            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'arduino_ctrl'))
+            from arduino_ctrl import send_automated_command, connect_to_arduinos, arduino_connections
             
             
             # 아두이노 연결 확인 및 연결
@@ -656,7 +656,7 @@ def trigger_hardware():
                 })
             elif command:
                 # 기존 명령어 처리
-                from rpi_controller.rpi_controller import broadcast_command
+                from arduino_ctrl.arduino_ctrl import broadcast_command
                 broadcast_command(command)
                 update_progress_stream(session_id, {
                     'event': 'hardware_progress',
