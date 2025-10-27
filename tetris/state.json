@@ -1,7 +1,7 @@
 {
   "system": {
-    "status": "idle",
-    "last_updated": "2025-10-01T19:33:23.424540",
+    "status": "connected",
+    "last_updated": "2025-10-27T19:02:04.229660",
     "version": "1.0.0"
   },
   "sessions": {},
@@ -13,10 +13,10 @@
     "completed_at": null
   },
   "upload": {
-    "uploaded_file": null,
+    "uploaded_file": false,
     "image_path": null,
     "image_data_url": null,
-    "people_count": 0,
+    "people_count": null,
     "scenario": null
   },
   "hardware": {
@@ -24,10 +24,30 @@
     "motor_status": "idle",
     "last_command": null
   },
-  "notifications": [],
-  "current_step": 0,
-  "step_times": {},
-  "total_elapsed": 0,
-  "analysis_result": {},
-  "processed_results": {}
+  "notifications": [
+    {
+      "id": "notif_1761559324.183752",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-10-27T19:02:04.183752"
+    },
+    {
+      "id": "notif_1761559324.219474",
+      "message": "모바일 연결됨",
+      "level": "info",
+      "timestamp": "2025-10-27T19:02:04.219474"
+    },
+    {
+      "id": "notif_1761559324.230823",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-10-27T19:02:04.230823"
+    },
+    {
+      "id": "notif_1761559324.851946",
+      "message": "데스크탑 연결됨",
+      "level": "info",
+      "timestamp": "2025-10-27T19:02:04.851946"
+    }
+  ]
 }
