@@ -956,23 +956,153 @@ function updateModalStepIcon(step, status) {
     }
     
     iconElement.innerHTML = iconHTML;
-    console.log(`🎨 Step ${step} 아이콘 업데이트: ${status}`);
 }
 
-// 안전한 JSON 파싱은 ProgressCore 사용
+// 안전한 JSON 파싱
 function safeJsonParse(data) {
     if (window.ProgressCore && typeof ProgressCore.safeJsonParse === 'function') {
         return ProgressCore.safeJsonParse(data);
     }
+    
     // fallback
     if (data && typeof data === 'object') return data;
     if (typeof data !== 'string') return null;
+    
     let s = data.trim();
+    
+    // 마크다운 코드 블록 제거
     if (s.startsWith('```')) {
         s = s.replace(/^```json\s*/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
     }
+    
     if (!(s.startsWith('{') || s.startsWith('['))) return null;
-    try { return JSON.parse(s); } catch { return null; }
+    
+    // 기본 JSON 파싱 시도
+    try { 
+        return JSON.parse(s); 
+    } catch (error) {
+        console.warn('JSON 파싱 실패, 복구 시도:', error.message);
+        
+        // JSON 복구 시도
+        try {
+            return repairAndParseJson(s);
+        } catch (repairError) {
+            console.warn('JSON 복구 실패:', repairError.message);
+            return null;
+        }
+    }
+}
+
+// 불완전한 JSON을 복구하고 파싱하는 함수
+function repairAndParseJson(jsonString) {
+    let repaired = jsonString;
+    
+    // 1. 제어 문자 처리 - 문자열 내의 제어 문자를 제거하거나 이스케이프 처리
+    repaired = repaired.replace(/"([^"]*)"/g, (match, content) => {
+        // 제어 문자를 제거하거나 이스케이프 처리
+        const cleaned = content
+            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '') // 대부분의 제어 문자 제거
+            .replace(/\x09/g, '\\t')  // 탭은 유지하되 이스케이프
+            .replace(/\x0A/g, '\\n')  // 줄바꿈은 유지하되 이스케이프
+            .replace(/\x0D/g, '\\r'); // 캐리지 리턴은 유지하되 이스케이프
+        return `"${cleaned}"`;
+    });
+    
+    // 2. 중괄호/대괄호 균형 맞추기
+    const openBraces = (repaired.match(/\{/g) || []).length;
+    const closeBraces = (repaired.match(/\}/g) || []).length;
+    const openBrackets = (repaired.match(/\[/g) || []).length;
+    const closeBrackets = (repaired.match(/\]/g) || []).length;
+    
+    // 부족한 닫는 중괄호 추가
+    for (let i = 0; i < openBraces - closeBraces; i++) {
+        repaired += '}';
+    }
+    
+    // 부족한 닫는 대괄호 추가
+    for (let i = 0; i < openBrackets - closeBrackets; i++) {
+        repaired += ']';
+    }
+    
+    // 3. }{ 패턴 처리 - 중간에 공백이나 계행이 있어도 콤마 추가
+    repaired = repaired.replace(/\}\s*\n*\s*\{/g, '}, {');
+    
+    // 4. 쉼표 정리 - 단계별로 확실하게 처리
+    // 4-1. 연속된 쉼표를 하나로 통합
+    repaired = repaired.replace(/,+/g, ',');
+    
+    // 4-2. 객체나 배열 시작 직전의 쉼표 제거
+    repaired = repaired.replace(/,(\s*[{\[])/g, '$1');
+    
+    // 4-3. 마지막 쉼표 제거 - 재귀적으로 처리
+    let prevRepaired = '';
+    while (prevRepaired !== repaired) {
+        prevRepaired = repaired;
+        repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
+    }
+    
+    // 5. 문자열 내의 따옴표 이스케이프 처리
+    repaired = repaired.replace(/"([^"]*)"([^"]*)"([^"]*)":/g, (match, p1, p2, p3) => {
+        return `"${p1}\\"${p2}\\"${p3}":`;
+    });
+    
+    // 6. 숫자 뒤의 쉼표 누락 처리 (간단한 경우만)
+    repaired = repaired.replace(/(\d+)\s*([}\]])/g, '$1,$2');
+    
+    // 7. 키 뒤의 콜론 누락 처리
+    repaired = repaired.replace(/"([^"]+)"\s*([^:,\[\]{}]+)/g, (match, key, value) => {
+        // 값이 문자열이 아닌 경우 콜론 추가
+        if (!value.trim().startsWith('"') && !value.trim().startsWith('{') && !value.trim().startsWith('[')) {
+            return `"${key}": ${value}`;
+        }
+        return match;
+    });
+    
+    
+    return JSON.parse(repaired);
+}
+
+// 리스트 요소들을 한 줄에 표시하는 커스텀 JSON 포맷팅 함수
+function formatJsonWithInlineArrays(obj, indent = 0) {
+    if (obj === null || obj === undefined) {
+        return 'null';
+    }
+    
+    if (typeof obj === 'string') {
+        return `${obj}`;
+    }
+    
+    if (typeof obj === 'number' || typeof obj === 'boolean') {
+        return String(obj);
+    }
+    
+    if (Array.isArray(obj)) {
+        if (obj.length === 0) {
+            return '[]';
+        }
+        
+        const items = obj.map(item => formatJsonWithInlineArrays(item, indent + 1));
+        return `[ ${items.join(', ')} ]`;
+    }
+    
+    if (typeof obj === 'object') {
+        const keys = Object.keys(obj);
+        if (keys.length === 0) {
+            return '{}';
+        }
+        
+        const items = keys.map(key => {
+            const value = formatJsonWithInlineArrays(obj[key], indent + 1);
+            return `"${key}": ${value}`;
+        });
+        
+        const spaces = '  '.repeat(indent);
+        const nextSpaces = '  '.repeat(indent + 1);
+        
+        return `{\n${nextSpaces}${items.join(',\n' + nextSpaces)}\n${spaces}}`;
+    }
+    
+    return String(obj);
 }
 
 // 결과 포맷팅 함수
@@ -984,7 +1114,7 @@ async function formatStepResult(stepNumber, resultData) {
             case 1: {
                 const chain1Data = (function () {
                     const parsed = safeJsonParse(resultData);
-                    return parsed && typeof parsed === 'object' ? parsed : {};
+                    return parsed && typeof parsed === 'object' ? parsed : resultData;
                 })();
 
                 // state.json에서 직접 image_data_url 가져오기
@@ -1039,7 +1169,7 @@ async function formatStepResult(stepNumber, resultData) {
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain1Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain1Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1048,24 +1178,43 @@ async function formatStepResult(stepNumber, resultData) {
             case 2: {
                 const chain2Data = (function () {
                     const parsed = safeJsonParse(resultData);
-                    return parsed && typeof parsed === 'object' ? parsed : {};
+                    return parsed && typeof parsed === 'object' ? parsed : resultData;
                 })();
-                const optNo = chain2Data.option_no ? chain2Data.option_no : 1;
+
+                // chain2의 optionNo 저장 - JSON 파싱 실패 시 텍스트에서 추출
+                let optionNo = -1;
+                
+                // JSON에서 option_no 추출 시도
+                if (chain2Data.option_no !== undefined) {
+                    optionNo = chain2Data.option_no;
+                } else if (chain2Data.instruction && chain2Data.instruction.option_no !== undefined) {
+                    optionNo = chain2Data.instruction.option_no;
+                } else if (chain2Data.luggage_analysis && chain2Data.luggage_analysis.option_no !== undefined) {
+                    optionNo = chain2Data.luggage_analysis.option_no;
+                }
+
+                // JSON 파싱이 실패했거나 option_no를 찾지 못한 경우 텍스트에서 추출
+                if (optionNo === -1) {
+                    const optionMatch = resultData.match(/"option_no"\s*:\s*(\d+)/);
+                    if (optionMatch) {
+                        optionNo = parseInt(optionMatch[1]);
+                    }
+                }
                 
                 // 전역 변수에 option_no 저장 (3단계에서 사용)
-                window.currentOptionNo = optNo;
+                window.currentOptionNo = optionNo;
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
                         <p style="margin-bottom: 1vh;">최적 배치 생성 결과</p>
                         <div class="image-container">
-                            <img src="/static/images/optimum_arrangement_options/${optNo}.png" alt="최적 배치 생성" class="analysis-image">
+                            <img src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain2Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain2Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1075,11 +1224,11 @@ async function formatStepResult(stepNumber, resultData) {
                 const cleanData = (typeof resultData === 'string') ? resultData.replace(/```json\s*|```/g, '') : resultData;
                 const chain3Data = (function () {
                     const parsed = safeJsonParse(cleanData);
-                    return parsed && typeof parsed === 'object' ? parsed : {};
+                    return parsed && typeof parsed === 'object' ? parsed : cleanData;
                 })();
 
                 // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
-                const optionNo = window.currentOptionNo || 1;
+                const optionNo = window.currentOptionNo || -1;
 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
@@ -1091,7 +1240,7 @@ async function formatStepResult(stepNumber, resultData) {
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain3Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain3Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1102,7 +1251,7 @@ async function formatStepResult(stepNumber, resultData) {
                 const placementCode = (typeof resultData === 'string') ? resultData : '';
                 
                 // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
-                const optionNo = window.currentOptionNo || 1;
+                const optionNo = window.currentOptionNo || -1;
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">

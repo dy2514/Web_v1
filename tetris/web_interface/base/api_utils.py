@@ -1,5 +1,5 @@
 """
-API utilities - standardized response format and error handling
+API 유틸리티 - 표준화된 응답 형식 및 에러 처리
 """
 import logging
 from typing import Any, Dict, Optional

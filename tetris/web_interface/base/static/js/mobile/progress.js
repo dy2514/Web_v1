@@ -1111,8 +1111,25 @@ async function formatStepResult(stepNumber, resultData) {
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
 
-                // chain2의 optionNo 저장
-                optionNo = chain2Data.option_no ? chain2Data.option_no : -1;
+                // chain2의 optionNo 저장 - JSON 파싱 실패 시 텍스트에서 추출
+                optionNo = -1;
+                
+                // JSON에서 option_no 추출 시도
+                if (chain2Data.option_no !== undefined) {
+                    optionNo = chain2Data.option_no;
+                } else if (chain2Data.instruction && chain2Data.instruction.option_no !== undefined) {
+                    optionNo = chain2Data.instruction.option_no;
+                } else if (chain2Data.luggage_analysis && chain2Data.luggage_analysis.option_no !== undefined) {
+                    optionNo = chain2Data.luggage_analysis.option_no;
+                }
+                
+                // JSON 파싱이 실패했거나 option_no를 찾지 못한 경우 텍스트에서 추출
+                if (optionNo === -1) {
+                    const optionMatch = resultData.match(/"option_no"\s*:\s*(\d+)/);
+                    if (optionMatch) {
+                        optionNo = parseInt(optionMatch[1]);
+                    }
+                }
 
                 // formattedResult = `
                 //     <p>🪑 좌석 배치 지시사항</p>
