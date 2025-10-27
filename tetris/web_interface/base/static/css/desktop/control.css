@@ -1194,8 +1194,8 @@ body.modal-open {
 }
 
 .step-circle {
-    width: 3vw;
-    height: 3vw;
+    width: var(--circle-size);
+    height: var(--circle-size);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1205,11 +1205,9 @@ body.modal-open {
     transition: all 0.3s ease;
     background-color: #e5e7eb;
     color: #6b7280;
-    border: 0.25vw solid #e5e7eb;
+    border: var(--circle-border) solid #e5e7eb;
     position: relative;
     margin-bottom: 0.4vw;
-
-
     z-index: 3;
     margin-bottom: 8px;
     border: 2px solid #6b7280;
@@ -1527,13 +1525,18 @@ body.modal-open {
     list-style: none;
     position: relative;
     width: 100%;
+    /* CSS 변수로 동그라미 크기 정의 */
+    --circle-size: 3vw;
+    --circle-border: 0.25vw;
+    --total-circle-size: calc(var(--circle-size) + var(--circle-border));
 }
 
- .step-indicator::before {
+.step-indicator::before {
     content: '';
     position: absolute;
-    top: 3vh;
-    left: 20px;
+    /* 동그라미의 중심에 선이 위치하도록 계산 */
+    top: calc(var(--total-circle-size) / 2);
+    left: 1vw;
     right: 20px;
     height: 1px;
     background-color: #d1d5db;
@@ -1544,7 +1547,8 @@ body.modal-open {
 .step-indicator::after {
     content: '';
     position: absolute;
-    top: 3vh;
+    /* 동그라미의 중심에 선이 위치하도록 계산 */
+    top: calc(var(--total-circle-size) / 2);
     left: 1vw;
     height: 3px;
     background-color: rgb(16, 185, 129);
@@ -1563,9 +1567,9 @@ body.modal-open {
 }
 
 .step-indicator li.inactive .step-circle {
-    width: 1.4vw;
-    height: 1.4vw;
-    margin: 0.8vw 0;
+    width: calc(var(--circle-size) * 0.47); /* 1.4vw = 3vw * 0.47 */
+    height: calc(var(--circle-size) * 0.47);
+    margin: calc(var(--circle-size) * 0.27) 0; /* 0.8vw = 3vw * 0.27 */
 }
 
 .step-indicator li.active .step-circle {
