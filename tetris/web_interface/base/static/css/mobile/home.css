@@ -232,8 +232,8 @@ body {
 
 .start-logo-section {
     position: absolute;
-    top: 55%;
-    right: 1rem;
+    top: 66%;
+    right: 1.4rem;
     transform: translateY(-50%);
     z-index: 1;
 }
@@ -251,10 +251,11 @@ body {
 }
 
 .tetris-logo {
-    width: 10rem;
+    width: 8.8rem;
     height: 8rem;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.05));
+    top: 8vh
 }
 
 .start-button {
@@ -616,14 +617,14 @@ body {
     }
     
     .start-container {
-        padding: 25px 35px;
+        padding: 20px 35px;
     }
     
     .new-service-label {
         top: 12px;
-        left: 12px;
+        left: 28px;
         font-size: 11px;
-        padding: 5px 10px;
+        padding: 4px 11px;
     }
     
     .hyundai-logo {

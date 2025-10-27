@@ -1,5 +1,5 @@
 """
-Unified state manager - single state storage
+통합 상태 관리자 - 단일 상태 저장소
 """
 import json
 import logging
