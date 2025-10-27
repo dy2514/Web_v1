@@ -975,6 +975,49 @@ function safeJsonParse(data) {
     try { return JSON.parse(s); } catch { return null; }
 }
 
+// 리스트 요소들을 한 줄에 표시하는 커스텀 JSON 포맷팅 함수
+function formatJsonWithInlineArrays(obj, indent = 0) {
+    if (obj === null || obj === undefined) {
+        return 'null';
+    }
+    
+    if (typeof obj === 'string') {
+        return `"${obj}"`;
+    }
+    
+    if (typeof obj === 'number' || typeof obj === 'boolean') {
+        return String(obj);
+    }
+    
+    if (Array.isArray(obj)) {
+        if (obj.length === 0) {
+            return '[]';
+        }
+        
+        const items = obj.map(item => formatJsonWithInlineArrays(item, indent + 1));
+        return `[ ${items.join(', ')} ]`;
+    }
+    
+    if (typeof obj === 'object') {
+        const keys = Object.keys(obj);
+        if (keys.length === 0) {
+            return '{}';
+        }
+        
+        const items = keys.map(key => {
+            const value = formatJsonWithInlineArrays(obj[key], indent + 1);
+            return `"${key}": ${value}`;
+        });
+        
+        const spaces = '  '.repeat(indent);
+        const nextSpaces = '  '.repeat(indent + 1);
+        
+        return `{\n${nextSpaces}${items.join(',\n' + nextSpaces)}\n${spaces}}`;
+    }
+    
+    return String(obj);
+}
+
 // 결과 포맷팅 함수
 async function formatStepResult(stepNumber, resultData) {
     try {
@@ -1039,7 +1082,7 @@ async function formatStepResult(stepNumber, resultData) {
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain1Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain1Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1050,22 +1093,41 @@ async function formatStepResult(stepNumber, resultData) {
                     const parsed = safeJsonParse(resultData);
                     return parsed && typeof parsed === 'object' ? parsed : {};
                 })();
-                const optNo = chain2Data.option_no ? chain2Data.option_no : 1;
+
+                // chain2의 optionNo 저장 - JSON 파싱 실패 시 텍스트에서 추출
+                let optionNo = -1;
+                
+                // JSON에서 option_no 추출 시도
+                if (chain2Data.option_no !== undefined) {
+                    optionNo = chain2Data.option_no;
+                } else if (chain2Data.instruction && chain2Data.instruction.option_no !== undefined) {
+                    optionNo = chain2Data.instruction.option_no;
+                } else if (chain2Data.luggage_analysis && chain2Data.luggage_analysis.option_no !== undefined) {
+                    optionNo = chain2Data.luggage_analysis.option_no;
+                }
+
+                // JSON 파싱이 실패했거나 option_no를 찾지 못한 경우 텍스트에서 추출
+                if (optionNo === -1) {
+                    const optionMatch = resultData.match(/"option_no"\s*:\s*(\d+)/);
+                    if (optionMatch) {
+                        optionNo = parseInt(optionMatch[1]);
+                    }
+                }
                 
                 // 전역 변수에 option_no 저장 (3단계에서 사용)
-                window.currentOptionNo = optNo;
+                window.currentOptionNo = optionNo;
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
                     <div class="analysis-result-container">
                         <p style="margin-bottom: 1vh;">최적 배치 생성 결과</p>
                         <div class="image-container">
-                            <img src="/static/images/optimum_arrangement_options/${optNo}.png" alt="최적 배치 생성" class="analysis-image">
+                            <img src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 생성" class="analysis-image">
                         </div>
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain2Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain2Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1079,7 +1141,7 @@ async function formatStepResult(stepNumber, resultData) {
                 })();
 
                 // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
-                const optionNo = window.currentOptionNo || 1;
+                const optionNo = window.currentOptionNo || -1;
 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
@@ -1091,7 +1153,7 @@ async function formatStepResult(stepNumber, resultData) {
                     </div>
                     <div class="analysis-result-json-container">
                         <h4 class="json-container-title">JSON 데이터</h4>
-                        <pre>${JSON.stringify(chain3Data, null, 2)}</pre>
+                        <pre>${formatJsonWithInlineArrays(chain3Data)}</pre>
                     </div>
                 </div>`;
                 break;
@@ -1102,7 +1164,7 @@ async function formatStepResult(stepNumber, resultData) {
                 const placementCode = (typeof resultData === 'string') ? resultData : '';
                 
                 // chain2에서 받은 option_no 사용 (전역 변수에서 가져오기)
-                const optionNo = window.currentOptionNo || 1;
+                const optionNo = window.currentOptionNo || -1;
                 
                 formattedResult = `
                 <div class="analysis-result-wrapper">
