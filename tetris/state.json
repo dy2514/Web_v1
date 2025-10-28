@@ -1,76 +1,32 @@
 {
   "system": {
-    "status": "completed",
-    "last_updated": "2025-10-28T02:28:47.419602",
+    "status": "idle",
+    "last_updated": "2025-10-29T06:37:17.522806",
     "version": "1.0.0"
   },
   "sessions": {},
   "processing": {
-    "current_scenario": "items_20251028_022837",
-    "progress": 100,
-    "status": "completed",
+    "current_scenario": null,
+    "progress": 0,
+    "status": "idle",
     "started_at": null,
-    "completed_at": "2025-10-28T02:28:47.423780",
-    "sent_steps": {},
-    "last_updated": "2025-10-28T02:28:47.423780"
+    "completed_at": null
   },
   "upload": {
-    "uploaded_file": true,
-    "image_path": "/uploads/upload_c9aa9c28.jpg",
+    "uploaded_file": null,
+    "image_path": null,
     "image_data_url": null,
-    "people_count": "2",
-    "scenario": "items_20251028_022837"
+    "people_count": 0,
+    "scenario": null
   },
   "hardware": {
     "arduino_connected": false,
     "motor_status": "idle",
     "last_command": null
   },
-  "notifications": [
-    {
-      "id": "notif_1761586120.186099",
-      "message": "1단계 완료",
-      "level": "info",
-      "timestamp": "2025-10-28T02:28:40.186099"
-    },
-    {
-      "id": "notif_1761586125.181428",
-      "message": "2단계 완료",
-      "level": "info",
-      "timestamp": "2025-10-28T02:28:45.181428"
-    },
-    {
-      "id": "notif_1761586127.411401",
-      "message": "3단계 완료",
-      "level": "info",
-      "timestamp": "2025-10-28T02:28:47.411401"
-    },
-    {
-      "id": "notif_1761586127.41653",
-      "message": "4단계 완료",
-      "level": "info",
-      "timestamp": "2025-10-28T02:28:47.416530"
-    },
-    {
-      "id": "notif_1761586127.419602",
-      "message": "분석이 완료되었습니다!",
-      "level": "info",
-      "timestamp": "2025-10-28T02:28:47.419602"
-    }
-  ],
-  "current_step": 4,
-  "analysis_result": {
-    "chain1_out": "{\n  \"people\": 2,\n  \"total_luggage_count\": 3,\n  \"luggage_details\": {\n    \"luggage_1\": {\n      \"object\": \"골프백\",\n      \"color\": \"검은색, 빨간색\",\n      \"material\": \"나일론\",\n      \"shape\": \"원통형\",\n      \"text\": \"Titleist\",\n      \"special_note\": \"공간 차지 max. 골프채가 꽂혀 있어 부피가 크고, 형태가 불규칙하여 다른 짐과 함께 효율적으로 배치하기가 까다로움\"\n    },\n    \"luggage_2\": {\n      \"object\": \"골프화\",\n      \"color\": \"흰색, 검은색, 빨간색\",\n      \"material\": \"가죽\",\n      \"shape\": \"비정형\",\n      \"special_note\": \"공간 차지 min\"\n    },\n    \"luggage_3\": {\n      \"object\": \"스포츠 가방\",\n      \"color\": \"검은색\",\n      \"material\": \"폴리에스터\",\n      \"shape\": \"직육면체\",\n      \"text\": \"adidas\"\n    }\n  }\n}",
-    "chain2_out": "{\n  \"Meta data\": {\n    \"luggage_1\": {\n      \"object\": \"골프백\",\n      \"volume_L\": 100,\n      \"dimensions_cm\": \"30x30x110 (추정)\"\n    },\n    \"luggage_2\": {\n      \"object\": \"골프화\",\n      \"volume_L\": 8,\n      \"dimensions_cm\": \"30x20x13 (추정)\"\n    },\n    \"luggage_3\": {\n      \"object\": \"스포츠 가방\",\n      \"volume_L\": 40,\n      \"dimensions_cm\": \"50x25x32 (추정)\"\n    },\n    \"total_volume_L\": 148,\n    \"trunk_capacity_L\": 600,\n    \"placement_strategy\": \"골프백을 트렁크 바닥에 눕혀 배치하고, 스포츠 가방을 그 위에 겹쳐 놓거나 옆 빈 공간에 배치합니다. 골프화는 남은 틈새 공간에 수납합니다. 4인 탑승 시 좌석을 접거나 제거할 수 없다는 가정 하에, 골프백의 길이가 길어 대각선으로 배치하거나 뒷좌석 발밑 공간을 활용해야 할 수 있습니다. 하지만 PV5의 트렁크는 600L로 충분히 수납 가능합니다.\",\n    \"exceeds_trunk_capacity\": false,\n    \"luggage_amount_category\": \"S\"\n  },\n  \"instruction\":{\n    \"seats\":{\n      \"1\":[\"y\",\"C\",\"F\",\"chair\"],\n      \"2\":[\"y\",\"C\",\"F\",\"chair\"],\n      \"3\":[\"x\",\"A\",\"R\",\"storage\"],\n      \"4\":[\"x\",\"C\",\"L\",\"storage\"]\n    }\n  },\n  \"option_no\": 7\n}",
-    "chain3_out": "```json\n{\n  \"task_sequence\": {\n    \"1\": [\n      \"disk_rotate(90)\",\n      \"fold(1)\",\n      \"seat_rotate(270)\",\n      \"move_on_rail(C)\",\n      \"unfold(1)\"\n    ],\n    \"2\": [\n      \"disk_rotate(90)\",\n      \"fold(2)\",\n      \"seat_rotate(270)\",\n      \"move_on_rail(C)\",\n      \"unfold(2)\"\n    ],\n    \"3\": [\n      \"fold(3)\",\n      \"seat_rotate(90)\",\n      \"move_on_rail(A)\"\n    ],\n    \"4\": [\n      \"fold(4)\",\n      \"seat_rotate(270)\",\n      \"move_on_rail(C)\"\n    ]\n  }\n}\n```",
-    "serial_encoder_out": "3210321011013201"
-  },
-  "step_times": {
-    "step1": 3.0174082000012277,
-    "step2": 4.988721400000941,
-    "step3": 0.0007461000004695961,
-    "step4": 0
-  },
-  "total_elapsed": 8.006875700002638,
-  "out_path": "C:\\Users\\user\\Desktop\\tetris_web\\tetris\\tetris_IO\\log_data\\items_20251028_022837.txt"
+  "notifications": [],
+  "current_step": 0,
+  "step_times": {},
+  "total_elapsed": 0,
+  "analysis_result": {}
 }
