@@ -121,7 +121,6 @@ const CONFIG = {
             STATUS: '/desktop/api/status',
             STATUS_STREAM: '/desktop/api/status_stream',
             PROGRESS_STREAM: '/desktop/api/progress_stream',
-            START_PROCESSING: '/desktop/api/start_processing',
             RESET: '/desktop/api/reset',
             JOIN_SESSION: '/desktop/api/join_session',
             SESSIONS: '/desktop/api/sessions',

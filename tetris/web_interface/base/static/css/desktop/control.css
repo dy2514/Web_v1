@@ -2151,7 +2151,7 @@ body.modal-open {
     background: #3f516f;
     padding: 2rem;
     overflow-x: auto;
-    max-height: 68vh;
+    height: 68vh;
     min-height: 8.3vw;
     overflow-y: auto;
     border: 1px solid #e5e7eb;
@@ -2185,7 +2185,7 @@ body.modal-open {
     flex: 0.6;
     padding: 5% 0 2%;
     margin: 0 2rem;
-    max-height: 68vh;
+    height: 68vh;
     /* border: 1px solid #e5e7eb;
     max-height: 500px;
     min-height: 8.3vw;

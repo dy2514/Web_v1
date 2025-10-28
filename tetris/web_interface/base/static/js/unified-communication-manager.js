@@ -555,29 +555,6 @@ class UnifiedCommunicationManager {
     }
 
     /**
-     * AI 처리 시작
-     * @returns {Promise<Object>} 처리 시작 결과
-     */
-    async startProcessing() {
-        if (!this.sessionId) {
-            throw new Error('세션이 시작되지 않았습니다.');
-        }
-
-        this.log('AI 처리 시작 요청', 'info');
-
-        const result = await this.post(
-            this.config.ENDPOINTS?.DESKTOP?.START_PROCESSING || '/desktop/api/start_processing',
-            { session_id: this.sessionId }
-        );
-
-        if (result.data.success) {
-            this.emit('processing_started', result);
-        }
-
-        return result;
-    }
-
-    /**
      * 단계별 AI 분석 시작
      * @param {number} peopleCount - 인원 수
      * @param {string} imageDataUrl - 이미지 데이터 URL
