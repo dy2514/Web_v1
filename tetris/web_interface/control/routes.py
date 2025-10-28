@@ -1,4 +1,5 @@
-# control/routes.py - Control screen routing (HTTP API + SSE hybrid)
+# control/routes.py - 데스크탑 관제 화면 라우팅 (HTTP API + SSE 하이브리드)
+
 import json
 import logging
 import sys
@@ -7,17 +8,17 @@ import time
 import uuid
 from datetime import datetime
 from pathlib import Path
-import qrcode  # pip install qrcode[pil]
+import qrcode  # QR 코드 생성용 라이브러리
 from io import BytesIO
 
 from flask import Response, jsonify, render_template, request, session, make_response
 
-# Path configuration
+# 경로 설정
 current_dir = Path(__file__).parent
 web_interface_dir = current_dir.parent
 sys.path.insert(0, str(web_interface_dir))
 
-# Simplified imports
+# 내부 모듈 임포트
 from web_interface.base.state_manager import get_global_status, update_status
 from web_interface.base.error_handler import (
     handle_tetris_error, handle_generic_error, create_success_response,
@@ -35,28 +36,42 @@ from .control_utils import (
 
 logger = logging.getLogger(__name__)
 
-# 전역 세션 및 진행 상태 관리 (HTTP + SSE 하이브리드)
-session_progress = {}  # 세션별 진행 상태
-session_connections = set()  # 활성 세션 목록
-session_metadata = {}  # 세션 메타데이터
-analysis_threads = {}  # 분석 스레드 관리
-analysis_stop_flags = {}  # 분석 중지 플래그
-analysis_abort_controllers = {}  # 분석 AbortController 관리
+# =============================================================================
+# 전역 상태 관리 변수들
+# =============================================================================
+session_progress = {}  # 세션별 진행 상태 저장소
+session_connections = set()  # 활성 세션 ID 목록
+session_metadata = {}  # 세션 메타데이터 (타입, 생성시간, 마지막 활동시간 등)
+analysis_threads = {}  # 백그라운드 분석 스레드 관리
+analysis_stop_flags = {}  # 분석 중지 신호 플래그
+analysis_abort_controllers = {}  # 분석 중단 컨트롤러 관리
 
 
-# Blueprint import
+# Blueprint 임포트
 from . import control_bp, api_bp
 
-# 서버 URL 생성 함수
+# =============================================================================
+# 유틸리티 함수들
+# =============================================================================
+
 def _server_url():
-    """서버 URL 생성"""
+    """모바일 연결용 서버 URL 생성"""
     from .control_utils import get_connection_info
     conn_info = get_connection_info()
     return conn_info['mobile_url']
 
+# =============================================================================
 # 세션 관리 함수들
+# =============================================================================
+
 def register_session(session_id, session_type='desktop'):
-    """세션 등록"""
+    """
+    새로운 세션을 시스템에 등록
+    
+    Args:
+        session_id (str): 고유 세션 식별자
+        session_type (str): 세션 타입 ('desktop', 'mobile' 등)
+    """
     session_connections.add(session_id)
     session_metadata[session_id] = {
         'type': session_type,
@@ -66,12 +81,18 @@ def register_session(session_id, session_type='desktop'):
     logger.info(f"세션 등록됨: {session_id} ({session_type})")
 
 def update_session_activity(session_id):
-    """세션 활동 업데이트"""
+    """세션의 마지막 활동 시간 업데이트"""
     if session_id in session_metadata:
         session_metadata[session_id]['last_activity'] = datetime.now().isoformat()
 
 def update_progress_stream(session_id, data):
-    """세션별 진행 상태 업데이트 (SSE용)"""
+    """
+    세션별 진행 상태 업데이트 (SSE 스트림용)
+    
+    Args:
+        session_id (str): 세션 식별자
+        data (dict): 업데이트할 진행 상태 데이터
+    """
     session_progress[session_id] = {
         **data,
         'timestamp': time.time(),
@@ -81,11 +102,11 @@ def update_progress_stream(session_id, data):
     logger.info(f"진행 상태 업데이트: {session_id} - {data}")
 
 def get_session_progress(session_id):
-    """세션별 진행 상태 조회"""
+    """특정 세션의 진행 상태 조회"""
     return session_progress.get(session_id)
 
 def get_active_sessions():
-    """활성 세션 목록 조회"""
+    """현재 활성화된 모든 세션 정보 조회"""
     return {
         'sessions': list(session_connections),
         'metadata': session_metadata,
@@ -93,21 +114,30 @@ def get_active_sessions():
     }
 
 def stop_all_analysis():
-    """모든 분석 중지"""
+    """
+    모든 진행 중인 분석 작업을 중지하고 시스템 상태를 초기화
+    
+    이 함수는 다음 작업을 수행합니다:
+    1. 모든 AbortController 중지
+    2. 모든 분석 중지 플래그 설정
+    3. 분석 스레드 정리
+    4. 전역 상태 초기화
+    5. 업로드 관련 데이터 초기화
+    """
     logger.info("[중지] 모든 분석 중지 요청")
     
-    # 모든 AbortController 중지
+    # 1. 모든 AbortController 중지
     for session_id, abort_controller in list(analysis_abort_controllers.items()):
         if abort_controller:
             abort_controller.abort()
             logger.info(f"AbortController 중지: {session_id}")
     
-    # 모든 분석 중지 플래그 설정
+    # 2. 모든 분석 중지 플래그 설정
     for session_id in analysis_stop_flags:
         analysis_stop_flags[session_id] = True
         logger.info(f"분석 중지 플래그 설정: {session_id}")
     
-    # 모든 분석 스레드 정리
+    # 3. 모든 분석 스레드 정리
     for session_id, thread in list(analysis_threads.items()):
         if thread and thread.is_alive():
             logger.info(f"분석 스레드 중지 시도: {session_id}")
@@ -115,11 +145,11 @@ def stop_all_analysis():
             # thread.join(timeout=5)  # 5초 대기 후 강제 종료
         del analysis_threads[session_id]
     
-    # 중지 플래그 및 AbortController 초기화
+    # 4. 중지 플래그 및 AbortController 초기화
     analysis_stop_flags.clear()
     analysis_abort_controllers.clear()
     
-    # 상태 강제 초기화 (중지 후 즉시 상태 리셋)
+    # 5. 상태 강제 초기화 (중지 후 즉시 상태 리셋)
     from web_interface.base.state_manager import state_manager
     state_manager.set('processing.status', 'idle')
     state_manager.set('processing.progress', 0)
@@ -140,16 +170,27 @@ def stop_all_analysis():
     
     logger.info("[완료] 모든 분석 중지 및 상태 초기화 완료")
 
+# =============================================================================
+# 라우트 핸들러들
+# =============================================================================
+
 @control_bp.route('/control')
 def desktop_control():
-    """데스크탑 관제 화면"""
+    """
+    데스크탑 관제 화면 메인 페이지
+    
+    Returns:
+        HTML: 데스크탑 관제 화면 템플릿
+    """
+    # 고유 세션 ID 생성 및 등록
     session_id = str(uuid.uuid4())
     session['session_id'] = session_id
     get_global_status()['session_id'] = session_id
     
-    # 세션 등록
+    # 데스크탑 세션으로 등록
     register_session(session_id, 'desktop')
     
+    # 연결 상태 업데이트
     update_status(status='connected', message='데스크탑 연결됨')
     
     return render_template('desktop/control.html', 
@@ -160,8 +201,17 @@ def desktop_control():
 
 @api_bp.route('/status')
 def get_status():
-    """시스템 상태 조회 API (폴링용)"""
+    """
+    시스템 상태 조회 API (폴링용)
+    
+    클라이언트가 주기적으로 호출하여 현재 시스템 상태를 확인하는 엔드포인트
+    모바일과 데스크탑 간의 호환성을 위해 데이터 구조를 평탄화하여 제공
+    
+    Returns:
+        JSON: 현재 시스템 상태 정보
+    """
     status_data = get_global_status().copy()
+    
     # 호환성: 잘못 중첩된 analysis_result 구조를 평탄화
     try:
         ar = status_data.get('analysis_result')
@@ -213,7 +263,15 @@ def get_status():
 
 @api_bp.route('/status_stream')
 def status_stream():
-    """전역 상태 SSE 스트림 (모바일용)"""
+    """
+    전역 상태 SSE 스트림 (모바일용)
+    
+    Server-Sent Events를 통해 실시간으로 시스템 상태를 전송
+    AI 분석 상태를 실시간으로 수신할 수 있음
+    
+    Returns:
+        Response: SSE 스트림 응답
+    """
     def generate():
         # 초기 연결 신호
         yield f"data: {json.dumps({'event': 'connected'})}\n\n"
@@ -362,7 +420,18 @@ def status_stream():
 
 @api_bp.route('/progress_stream')
 def progress_stream():
-    """진행 상태 SSE 스트림 (하이브리드 방식)"""
+    """
+    진행 상태 SSE 스트림 (하이브리드 방식)
+    
+    특정 세션의 진행 상태를 실시간으로 전송하는 SSE 엔드포인트
+    세션별로 독립적인 진행 상태를 관리하고 전송
+    
+    Query Parameters:
+        session_id (str): 세션 식별자
+        
+    Returns:
+        Response: SSE 스트림 응답
+    """
     session_id = request.args.get('session_id')
     
     if not session_id:
@@ -413,57 +482,17 @@ def progress_stream():
         }
     )
 
-@api_bp.route('/start_processing', methods=['POST'])
-def start_processing():
-    """AI 처리 시작 (HTTP API + SSE 하이브리드)"""
-    try:
-        data = request.get_json() or {}
-        session_id = data.get('session_id')
-        
-        if not session_id:
-            return jsonify({'success': False, 'error': 'Session ID required'}), 400
-        
-        if session_id not in session_connections:
-            return jsonify({'success': False, 'error': 'Invalid session ID'}), 400
-        
-        # 처리 시뮬레이션 (SSE로 진행 상태 전송)
-        def simulate_processing():
-            steps = [
-                (10, 'analyzing', '사용자 입력 분석 중...'),
-                (30, 'processing', 'AI 처리 중...'),
-                (60, 'generating', '결과 생성 중...'),
-                (90, 'finalizing', '최종 처리 중...'),
-                (100, 'completed', '처리 완료!')
-            ]
-            
-            for progress, status, message in steps:
-                # SSE로 진행 상태 전송
-                update_progress_stream(session_id, {
-                    'event': 'progress_update',
-                    'progress': progress,
-                    'status': status,
-                    'message': message
-                })
-                time.sleep(2)  # 2초마다 단계 진행
-        
-        # 백그라운드에서 처리 실행
-        thread = threading.Thread(target=simulate_processing)
-        thread.daemon = True
-        thread.start()
-        
-        return jsonify({
-            'success': True,
-            'message': 'AI 처리가 시작되었습니다.',
-            'session_id': session_id
-        })
-        
-    except Exception as e:
-        logger.error(f"처리 시작 오류: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 @api_bp.route('/reset', methods=['POST'])
 def reset_system():
-    """시스템 초기화 및 분석 중지"""
+    """
+    시스템 초기화 및 분석 중지
+    
+    모든 진행 중인 분석을 중지하고 시스템 상태를 초기 상태로 리셋
+    페이지 이탈이나 사용자 요청에 의해 호출됨
+    
+    Returns:
+        JSON: 초기화 완료 응답
+    """
     try:
         # 요청 소스 확인
         user_agent = request.headers.get('User-Agent', '')
@@ -522,10 +551,24 @@ def reset_system():
             'error': str(e)
         }), 500
 
-# 새로운 HTTP API 엔드포인트들
+# =============================================================================
+# 세션 관리 API 엔드포인트들
+# =============================================================================
+
 @api_bp.route('/join_session', methods=['POST'])
 def join_session():
-    """세션 참여 (HTTP API)"""
+    """
+    세션 참여 (HTTP API)
+    
+    새로운 클라이언트가 기존 세션에 참여할 때 사용
+    
+    Request Body:
+        session_id (str): 참여할 세션 ID
+        type (str): 세션 타입 ('desktop', 'mobile' 등)
+        
+    Returns:
+        JSON: 세션 참여 결과
+    """
     try:
         data = request.get_json()
         session_id = data.get('session_id')
@@ -549,7 +592,14 @@ def join_session():
 
 @api_bp.route('/sessions', methods=['GET'])
 def get_sessions():
-    """활성 세션 목록 조회 (HTTP API)"""
+    """
+    활성 세션 목록 조회 (HTTP API)
+    
+    현재 시스템에 연결된 모든 활성 세션의 정보를 조회
+    
+    Returns:
+        JSON: 활성 세션 목록 및 메타데이터
+    """
     try:
         sessions_info = get_active_sessions()
         return jsonify({
@@ -560,25 +610,26 @@ def get_sessions():
         logger.error(f"세션 목록 조회 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@api_bp.route('/session/<session_id>/progress', methods=['GET'])
-def get_session_progress_api(session_id):
-    """특정 세션의 진행 상태 조회 (HTTP API)"""
-    try:
-        if session_id not in session_connections:
-            return jsonify({'success': False, 'error': 'Invalid session ID'}), 400
-        
-        progress_data = get_session_progress(session_id)
-        return jsonify({
-            'success': True,
-            'data': progress_data
-        })
-    except Exception as e:
-        logger.error(f"세션 진행 상태 조회 오류: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+# =============================================================================
+# 하드웨어 제어 API
+# =============================================================================
 
 @api_bp.route('/trigger_hardware', methods=['POST'])
 def trigger_hardware():
-    """하드웨어 제어 (HTTP API) - 배치 코드 처리"""
+    """
+    하드웨어 제어 (HTTP API) - 배치 코드 처리
+    
+    아두이노를 통한 하드웨어 제어를 실행
+    분석 결과에서 자동으로 배치 코드를 추출하거나 수동으로 제공된 코드를 사용
+    
+    Request Body:
+        session_id (str): 세션 식별자
+        command (str, optional): 하드웨어 명령어
+        placement_code (str, optional): 16자리 배치 코드
+        
+    Returns:
+        JSON: 하드웨어 제어 실행 결과
+    """
     try:
         data = request.get_json()
         session_id = data.get('session_id')
@@ -698,7 +749,10 @@ def trigger_hardware():
         logger.error(f"하드웨어 제어 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# QR 이미지 생성 라우트
+# =============================================================================
+# QR 코드 생성 API
+# =============================================================================
+
 @control_bp.route("/qr.png")
 def qr_png():
     """QR 코드 이미지 생성"""
@@ -722,9 +776,21 @@ def qr_png():
         return jsonify({'error': 'QR 코드 생성 실패'}), 500
 
 
+# =============================================================================
+# 로그 관리 API
+# =============================================================================
+
 @api_bp.route('/logs/recent', methods=['GET'])
 def get_recent_logs():
-    """최신 로그 3개 조회 API"""
+    """
+    최신 로그 3개 조회 API
+    
+    tetris_IO/log_data 디렉토리에서 최신 로그 파일 3개를 조회
+    각 로그 파일의 내용과 타임스탬프 정보를 제공
+    
+    Returns:
+        JSON: 최신 로그 파일 목록 및 내용
+    """
     try:
         import os
         import glob
@@ -783,9 +849,26 @@ def get_recent_logs():
         logger.error(f"최신 로그 조회 오류: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# =============================================================================
+# AI 분석 API
+# =============================================================================
+
 @api_bp.route('/step_analysis', methods=['POST'])
 def start_step_analysis():
-    """단계별 AI 분석 시작"""
+    """
+    단계별 AI 분석 시작
+    
+    사용자가 업로드한 이미지와 인원 수를 바탕으로 단계별 AI 분석을 실행
+    백그라운드 스레드에서 실행되며 SSE를 통해 실시간 진행 상태를 전송
+    
+    Request Body:
+        people_count (int): 인원 수
+        image_data_url (str): 이미지 데이터 URL (Base64 또는 HTTP URL)
+        image_path (str): 이미지 파일 경로
+        
+    Returns:
+        JSON: 분석 시작 응답
+    """
     try:
         data = request.get_json()
         people_count = data.get('people_count', 0)
