@@ -9,9 +9,6 @@ let progressValue = 0;
 let shownSteps = { 1: false, 2: false, 3: false, 4: false };
 let eventSource = null;
 
-// 로그 관련 변수
-let logsRefreshInterval = null;
-
 // option 이미지 파일 관련 변수
 window.currentOptionNo = 1; // chain2에서 받은 option_no 저장용
 
@@ -136,27 +133,6 @@ function setupLogsRefreshButton() {
         refreshBtn.addEventListener('click', () => {
             loadRecentLogs();
         });
-    }
-}
-
-// 로그 자동 새로고침 시작
-function startLogsAutoRefresh() {
-    // 기존 인터벌 정리
-    if (logsRefreshInterval) {
-        clearInterval(logsRefreshInterval);
-    }
-    
-    // 30초마다 자동 새로고침
-    logsRefreshInterval = setInterval(() => {
-        loadRecentLogs();
-    }, 30000);
-}
-
-// 로그 자동 새로고침 중지
-function stopLogsAutoRefresh() {
-    if (logsRefreshInterval) {
-        clearInterval(logsRefreshInterval);
-        logsRefreshInterval = null;
     }
 }
 
@@ -1258,7 +1234,7 @@ async function formatStepResult(stepNumber, resultData) {
                     <div class="analysis-result-container" style="flex: 1; padding: 0; background-image: none;">
                         <p style="font-size: 1.3vw; text-align: center; margin: 1vh;">하드웨어 제어 코드</p>
                         <div class="placement-code-display" style="background: #f5f5f5; padding: 1vh; border-radius: 8px; margin: 0 20vw 1vh;">
-                            <h3 style="font-size: 1.3vw; font-weight: bold; text-align: center; font-family: monospace; letter-spacing: 4px;">${placementCode}</h3>
+                            <h3 style="font-size: 1.3vw; font-weight: bold; text-align: center; letter-spacing: 4px;">${placementCode}</h3>
                         </div>
                         <div class="image-container">
                             <img style="height: 46vh; max-width: 46vw;" src="/static/images/optimum_arrangement_options/${optionNo}.png" alt="최적 배치 코드" class="analysis-image">
@@ -1615,7 +1591,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 로그 관련 기능 초기화
     setupLogsRefreshButton();
     loadRecentLogs();
-    startLogsAutoRefresh();
     
     // 하드웨어 아이콘 초기화
     setupHardwareIcon();
@@ -1626,11 +1601,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
     
     console.log('✅ 로그 기능 초기화 완료');
-});
-
-// 페이지 언로드 시 정리
-window.addEventListener('beforeunload', function() {
-    stopLogsAutoRefresh();
 });
 
 // 전역 함수 노출

@@ -2555,7 +2555,6 @@ body.modal-open {
 }
 
 .log-content {
-    font-family: "Courier New", monospace;
     font-size: 1.0vw;
     line-height: 1.4;
     color: var(--color-text-secondary);
