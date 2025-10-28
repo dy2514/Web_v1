@@ -174,9 +174,9 @@ def check_project_structure() -> bool:
     
     return True
 
-def check_prerequisites() -> bool:
-    """필수 조건 확인 (통합 함수)"""
-    log_step(1, "필수 조건 확인")
+def setup_environment() -> bool:
+    """환경 설정 및 초기화 (통합 함수)"""
+    log_step(1, "환경 설정 및 초기화")
     
     if not check_requirements_file():
         return False
@@ -188,7 +188,7 @@ def check_prerequisites() -> bool:
     if not check_project_structure():
         return False
     
-    print_success("모든 필수 조건 확인 완료")
+    print_success("환경 설정 및 초기화 완료")
     return True
 
 def test_config_loading() -> Tuple[bool, Optional[int], Optional[str]]:
@@ -354,8 +354,8 @@ def main() -> None:
             logger.info("상태 파일 초기화를 건너뜁니다.")
             print("\n[WARNING] 상태 파일 초기화를 건너뜁니다.")
         
-        if not check_prerequisites():
-            print_error("필수 조건을 만족하지 않습니다.")
+        if not setup_environment():
+            print_error("환경 설정에 실패했습니다.")
             return
         
         config_ok, port, host = test_config_loading()
