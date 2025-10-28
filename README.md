@@ -3,11 +3,10 @@
 
 
 ## 1.주요 기능 🚀
-- **AI 기반 분석**: Google Gemini 2.5 Flash 모델을 활용한 이미지 분석 및 최적 배치 생성
-- **웹 인터페이스**: 모바일/데스크탑 친화적인 반응형 웹 UI
+- **AI 기반 분석**: Google Gemini 모델을 활용한 이미지 분석 및 최적 배치 생성
+- **웹 인터페이스**: Flask 기반 모바일(사용자)/데스크탑(관리자) 웹 실행
 - **하드웨어 제어**: 4개 아두이노를 통한 실시간 모터 제어
-- **실시간 모니터링**: 시스템 성능 및 진행률 실시간 추적
-- **다단계 AI 파이프라인**: 4단계 LangChain 기반 AI 처리 체인
+- **다단계 AI 파이프라인**: 3단계 LangChain 기반 AI 처리 체인
 
 
 ## 2.요구사항 📋
@@ -31,7 +30,7 @@
 pip install -r requirements.txt
 ```
 
-### 2.1.Google API 키 설정
+### 3.2.Google API 키 설정
 
 #### 방법 1: 환경변수 설정
 ```bash
@@ -52,12 +51,12 @@ export GOOGLE_API_KEY="your_google_api_key_here"
 
 ## 4.실행 방법 🚀
 
-### 자동 실행 (권장)
+### 4.1.자동 실행 (권장)
 ```bash
 python tetris_launcher.py
 ```
 
-### 수동 실행
+### 4.2.수동 실행
 ```bash
 # 웹 서버만 실행
 python tetris/tetris.py --mode web --port 5002
@@ -66,7 +65,7 @@ python tetris/tetris.py --mode web --port 5002
 python tetris/arduino_ctrl/arduino_ctrl.py
 ```
 
-### 웹 접속
+### 4.3.웹 접속
 - **모바일**: http://localhost:5002/mobile/input
 - **데스크탑**: http://localhost:5002/desktop/control
 - **메인 페이지**: http://localhost:5002/

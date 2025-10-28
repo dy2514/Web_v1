@@ -72,7 +72,7 @@ if not GOOGLE_API_KEY:
 
 # LLM 모델 초기화
 chain1_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-image",
+    model="gemini-2.5-pro",
     temperature=0.2,
     api_key=GOOGLE_API_KEY
 )
